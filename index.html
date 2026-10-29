@@ -690,6 +690,210 @@ const TOP=[
 TOP.forEach((t,i)=>{t.i=i+1;t.col=`var(--c${i+1})`;t.cold=`var(--d${i+1})`;});
 const QTOTAL=TOP.reduce((a,t)=>a+t.qs.length,0);
 
+/* ---------- question generators: same idea, new numbers ---------- */
+function hstr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function rng(seed){
+  let s=seed>>>0;
+  const nx=()=>{s=(s+0x6D2B79F5)>>>0;let t=s;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;};
+  const R={f:nx,i:(a,b)=>a+Math.floor(nx()*(b-a+1)),pick:a=>a[Math.floor(nx()*a.length)],sign:()=>nx()<.5?-1:1,
+    nz:(a,b)=>{let v=0;while(v===0)v=a+Math.floor(nx()*(b-a+1));return v;},
+    shuffle:a=>{const r=a.slice();for(let i=r.length-1;i>0;i--){const j=Math.floor(nx()*(i+1));const t=r[i];r[i]=r[j];r[j]=t;}return r;}};
+  nx();nx();return R;
+}
+const SUPD='\u2070\u00B9\u00B2\u00B3\u2074\u2075\u2076\u2077\u2078\u2079',SUBD='\u2080\u2081\u2082\u2083\u2084\u2085\u2086\u2087\u2088\u2089';
+const sup=n=>String(n).split('').map(c=>c==='-'?'\u207B':SUPD[+c]).join('');
+const sub=n=>String(n).split('').map(c=>SUBD[+c]).join('');
+const xm=r=>r===0?'x':(r>0?'x \u2212 '+r:'x + '+(-r));
+const cx=c=>c===1?'x':(c===-1?'\u2212x':f2(c)+'x');
+const set2=(a,b)=>{const s=[a,b].sort((p,q)=>p-q);return 'x = '+f2(s[0])+' or x = '+f2(s[1]);};
+const pairS=(x,y)=>'('+f2(x)+', '+f2(y)+')';
+const INF='\u221E',UN=' \u222A ',MN='\u2212';
+function mkMC(R,correct,wrongs){
+  const seen=new Set([correct]),w=[];
+  wrongs.forEach(x=>{if(!seen.has(x)){seen.add(x);w.push(x);}});
+  const o=R.shuffle([correct].concat(w.slice(0,3)));
+  return{o:o,a:o.indexOf(correct)};
+}
+const GEN={
+'1a':R=>{const a=R.i(1,4),b=R.i(2,9),A=a*a,B=b*b,t=a===1?'':String(a),AA=A===1?'':String(A);
+  const m=mkMC(R,`(${t}x ${MN} ${b})(${t}x + ${b})`,[`(${t}x ${MN} ${b})\u00B2`,`(${t}x + ${b})\u00B2`,'It cannot be factored']);
+  return Object.assign({q:`Factor ${AA}x\u00B2 ${MN} ${B}.`,hint:'Two perfect squares with a minus between: a difference of squares.',
+   sol:`${AA}x\u00B2 is (${t}x)\u00B2 and ${B} is ${b}\u00B2, so a\u00B2 ${MN} b\u00B2 = (a ${MN} b)(a + b) gives (${t}x ${MN} ${b})(${t}x + ${b}).`},m);},
+'1b':R=>{const g=R.i(2,5),k=R.i(2,5),kk=k*k;
+  const m=mkMC(R,`${g}x(x ${MN} ${k})(x + ${k})`,[`${g}x(x\u00B2 ${MN} ${kk})`,`${g}(x\u00B3 ${MN} ${kk}x)`,`x(${g}x\u00B2 ${MN} ${g*kk})`]);
+  return Object.assign({q:`Factor ${g}x\u00B3 ${MN} ${g*kk}x completely.`,hint:'Take out the GCF first, then look at what is left.',
+   sol:`GCF is ${g}x: ${g}x(x\u00B2 ${MN} ${kk}). Then x\u00B2 ${MN} ${kk} is a difference of squares: ${g}x(x ${MN} ${k})(x + ${k}).`},m);},
+'1c':R=>{let p,q;do{p=R.nz(-7,7);q=R.nz(-7,7);}while(p+q===0||p===q);const b=p+q,c=p*q;
+  const m=mkMC(R,`x\u00B2${sg(b,'x')}${sg(c,'')}`,[`x\u00B2${sg(-b,'x')}${sg(c,'')}`,`x\u00B2${sg(b,'x')}${sg(-c,'')}`,`x\u00B2${sg(c,'x')}${sg(b,'')}`]);
+  return Object.assign({q:`Expand (${xm(-p)})(${xm(-q)}).`,hint:`Use the area picture: x\u00B2, then ${f2(p)}x and ${f2(q)}x, then ${f2(p)}\u00B7(${f2(q)}).`,
+   sol:`x\u00B2${sg(q,'x')}${sg(p,'x')}${sg(c,'')} = x\u00B2${sg(b,'x')}${sg(c,'')}.`},m);},
+'1d':R=>{if(R.i(0,1)===0){const a=R.i(3,8),b=R.i(1,a-1),n=a-b;
+   return{q:`x${sup(a)} \u00B7 x${sup(-b)} = x\u207F. What is n?`,a:[n],hint:'Same base, multiplying: add the exponents.',sol:`${a} + (${MN}${b}) = ${n}, so the answer is x${sup(n)}.`};}
+  const a=R.i(2,7),b=R.i(2,7),n=a+b;
+  return{q:`x${sup(a)} \u00B7 x${sup(b)} = x\u207F. What is n?`,a:[n],hint:'Same base, multiplying: add the exponents.',sol:`${a} + ${b} = ${n}, so the answer is x${sup(n)}.`};},
+'1e':R=>{const T=[[8,3,2],[27,3,3],[64,3,4],[125,3,5],[16,4,2],[81,4,3],[4,2,2],[9,2,3],[25,2,5],[36,2,6],[32,5,2]];
+  const t=R.pick(T),B=t[0],n=t[1],r=t[2],m=R.i(2,3),v=Math.pow(r,m);
+  return{q:`Evaluate ${B}^(${m}/${n}).`,a:[v],hint:`The bottom of the fraction (${n}) is the root. Take that root first, then raise it to the power ${m}.`,
+   sol:`The ${n===2?'square':n===3?'cube':n+'th'} root of ${B} is ${r}, and ${r}^${m} = ${v}.`};},
+'1f':R=>{const b=R.i(2,6),s=R.pick([1,-1]),v=b*b*b,sg1=s>0?'+':MN;
+  return{q:`Factor x\u00B3 ${sg1} ${v} completely.`,ans:s>0?`(x + ${b})(x\u00B2 ${MN} ${b}x + ${b*b})`:`(x ${MN} ${b})(x\u00B2 + ${b}x + ${b*b})`,
+   hint:`${s>0?'Sum':'Difference'} of cubes: a\u00B3 ${sg1} b\u00B3 with a = x and b = ${b}. Use SOAP for the signs.`,
+   sol:`a\u00B3 ${sg1} b\u00B3 = (a ${sg1} b)(a\u00B2 ${s>0?MN:'+'} ab + b\u00B2) gives ${s>0?`(x + ${b})(x\u00B2 ${MN} ${b}x + ${b*b})`:`(x ${MN} ${b})(x\u00B2 + ${b}x + ${b*b})`}. The second factor does not factor further.`};},
+
+'2a':R=>{let p,q;do{p=R.nz(-8,8);q=R.nz(-8,8);}while(Math.abs(p)===Math.abs(q));const B=-(p+q),C=p*q;
+  const m=mkMC(R,set2(p,q),[set2(-p,-q),set2(-p,q),set2(p,-q)]);
+  return Object.assign({q:`Solve x\u00B2${sg(B,'x')}${sg(C,'')} = 0.`,hint:`Two numbers that multiply to ${f2(C)} and add to ${f2(B)}.`,
+   sol:`(${xm(p)})(${xm(q)}) = 0, so x = ${f2(p)} or x = ${f2(q)}.`},m);},
+'2b':R=>{const k=R.i(0,2);let b,c;
+  if(k===0){const r=R.i(1,5);b=2*r*R.sign();c=r*r;}
+  else if(k===1){b=R.i(-6,6);c=R.i(-8,Math.ceil(b*b/4)-1);}
+  else{b=R.i(-6,6);c=R.i(Math.floor(b*b/4)+1,Math.floor(b*b/4)+9);}
+  const d=b*b-4*c,o=['None','One (repeated)','Two','Infinitely many'],a=d>0?2:(d===0?1:0);
+  return{q:`How many real solutions does x\u00B2${sg(b,'x')}${sg(c,'')} = 0 have?`,o:o,a:a,hint:'Compute the discriminant b\u00B2 \u2212 4ac. Positive: two. Zero: one. Negative: none.',
+   sol:`b\u00B2 ${MN} 4ac = ${f2(b)}\u00B2 ${MN} 4(1)(${f2(c)}) = ${f2(d)}, which is ${d>0?'positive':(d===0?'zero':'negative')}, so ${d>0?'two real solutions':(d===0?'one repeated real solution':'no real solutions')}.`};},
+'2c':R=>{const h=R.nz(-6,8),k=R.i(2,9),a=h+k,b=h-k;
+  const m=mkMC(R,set2(a,b),[`x = ${f2(a)} only`,set2(k-h,-k-h),`x = ${f2(b)} only`]);
+  return Object.assign({q:`Which describes the solutions of |${xm(h)}| = ${k}?`,hint:`${xm(h)} can be ${k} or ${MN}${k}.`,
+   sol:`${xm(h)} = ${k} gives x = ${f2(a)}. ${xm(h)} = ${MN}${k} gives x = ${f2(b)}.`},m);},
+'2d':R=>{const h=R.nz(-5,7),k=R.i(2,8),lo=h-k,hi=h+k;
+  const m=mkMC(R,`(${f2(lo)}, ${f2(hi)})`,[`(${MN}${INF}, ${f2(lo)})${UN}(${f2(hi)}, ${INF})`,`[${f2(lo)}, ${f2(hi)}]`,`(${f2(-hi)}, ${f2(-lo)})`]);
+  return Object.assign({q:`Solve |${xm(h)}| < ${k}.`,hint:`Less than means between: ${MN}${k} < ${xm(h)} < ${k}.`,
+   sol:`Add ${f2(h)} to all parts: ${f2(lo)} < x < ${f2(hi)}, which is (${f2(lo)}, ${f2(hi)}).`},m);},
+'2e':R=>{const s=R.i(1,5),b=R.i(1,3),t=1-2*b-s,a=b*b-s*t,v=Math.abs(t+b);
+  return{q:`Solve \u221A(x + ${a}) = x + ${b}. Give the one answer that works.`,a:[s],hint:'Square both sides, solve the quadratic, then test both answers in the original equation.',
+   sol:`x + ${a} = x\u00B2 + ${2*b}x + ${b*b} gives x\u00B2${sg(2*b-1,'x')}${sg(b*b-a,'')} = 0, so x = ${s} or x = ${f2(t)}. Check x = ${f2(t)}: \u221A${t+a} = ${v} but x + ${b} = ${f2(t+b)}, so reject. x = ${s} works.`};},
+'2f':R=>{const p=R.i(-6,4),q=R.i(p+2,Math.min(p+8,6)),op=R.pick(['>','<','\u2265','\u2264']),B=-(p+q),C=p*q;let ans;
+  if(op==='>')ans=`(${MN}${INF}, ${f2(p)})${UN}(${f2(q)}, ${INF})`;
+  else if(op==='<')ans=`(${f2(p)}, ${f2(q)})`;
+  else if(op==='\u2265')ans=`(${MN}${INF}, ${f2(p)}]${UN}[${f2(q)}, ${INF})`;
+  else ans=`[${f2(p)}, ${f2(q)}]`;
+  const pos=(op==='>'||op==='\u2265');
+  return{q:`Solve x\u00B2${sg(B,'x')}${sg(C,'')} ${op} 0. Write the answer in interval notation.`,ans:ans,
+   hint:'Factor, find the critical values, then test a point in each of the three zones.',
+   sol:`(${xm(p)})(${xm(q)}) ${op} 0. Critical values ${f2(p)} and ${f2(q)}. The product is ${pos?'positive outside them':'negative between them'}${(op==='>'||op==='<')?', with open dots because the sign is strict':', with closed dots because of the equals part'}.`};},
+
+'3a':R=>{const rel=bad=>{const xs=R.shuffle([1,2,3,4,5,6,7,8,9]).slice(0,3).sort((a,b)=>a-b);const pts=xs.map(x=>[x,R.i(1,9)]);
+    if(bad){pts[1]=[pts[0][0],pts[0][1]%9+1];}return '{'+pts.map(p=>`(${p[0]}, ${p[1]})`).join(', ')+'}';};
+  const bad=rel(true),m=mkMC(R,bad,[rel(false),rel(false),rel(false)]);
+  return Object.assign({q:'Which relation is NOT a function?',hint:'Look for the same x paired with two different y values.',sol:`In ${bad}, one x-value goes to two different y-values, so one input has two outputs.`},m);},
+'3b':R=>{const k=R.nz(-6,6);
+  if(R.i(0,1)===0){const m=mkMC(R,`[${f2(k)}, ${INF})`,[`(${MN}${INF}, ${f2(k)}]`,`(${f2(k)}, ${INF})`,'All real numbers']);
+    return Object.assign({q:`What is the domain of f(x) = \u221A(${xm(k)})?`,hint:'The inside of a square root cannot be negative.',sol:`${xm(k)} \u2265 0 gives x \u2265 ${f2(k)}.`},m);}
+  const m=mkMC(R,`(${MN}${INF}, ${f2(k)}]`,[`[${f2(k)}, ${INF})`,`(${MN}${INF}, ${f2(k)})`,'All real numbers']);
+  return Object.assign({q:`What is the domain of f(x) = \u221A(${f2(k)} ${MN} x)?`,hint:'The inside of a square root cannot be negative. Be careful when you move x: the inequality flips.',sol:`${f2(k)} ${MN} x \u2265 0 gives x \u2264 ${f2(k)}.`},m);},
+'3c':R=>{const h=R.nz(-6,6),k=R.nz(-6,6),H=d=>d>0?`Left ${d}`:`Right ${-d}`,V=d=>d>0?`up ${d}`:`down ${-d}`;
+  const m=mkMC(R,`${H(h)}, ${V(k)}`,[`${H(-h)}, ${V(k)}`,`${H(h)}, ${V(-k)}`,`${H(-h)}, ${V(-k)}`]);
+  return Object.assign({q:`How does y = (${xm(-h)})\u00B2${sg(k,'')} compare to y = x\u00B2?`,hint:'Inside the parentheses does the opposite. Outside does what you expect.',
+   sol:`${xm(-h)} moves ${h>0?'left':'right'} ${Math.abs(h)}. The ${f2(k)} moves ${k>0?'up':'down'} ${Math.abs(k)}.`},m);},
+'3d':R=>{const m=R.i(1,8),n=R.i(1,5),a=R.i(1,4),gv=a+n,v=gv*gv-m;
+  return{q:`f(x) = x\u00B2 ${MN} ${m} and g(x) = x + ${n}. Find f(g(${a})).`,a:[v],hint:`Inside first: find g(${a}). Then put that into f.`,sol:`g(${a}) = ${gv}. f(${gv}) = ${gv*gv} ${MN} ${m} = ${v}.`};},
+'3e':R=>{const p=R.i(2,5),q=R.i(1,9),t=R.i(-3,8),v=p*t-q;
+  return{q:`If f(x) = ${p}x ${MN} ${q}, what is f\u207B\u00B9(${f2(v)})?`,a:[t],hint:'Either find the inverse formula, or ask: what input makes f equal that number?',
+   sol:`f\u207B\u00B9(x) = (x + ${q})/${p}, so f\u207B\u00B9(${f2(v)}) = ${t}. Check: f(${t}) = ${f2(v)}.`};},
+'3f':R=>{const c=R.i(1,5),d=R.i(1,6);
+  return{q:`Find the domain of h(x) = \u221A(x + ${c}) / (x ${MN} ${d}).`,ans:`[${MN}${c}, ${d})${UN}(${d}, ${INF})`,hint:`Two red flags: the square root needs x + ${c} \u2265 0, and the bottom cannot be 0.`,
+   sol:`x \u2265 ${MN}${c} from the root, and x \u2260 ${d} from the denominator. In interval notation: [${MN}${c}, ${d})${UN}(${d}, ${INF}).`};},
+
+'4a':R=>{const n=R.i(2,6),s=R.sign(),c=R.i(1,5),lc=R.nz(-4,4),k0=R.nz(-5,5);
+  const lead=`${s<0?MN:''}${c===1?'':c}x${sup(n)}`,low=sg(lc,n-1===1?'x':'x'+sup(n-1))+sg(k0,'');
+  const O=['Both ends go up','Both ends go down','Left up, right down','Left down, right up'];
+  const ans=n%2===0?(s>0?O[0]:O[1]):(s>0?O[3]:O[2]);
+  const m=mkMC(R,ans,O);
+  return Object.assign({q:`What is the end behavior of f(x) = ${lead}${low}?`,hint:`Look only at the leading term: ${n%2===0?'even':'odd'} degree, ${s>0?'positive':'negative'} coefficient.`,
+   sol:`${n%2===0?'Even':'Odd'} degree with a ${s>0?'positive':'negative'} leading coefficient: ${ans.toLowerCase()}.`},m);},
+'4b':R=>{const p=R.i(1,5),q=R.i(1,5),mu=R.i(1,3),fac=mu===1?`(${xm(p)})`:`(${xm(p)})${sup(mu)}`;
+  const O=['crosses the x-axis straight through','touches the x-axis and turns around','flattens out as it crosses the x-axis','has a vertical asymptote'];
+  const m=mkMC(R,O[mu-1],O.filter((x,i)=>i!==mu-1));
+  return Object.assign({q:`f(x) = ${fac}(x + ${q}). At x = ${p}, the graph\u2026`,hint:`The factor (${xm(p)}) has an exponent of ${mu}. What does that multiplicity do?`,
+   sol:`Multiplicity ${mu} means the graph ${O[mu-1]}.`},m);},
+'4c':R=>{const r=R.nz(-3,4),b=R.nz(-5,5),c=R.i(-6,9),v=r*r*r+b*r+c;
+  return{q:`What is the remainder when x\u00B3${sg(b,'x')}${sg(c,'')} is divided by ${xm(r)}?`,a:[v],hint:`Remainder Theorem: just compute f(${f2(r)}).`,
+   sol:`f(${f2(r)}) = ${f2(r*r*r)}${sg(b*r,'')}${sg(c,'')} = ${f2(v)}.`};},
+'4d':R=>{const a=R.pick([2,3,4,6]),c0=R.pick([2,3,4,6,8,9,10,12]);
+  const dv=n=>{const d=[];for(let i=1;i<=n;i++)if(n%i===0)d.push(i);return d;};
+  const P=[];dv(c0).forEach(p=>dv(a).forEach(q=>{const v=p/q;if(!P.some(x=>Math.abs(x.v-v)<1e-9))P.push({v:v,s:q===1?String(p):`${p}/${q}`});}));
+  const good=R.shuffle(P).slice(0,3).map(x=>(R.sign()<0?MN:'')+x.s);
+  let bad=null;
+  for(let tries=0;tries<300&&!bad;tries++){const p=R.i(1,c0+3),q=R.i(1,a+2);if((c0%p!==0||a%q!==0)&&!P.some(x=>Math.abs(x.v-p/q)<1e-9))bad=q===1?String(p):`${p}/${q}`;}
+  if(!bad)bad=String(c0+1);
+  const m=mkMC(R,bad,good);
+  return Object.assign({q:`Which is NOT a possible rational zero of ${a}x\u00B3 + x\u00B2 ${MN} 5x + ${c0}?`,hint:`Possible zeros are \u00B1 (factors of ${c0}) over (factors of ${a}).`,
+   sol:`The top of the fraction must divide ${c0} and the bottom must divide ${a}. ${bad} breaks that rule.`},m);},
+'4e':R=>{if(R.i(0,1)===0){const n=R.i(3,9);return{q:`How many complex zeros (counting multiplicity) does a degree-${n} polynomial have?`,a:[n],hint:'Fundamental Theorem of Algebra.',sol:`A degree n polynomial has exactly n zeros, counting repeats and complex ones. Here, ${n}.`};}
+  const n=R.pick([4,5,6,7,8]),j=R.i(1,Math.floor(n/2)),k=n-2*j;
+  return{q:`A degree-${n} polynomial with real coefficients has ${k} real zeros (counting multiplicity). How many nonreal complex zeros does it have?`,a:[2*j],hint:`The total number of zeros is ${n}. Nonreal zeros come in conjugate pairs.`,sol:`${n} total minus ${k} real = ${2*j} nonreal zeros (${j} conjugate pair${j>1?'s':''}).`};},
+'4f':R=>{let p,q;do{p=R.i(1,5);q=R.i(1,5);}while(p===q);
+  const e=`x\u00B3${sg(-p,'x\u00B2')}${sg(-q*q,'x')}${sg(p*q*q,'')}`,zs=[p,q,-q].sort((a,b)=>a-b).map(z=>`x = ${f2(z)}`).join(', ');
+  return{q:`Find all zeros of ${e}.`,ans:zs,hint:'Four terms: factor by grouping.',sol:`x\u00B2(${xm(p)}) ${MN} ${q*q}(${xm(p)}) = (${xm(p)})(x\u00B2 ${MN} ${q*q}) = (${xm(p)})(x ${MN} ${q})(x + ${q}).`};},
+
+'5a':R=>{let a,b;do{a=R.nz(-6,6);b=R.nz(-6,6);}while(a===-b);
+  const m=mkMC(R,`x = ${f2(b)}`,[`x = ${f2(-a)}`,'y = 1','There is none']);
+  return Object.assign({q:`What is the vertical asymptote of f(x) = (${xm(-a)})/(${xm(b)})?`,hint:'Where is the bottom zero (and nothing cancels)?',sol:`${xm(b)} = 0 gives x = ${f2(b)}.`},m);},
+'5b':R=>{const p=R.i(2,8);
+  const m=mkMC(R,`Hole at x = ${p}, vertical asymptote at x = ${MN}${p}`,[`Vertical asymptotes at x = ${p} and x = ${MN}${p}`,`Hole at x = ${MN}${p}, vertical asymptote at x = ${p}`,`Holes at x = ${p} and x = ${MN}${p}`]);
+  return Object.assign({q:`f(x) = (x ${MN} ${p})/(x\u00B2 ${MN} ${p*p}). What features does it have?`,hint:`Factor the bottom: x\u00B2 ${MN} ${p*p} = (x ${MN} ${p})(x + ${p}). What cancels?`,
+   sol:`(x ${MN} ${p}) cancels, leaving a hole at x = ${p}. (x + ${p}) stays on the bottom: wall at x = ${MN}${p}.`},m);},
+'5c':R=>{const b=R.i(2,4),mu=R.i(2,5),a=mu*b,c=R.i(1,9),d=R.i(1,9);
+  const m=mkMC(R,`y = ${mu}`,['y = 0',`y = ${a}`,'None']);
+  return Object.assign({q:`What is the horizontal asymptote of (${a}x\u00B2 + ${c})/(${b}x\u00B2 ${MN} ${d})?`,hint:'Same degree: divide the leading coefficients.',sol:`${a}/${b} = ${mu}, so y = ${mu}.`},m);},
+'5d':R=>{const a=R.i(2,9),b=R.i(1,9),t=R.i(0,1),O=['y = 0','y = 1',`y = ${a}`,'None'];
+  const m=mkMC(R,t===0?'y = 0':'None',O.filter(x=>x!==(t===0?'y = 0':'None')));
+  return Object.assign(t===0?{q:`What is the horizontal asymptote of (x + ${a})/(x\u00B2 + ${b})?`,hint:'Compare the degrees: top 1, bottom 2.',sol:'The bottom has the bigger degree, so the fraction shrinks to y = 0.'}:
+   {q:`What is the horizontal asymptote of (x\u2074 + ${a})/(x\u00B2 + ${b})?`,hint:'Compare the degrees: top 4, bottom 2.',sol:'The top has a degree 2 or more bigger than the bottom, so there is no horizontal asymptote.'},m);},
+'5e':R=>{let t;do{t=R.nz(-6,6);}while(t===-1);const q=R.i(1,5),p=q*t;
+  return{q:`What is the y-intercept of f(x) = (${xm(p)})/(x + ${q})?`,a:[-t],hint:'The y-intercept is f(0).',sol:`f(0) = (0 ${MN} ${f2(p)})/(0 + ${q}) = ${f2(-t)}.`};},
+'5f':R=>{const d=R.nz(-4,5),c=R.i(1,6);
+  return{q:`Find the slant asymptote of f(x) = (x\u00B2 + ${c})/(${xm(d)}).`,ans:`y = x${sg(d,'')}`,hint:'Top degree is exactly one bigger: do long division and ignore the remainder.',
+   sol:`(x\u00B2 + ${c}) \u00F7 (${xm(d)}) = x${sg(d,'')} with remainder ${c+d*d}. The slant asymptote is y = x${sg(d,'')}.`};},
+
+'6a':R=>{const T=[[2,3,8],[3,2,5],[4,2,4],[5,2,4],[10,2,4]],t=R.pick(T),b=t[0],e=R.i(t[1],t[2]),N=Math.pow(b,e);
+  const m=mkMC(R,String(e),[String(e+1),String(e-1),String(e+2)]);
+  return Object.assign({q:`What is log${sub(b)} ${N}?`,hint:`${b} to what power equals ${N}?`,sol:`${b}${sup(e)} = ${N}, so log${sub(b)} ${N} = ${e}.`},m);},
+'6b':R=>{let b,e;do{b=R.i(2,7);e=R.i(2,5);}while(b===e);const N=Math.pow(b,e);
+  const m=mkMC(R,`${b}${sup(e)} = ${N}`,[`${e}${sup(b)} = ${N}`,`${N}${sup(b)} = ${e}`,`${b}${sup(N)} = ${e}`]);
+  return Object.assign({q:`Which is log${sub(b)} ${N} = ${e} written in exponential form?`,hint:'The base of the log is the base of the power. The answer to the log is the exponent.',sol:`Base ${b}, exponent ${e}: ${b}${sup(e)} = ${N}.`},m);},
+'6c':R=>{const k=R.i(2,9),t=R.i(0,2);
+  if(t===0){const m=mkMC(R,`log(${k}x)`,[`log(x + ${k})`,`${k} log x`,`log(x) \u00B7 log(${k})`]);return Object.assign({q:`log(x) + log(${k}) equals\u2026`,hint:'Adding logs means multiplying inside.',sol:`Product property: log x + log ${k} = log(${k}x).`},m);}
+  if(t===1){const m=mkMC(R,`log(x/${k})`,[`log(x ${MN} ${k})`,'log(x) / log('+k+')',`log(${k}/x)`]);return Object.assign({q:`log(x) ${MN} log(${k}) equals\u2026`,hint:'Subtracting logs means dividing inside.',sol:`Quotient property: log x ${MN} log ${k} = log(x/${k}).`},m);}
+  const m=mkMC(R,`log(x${sup(k)})`,[`log(${k}x)`,`(log x)${sup(k)}`,`log(x + ${k})`]);return Object.assign({q:`${k}\u00B7log(x) equals\u2026`,hint:'A multiplier in front of a log can hop up to become an exponent.',sol:`Power property: ${k} log x = log(x${sup(k)}).`},m);},
+'6d':R=>{const b=R.i(2,5),E=R.i(2,4),c=R.i(1,5),N=Math.pow(b,E);
+  return{q:`Solve ${b}^(${xm(c)}) = ${N}.`,a:[E+c],hint:`Write ${N} as a power of ${b}.`,sol:`${N} = ${b}${sup(E)}, so ${xm(c)} = ${E} and x = ${E+c}.`};},
+'6e':R=>{const b=R.i(2,5),E=R.i(2,3),c=R.i(1,6),v=Math.pow(b,E)-c;
+  return{q:`Solve log${sub(b)}(x + ${c}) = ${E}.`,a:[v],hint:`Rewrite in exponential form: ${b}${sup(E)} = x + ${c}.`,sol:`${b}${sup(E)} = ${Math.pow(b,E)} = x + ${c}, so x = ${v}.`};},
+'6f':R=>{const p=R.i(1,5),k=R.i(1,4),s=p+k,N=s*k;
+  return{q:`Solve ln(x) + ln(${xm(p)}) = ln ${N}.`,ans:`x = ${s}`,hint:'Combine the left side into one log, then drop the ln from both sides. Check the domain!',
+   sol:`ln(x(${xm(p)})) = ln ${N}, so x\u00B2 ${MN} ${p}x = ${N}, x\u00B2 ${MN} ${p}x ${MN} ${N} = 0, giving x = ${s} or x = ${MN}${k}. x = ${MN}${k} makes ln(x) undefined, so reject it. x = ${s}.`};},
+
+'7a':R=>{let m1,m2;do{m1=R.nz(-4,4);m2=R.nz(-4,4);}while(m1===m2);const xs=R.i(-3,5),ys=R.i(-3,7),b1=ys-m1*xs,b2=ys-m2*xs;
+  const m=mkMC(R,pairS(xs,ys),R.shuffle([pairS(ys,xs),pairS(-xs,ys),pairS(xs,-ys),pairS(xs+1,ys),pairS(xs,ys+1)]));
+  return Object.assign({q:`Solve y = ${cx(m1)}${sg(b1,'')} and y = ${cx(m2)}${sg(b2,'')}.`,hint:'Both equal y, so set them equal to each other.',
+   sol:`${cx(m1)}${sg(b1,'')} = ${cx(m2)}${sg(b2,'')} gives x = ${f2(xs)}, then y = ${f2(ys)}.`},m);},
+'7b':R=>{const k=R.i(0,2),m=R.nz(-5,5),b1=R.nz(-6,6);let e2,ans,why;
+  if(k===0){const b2=b1+R.nz(-5,5);e2=`y = ${cx(m)}${sg(b2,'')}`;ans='None';why='Same slope, different intercepts: parallel lines that never meet.';}
+  else if(k===1){const j=R.i(2,3);e2=`${j}y = ${cx(m*j)}${sg(b1*j,'')}`;ans='Infinitely many';why=`Divide the second equation by ${j} and you get the first one. It is the same line.`;}
+  else{let m2;do{m2=R.nz(-5,5);}while(m2===m);const b2=R.i(-6,6);e2=`y = ${cx(m2)}${sg(b2,'')}`;ans='One';why='Different slopes always cross exactly once.';}
+  const m3=mkMC(R,ans,['One','None','Infinitely many','Two']);
+  return Object.assign({q:`How many solutions: y = ${cx(m)}${sg(b1,'')} and ${e2}?`,hint:'Compare the slopes, then the intercepts.',sol:why},m3);},
+'7c':R=>{let x,y;do{x=R.i(1,9);y=R.i(1,9);}while(x===y);const S=x+y,D=x-y;
+  const m=mkMC(R,pairS(x,y),R.shuffle([pairS(y,x),pairS(x,-y),pairS(-x,y),pairS(x+1,y)]));
+  return Object.assign({q:`Solve x + y = ${S} and x ${MN} y = ${f2(D)}.`,hint:'Add the two equations: the y terms cancel.',sol:`2x = ${S+D} gives x = ${x}. Then y = ${y}.`},m);},
+'7d':R=>{const a=R.i(2,4),xs=R.i(1,7),ys=R.i(1,7),A=a*xs+ys,B=xs-ys,w=R.pick(['x','y']);
+  return{q:`Solve ${a}x + y = ${A} and x ${MN} y = ${f2(B)}. What is ${w}?`,a:[w==='x'?xs:ys],hint:'Add the equations to cancel y, solve for x, then go back for y.',
+   sol:`${a+1}x = ${A+B} so x = ${xs}. Then y = ${ys}.`};},
+'7e':R=>{const L=R.i(6,20),M=R.i(1,L-1),S=L+M,D=L-M,big=R.i(0,1)===0;
+  return{q:`Two numbers add to ${S} and differ by ${D}. What is the ${big?'larger':'smaller'} number?`,a:[big?L:M],hint:`Let the numbers be x and y: x + y = ${S} and x ${MN} y = ${D}.`,
+   sol:`Adding: 2x = ${S+D}, so x = ${L}. The other number is ${M}.`};},
+'7f':R=>{const T=[[5,[3,4],[-4,-3],1],[5,[4,3],[-3,-4],-1],[5,[0,5],[-5,0],5],[5,[5,0],[0,-5],-5],[13,[5,12],[-12,-5],7],[13,[12,5],[-5,-12],-7],[10,[6,8],[-8,-6],2],[10,[8,6],[-6,-8],-2]];
+  const t=R.pick(T),r=t[0],P1=t[1],P2=t[2],d=t[3];
+  return{q:`Solve x\u00B2 + y\u00B2 = ${r*r} and y = x${sg(d,'')}.`,ans:`${pairS(P1[0],P1[1])} and ${pairS(P2[0],P2[1])}`,hint:`Substitute y = x${sg(d,'')} into the circle equation.`,
+   sol:`x\u00B2 + (x${sg(d,'')})\u00B2 = ${r*r} simplifies to 2x\u00B2${sg(2*d,'x')}${sg(d*d-r*r,'')} = 0. Its solutions are x = ${f2(P1[0])} and x = ${f2(P2[0])}, and y = x${sg(d,'')} gives y = ${f2(P1[1])} and y = ${f2(P2[1])}.`};}
+};
+TOP.forEach(t=>t.qs.forEach(q=>{q.g=GEN[q.id];}));
+function eff(q,r){
+  if(r&&r.seed&&q.g){try{return Object.assign({},q,q.g(rng(hstr(q.id)+r.seed*7919)));}catch(e){return q;}}
+  return q;
+}
+
 /* ---------- state + saving ---------- */
 const KEY='mat171-visual-v1';
 let S={q:{},conf:{},last:null,updated:0};
@@ -738,7 +942,8 @@ function loadTutor(){
 }
 
 /* ---------- progress helpers ---------- */
-const qdone=(id)=>{const r=S.q[id];return !!(r&&(r.ok||r.self==='got'));};
+const rdone=r=>!!(r&&(r.ok||r.self==='got'||r.ever));
+const qdone=(id)=>rdone(S.q[id]);
 const topicDone=t=>t.qs.filter(q=>qdone(q.id)).length;
 const allDone=()=>TOP.reduce((a,t)=>a+topicDone(t),0);
 let shareOpen=false;
@@ -746,9 +951,9 @@ function summary(){
   const L=['MAT 171 progress: '+allDone()+' of '+QTOTAL+' questions solved'];
   TOP.forEach(t=>{const c=S.conf[t.id];L.push(t.n+': '+topicDone(t)+' of '+t.qs.length+(c?' ('+({g:'feels clear',y:'a bit shaky',r:'feeling lost'})[c]+')':''));});
   const miss=[],retry=[];
-  TOP.forEach(t=>t.qs.forEach(q=>{const r=S.q[q.id];if(!r)return;if(!qdone(q.id)&&(r.tries>0||r.self==='missed'))miss.push(t.n+': '+q.q);else if(qdone(q.id)&&r.tries>1)retry.push(t.n+': '+q.q);}));
+  TOP.forEach(t=>t.qs.forEach(q=>{const r=S.q[q.id];if(!r)return;if(!qdone(q.id)&&(r.tries>0||r.self==='missed'))miss.push(t.n+': '+q.q);else if(qdone(q.id)&&(r.wrong||0)>0)retry.push(t.n+': '+q.q);}));
   if(miss.length){L.push('','Still working on:');miss.forEach(m=>L.push('- '+m));}
-  if(retry.length){L.push('','Took more than one try:');retry.forEach(m=>L.push('- '+m));}
+  if(retry.length){L.push('','Got wrong at least once before solving:');retry.forEach(m=>L.push('- '+m));}
   return L.join('\n');
 }
 
@@ -757,7 +962,7 @@ function tcStyle(t){return `--tc:${t.col};--tcd:${t.cold}`;}
 function renderHome(){
   const d=allDone(),pct=Math.round(d/QTOTAL*100);
   return `<section class="hero"><h1>Precalculus Algebra, picture by picture</h1>
-  <p>Seven topics, each with a graph you can play with, plain-English rules, a step-by-step example, and practice questions that save your answers.</p>
+  <p>Seven topics, each with a graph you can play with, plain-English rules, a step-by-step example, and practice questions that save your answers. Tap New numbers on any question to get a fresh version of the same kind of problem.</p>
   <div class="overall" style="--tc:var(--c5);--tcd:var(--d5)"><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><span>${d} of ${QTOTAL} questions solved</span></div></section>
   <div class="tiles">${TOP.map(t=>{const n=topicDone(t),p=Math.round(n/t.qs.length*100);
    return `<button class="tile" style="${tcStyle(t)}" data-act="topic" data-id="${t.id}"><div class="gl">${t.glyph}</div><div class="tb"><h3>${esc(t.n)}</h3><p>${esc(t.goal)}</p><div class="bar"><i style="width:${p}%"></i></div><div class="cnt">${n} of ${t.qs.length} solved${S.conf[t.id]?' \u00B7 '+({g:'feels clear',y:'a bit shaky',r:'feeling lost'})[S.conf[t.id]]:''}</div></div></button>`;}).join('')}</div>
@@ -775,15 +980,15 @@ function renderTopic(t){
     const n=walk[t.id]||1,steps=t.ex.steps;
     body=`<h3 class="gh" style="margin-top:4px">${esc(t.ex.title)}</h3><div class="steps">${steps.slice(0,n).map((s,i)=>`<div class="st"><div class="nb">${i+1}</div><div><div class="do">${esc(s.d)}</div>${s.m?`<div class="mt">${esc(s.m)}</div>`:''}<div class="wy">${esc(s.w)}</div>${s.viz?`<div class="vz">${s.viz}</div>`:''}</div></div>`).join('')}</div>
     <div class="walkbtns"><button class="btn" data-act="wback" ${n<=1?'disabled':''}>Back</button><button class="btn fill" data-act="wnext" ${n>=steps.length?'disabled':''}>${n>=steps.length?'Done':'Show next step'}</button><button class="btn" data-act="wall" ${n>=steps.length?'disabled':''}>Show all</button><button class="btn" data-act="wtry">Go to practice</button></div>`;
-  }else body=`<p class="lead">${topicDone(t)} of ${t.qs.length} solved. Wrong answers are fine, they save too so you can see what to review.</p><div class="qs">${t.qs.map(q=>renderQ(t,q)).join('')}</div>`;
+  }else body=`<p class="lead">${topicDone(t)} of ${t.qs.length} solved. Wrong answers are fine, they save too so you can see what to review. Tap New numbers for the same kind of question with different numbers.</p><div class="qs">${t.qs.map(q=>renderQ(t,q)).join('')}</div>`;
   return `<div class="tview" style="${tcStyle(t)}"><button class="back" data-act="home">\u2039 All topics</button>
   <div class="thead"><h2>${esc(t.n)}</h2><p>${esc(t.goal)}</p>
   <div class="conf"><span>How does this topic feel?</span>
    <button class="cb g" data-act="conf" data-v="g" aria-pressed="${cf==='g'}">Clear</button><button class="cb y" data-act="conf" data-v="y" aria-pressed="${cf==='y'}">A bit shaky</button><button class="cb r" data-act="conf" data-v="r" aria-pressed="${cf==='r'}">Lost</button></div></div>
   <div class="tabs" role="tablist">${tabs.map(x=>`<button role="tab" data-act="tab" data-v="${x[0]}" aria-selected="${tab===x[0]}">${x[1]}</button>`).join('')}</div>${body}</div>`;
 }
-function renderQ(t,q){
-  const r=S.q[q.id]||{};const ok=r.ok||r.self==='got';const bad=!ok&&((r.tries>0&&q.t!=='self')||r.self==='missed');
+function renderQ(t,q0){
+  const r=S.q[q0.id]||{};const q=eff(q0,r);const ok=r.ok||r.self==='got';const bad=!ok&&((r.tries>0&&q.t!=='self')||r.self==='missed');
   const L='ABCD';let ui='';
   if(q.t==='mc'){
     ui=`<div class="opts">${q.o.map((o,i)=>`<button class="opt${r.pick===i&&r.ok?' right':''}${r.pick===i&&r.tries>0&&!r.ok?' wrong':''}" data-act="pick" data-q="${q.id}" data-v="${i}" ${r.ok?'disabled':''}><span class="lt">${L[i]}</span><span>${esc(o)}</span></button>`).join('')}</div>`;
@@ -800,7 +1005,10 @@ function renderQ(t,q){
   const acts=[];
   if(!ok&&q.t!=='self')acts.push(`<button data-act="hint" data-q="${q.id}">Hint</button>`);
   if(q.t!=='self'&&!ok)acts.push(`<button data-act="sol" data-q="${q.id}">Show solution</button>`);
-  return `<div class="q${ok?' ok':(bad?' bad':'')}" id="q-${q.id}"><p class="qt">${esc(q.q)}</p>${ui}${acts.length?`<div class="qa">${acts.join('')}</div>`:''}${fb}</div>`;
+  acts.push(`<button${ok?' class="go"':''} data-act="newq" data-q="${q.id}">${ok?'Try new numbers':'New numbers'}</button>`);
+  const times=(r.right||0)+(ok?1:0);
+  const tags=(times?`<span class="tag g">Solved ${times} time${times>1?'s':''}</span> `:'')+(r.seed?'<span class="tag" style="background:var(--d5)">New numbers</span>':'');
+  return `<div class="q${ok?' ok':(bad?' bad':'')}" id="q-${q.id}">${tags?`<div style="margin-bottom:8px">${tags}</div>`:''}<p class="qt">${esc(q.q)}</p>${ui}${acts.length?`<div class="qa">${acts.join('')}</div>`:''}${fb}</div>`;
 }
 function renderTutor(){
   let h=`<button class="back" data-act="home">\u2039 Back</button><div class="hero" style="padding-top:6px"><h1 style="font-size:32px;max-width:none">Tutor view</h1><p>Everyone who has used this page with saved progress. Students need Contributor access to save to your page.</p></div>`;
@@ -808,9 +1016,9 @@ function renderTutor(){
   if(!tutorDocs.length&&!tutorErr)h+=`<div class="notice" style="--tc:var(--c5)">No saved progress yet. Once Hana answers a question while signed in, it will appear here.</div>`;
   h+=tutorDocs.map(d=>{
     const q=d.q||{},cf=d.conf||{};
-    const total=TOP.reduce((a,t)=>a+t.qs.filter(x=>q[x.id]&&(q[x.id].ok||q[x.id].self==='got')).length,0);
-    const miss=[];TOP.forEach(t=>t.qs.forEach(x=>{const r=q[x.id];if(r&&((r.tries>=2)||(r.self==='missed')||(r.tries>0&&!r.ok)))miss.push(`${t.n}: ${x.q}`);}));
-    return `<div class="trow"><h3>${esc(names[d.id]||'Student')} \u2014 ${total} of ${QTOTAL} solved</h3><div class="tgrid">${TOP.map(t=>{const n=t.qs.filter(x=>q[x.id]&&(q[x.id].ok||q[x.id].self==='got')).length;const c=cf[t.id];
+    const total=TOP.reduce((a,t)=>a+t.qs.filter(x=>rdone(q[x.id])).length,0);
+    const miss=[];TOP.forEach(t=>t.qs.forEach(x=>{const r=q[x.id];if(r&&((!rdone(r)&&(r.tries>0||r.self==='missed'))||(r.wrong||0)>=2))miss.push(`${t.n}: ${x.q}`);}));
+    return `<div class="trow"><h3>${esc(names[d.id]||'Student')} \u2014 ${total} of ${QTOTAL} solved</h3><div class="tgrid">${TOP.map(t=>{const n=t.qs.filter(x=>rdone(q[x.id])).length;const c=cf[t.id];
       return `<div class="tc1" style="${tcStyle(t)}"><b>${esc(t.n)}</b>${n} of ${t.qs.length}${c?` <span class="tag ${c}">${({g:'clear',y:'shaky',r:'lost'})[c]}</span>`:''}</div>`;}).join('')}</div>
       ${miss.length?`<p class="miss"><b>Needs review:</b> ${miss.map(esc).join(' \u00B7 ')}</p>`:''}</div>`;
   }).join('');
@@ -862,15 +1070,16 @@ document.addEventListener('click',e=>{
   if(a==='copy'){const ta=document.getElementById('sharebox');if(ta){ta.select();let ok=false;try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(ta.value);ok=true;}else ok=document.execCommand('copy');}catch(er){try{ok=document.execCommand('copy');}catch(e2){}}b.textContent=ok?'Copied':'Select the text and copy it';}return;}
   if(a==='reset'){if(!resetArm){resetArm=true;return render();}S={q:{},conf:{},last:null,updated:Date.now()};persistLocal();if(dbDoc)queueCloud();resetArm=false;return render();}
   const qid=b.dataset.q;const f=qid&&findQ(qid);
-  if(!f)return;const q=f.q,r=rec(qid);
-  const redo=()=>{const el=$('#q-'+qid);if(el){const tmp=document.createElement('div');tmp.innerHTML=renderQ(f.t,q);el.replaceWith(tmp.firstElementChild);}};
-  if(a==='pick'){r.pick=parseInt(b.dataset.v,10);r.tries=(r.tries||0)+1;r.ok=r.pick===q.a;save();redo();}
-  else if(a==='check'){const inp=document.querySelector(`input[data-q="${qid}"]`);const v=inp?inp.value:'';if(!v.trim())return;r.val=v;r.tries=(r.tries||0)+1;const n=parseNum(v);r.ok=!isNaN(n)&&q.a.some(x=>Math.abs(x-n)<1e-6);save();redo();}
+  if(!f)return;const r=rec(qid);const q=eff(f.q,r);
+  const redo=()=>{const el=$('#q-'+qid);if(el){const tmp=document.createElement('div');tmp.innerHTML=renderQ(f.t,f.q);el.replaceWith(tmp.firstElementChild);}};
+  if(a==='pick'){r.pick=parseInt(b.dataset.v,10);r.tries=(r.tries||0)+1;r.ok=r.pick===q.a;if(!r.ok)r.wrong=(r.wrong||0)+1;save();redo();}
+  else if(a==='check'){const inp=document.querySelector(`input[data-q="${qid}"]`);const v=inp?inp.value:'';if(!v.trim())return;r.val=v;r.tries=(r.tries||0)+1;const n=parseNum(v);r.ok=!isNaN(n)&&q.a.some(x=>Math.abs(x-n)<1e-6);if(!r.ok)r.wrong=(r.wrong||0)+1;save();redo();}
   else if(a==='hint'){r.hint=true;save();redo();}
   else if(a==='sol'){r.sol=true;save();redo();}
   else if(a==='reveal'){r.rev=true;save();redo();}
-  else if(a==='self'){r.self=b.dataset.v;save();redo();}
-  if(a==='pick'||a==='check'||a==='self'){/* update progress count text */const lead=document.querySelector('.tview .lead');if(lead&&f.t)lead.textContent=`${topicDone(f.t)} of ${f.t.qs.length} solved. Wrong answers are fine, they save too so you can see what to review.`;}
+  else if(a==='self'){r.self=b.dataset.v;if(r.self==='missed')r.wrong=(r.wrong||0)+1;save();redo();}
+  else if(a==='newq'){const was=!!(r.ok||r.self==='got');S.q[qid]={seed:(r.seed||0)+1,right:(r.right||0)+(was?1:0),ever:!!(r.ever||was),wrong:r.wrong||0};save();redo();}
+  if(a==='pick'||a==='check'||a==='self'||a==='newq'){/* update progress count text */const lead=document.querySelector('.tview .lead');if(lead&&f.t)lead.textContent=`${topicDone(f.t)} of ${f.t.qs.length} solved. Wrong answers are fine, they save too so you can see what to review. Tap New numbers for the same kind of question with different numbers.`;}
 });
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.matches&&e.target.matches('.ans input')){const b=document.querySelector(`[data-act="check"][data-q="${e.target.dataset.q}"]`);if(b)b.click();}
