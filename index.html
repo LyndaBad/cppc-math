@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MAT 171 Visual Study Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F1F4FA; --card:#FFFFFF; --ink:#18202E; --mute:#566176; --line:#D9E0EE; --soft:#E7ECF6;
+  --ok:#17804F; --bad:#C8383A; --okbg:#E3F5EC; --badbg:#FBE8E8;
+  --c1:#EF5B5B; --d1:#C23A3A; --c2:#F5A524; --d2:#A65F00; --c3:#2FB67C; --d3:#167A50;
+  --c4:#1FA7B5; --d4:#11727D; --c5:#3B7BF6; --d5:#2457C9; --c6:#7B5CF0; --d6:#5A3DD1;
+  --c7:#E253A8; --d7:#B52D82;
+  --shadow:0 1px 2px rgba(24,32,46,.06),0 6px 18px rgba(24,32,46,.06);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1522; --card:#171F33; --ink:#EAF0FB; --mute:#A0ADC4; --line:#2B3652; --soft:#1F2A43;
+    --ok:#4CCB8D; --bad:#FF7B7B; --okbg:#123424; --badbg:#3A1C20; --shadow:none; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1522; --card:#171F33; --ink:#EAF0FB; --mute:#A0ADC4; --line:#2B3652; --soft:#1F2A43;
+  --ok:#4CCB8D; --bad:#FF7B7B; --okbg:#123424; --badbg:#3A1C20; --shadow:none; color-scheme:dark;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px);height:100%}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:"Lexend",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17px;line-height:1.6}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+.m,.eq,.fm{font-family:"STIX Two Text","Cambria Math","Times New Roman",serif}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--tc,var(--c5));outline-offset:2px;border-radius:6px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:12px;padding-top:10px;padding-bottom:10px}
+.brand{font-weight:700;font-size:17px;letter-spacing:-.01em;background:none;border:0;padding:4px 0;text-align:left}
+.brand small{display:block;font-weight:400;font-size:12px;color:var(--mute)}
+.sp{flex:1}
+.pill{font-size:13px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 12px;color:var(--mute);white-space:nowrap}
+.pill.cloud{color:var(--ok);border-color:var(--ok)}
+.pill.err{color:var(--bad);border-color:var(--bad)}
+.tbtn{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 14px;font-size:14px}
+
+/* home */
+.hero{padding:34px 0 10px}
+.hero h1{font-size:clamp(28px,5vw,44px);line-height:1.12;margin:0 0 10px;letter-spacing:-.02em;max-width:18ch}
+.hero p{margin:0;color:var(--mute);max-width:56ch}
+.overall{margin:22px 0 8px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.bar{height:12px;border-radius:99px;background:var(--soft);overflow:hidden;flex:1;min-width:160px;max-width:420px}
+.bar i{display:block;height:100%;background:var(--tc,var(--c5));border-radius:99px;transition:width .4s}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;margin-top:20px}
+.tile{--tx:var(--tcd);text-align:left;padding:0;border:2px solid var(--line);background:var(--card);border-radius:22px;overflow:hidden;box-shadow:var(--shadow);transition:transform .15s,border-color .15s;display:flex;flex-direction:column}
+.tile:hover{border-color:var(--tc);transform:translateY(-2px)}
+.tile .gl{background:color-mix(in srgb,var(--tc) 16%,var(--card));padding:14px 14px 6px}
+.tile .gl svg{width:100%;height:92px;display:block}
+.tile .tb{padding:12px 16px 16px}
+.tile h3{margin:0 0 2px;font-size:18px;color:var(--tx)}
+.tile p{margin:0 0 10px;font-size:14px;color:var(--mute);line-height:1.45}
+.tile .bar{height:8px;max-width:none}
+.tile .cnt{font-size:13px;color:var(--mute);margin-top:6px}
+.how{margin-top:34px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;color:var(--mute);font-size:15px}
+.how b{color:var(--ink)}
+.how span.ar{opacity:.5}
+.foot{margin-top:40px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:14px;color:var(--mute)}
+.foot button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 14px;font-size:13px}
+
+/* topic view */
+.tview{--tx:var(--tcd)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tview,:root:not([data-theme="light"]) .tile{--tx:var(--tc)}}
+:root[data-theme="dark"] .tview,:root[data-theme="dark"] .tile{--tx:var(--tc)}
+.back{border:0;background:none;color:var(--mute);padding:14px 0 4px;font-size:15px}
+.thead{background:color-mix(in srgb,var(--tc) 15%,var(--card));border:2px solid color-mix(in srgb,var(--tc) 45%,var(--card));border-radius:24px;padding:22px 24px;margin:6px 0 18px}
+.thead h2{margin:0 0 4px;font-size:clamp(24px,4vw,34px);letter-spacing:-.02em;color:var(--tx)}
+.thead p{margin:0;max-width:60ch}
+.conf{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px}
+.conf .cb{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:4px 14px;font-size:14px}
+.conf .cb[aria-pressed="true"]{color:#fff;border-color:transparent}
+.conf .cb.g[aria-pressed="true"]{background:var(--d3)}
+.conf .cb.y[aria-pressed="true"]{background:var(--d2)}
+.conf .cb.r[aria-pressed="true"]{background:var(--d1)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tabs button{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:8px 18px;font-weight:500}
+.tabs button[aria-selected="true"]{background:var(--tcd);color:#fff;border-color:var(--tcd)}
+h3.gh{font-size:19px;margin:28px 0 12px;color:var(--tx)}
+.lead{color:var(--mute);margin:0 0 14px}
+
+/* widget */
+.wg{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:820px){.wg{grid-template-columns:1fr}}
+.wg-plot,.wg-side{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;box-shadow:var(--shadow)}
+.wg-plot svg{width:100%;height:auto;display:block}
+.wg-info{font-size:15px;line-height:1.55;min-height:96px}
+.wg-info p{margin:0 0 8px}
+.eq{font-size:21px;margin:0 0 6px;color:var(--tx)}
+.wg-ctl{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);display:grid;gap:10px}
+.ctl{display:grid;gap:2px;font-size:14px;color:var(--mute)}
+.ctl.chk{display:flex;align-items:center;gap:10px}
+.ctl input[type=range]{width:100%;accent-color:var(--tcd)}
+.ctl .val{color:var(--tx);font-weight:600}
+.ctl select{font:inherit;padding:6px 8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.ctl input[type=checkbox]{width:20px;height:20px;accent-color:var(--tcd)}
+.notice{margin-top:18px;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--tc);border-radius:16px;padding:14px 18px}
+.notice b{color:var(--tx)}
+.notice ul{margin:6px 0 0;padding-left:20px}
+
+/* svg bits */
+.gl0{stroke:var(--line);stroke-width:1}
+.ax{stroke:var(--mute);stroke-width:1.6}
+.gt{fill:var(--mute);font-size:11px;font-family:"Lexend",sans-serif}
+.cv{fill:none;stroke:var(--tcd);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+:root[data-theme="dark"] .cv{stroke:var(--tc)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cv{stroke:var(--tc)}}
+.cv2{fill:none;stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.cv3{fill:none;stroke:var(--c1);stroke-width:3;stroke-linecap:round}
+.base{fill:none;stroke:var(--mute);stroke-width:2;stroke-dasharray:6 6;stroke-linecap:round}
+.asy{stroke:var(--c1);stroke-width:2;stroke-dasharray:7 6}
+.asyb{stroke:var(--c5);stroke-width:2;stroke-dasharray:7 6}
+.dot{fill:var(--tcd);stroke:var(--card);stroke-width:2}
+.dot.open{fill:var(--card);stroke:var(--tcd);stroke-width:3}
+:root[data-theme="dark"] .dot{fill:var(--tc)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dot{fill:var(--tc)}}
+.lab{fill:var(--ink);font-size:12px;font-weight:600;font-family:"Lexend",sans-serif}
+.lab.mu{fill:var(--mute);font-weight:400}
+.nl{width:100%;height:auto;display:block;margin-top:6px}
+.nll{stroke:var(--mute);stroke-width:2}
+.nlt{stroke:var(--mute);stroke-width:1.5}
+.nlx{fill:var(--mute);font-size:11px;font-family:"Lexend",sans-serif}
+.sh{fill:color-mix(in srgb,var(--tc) 55%,transparent)}
+.sh.neg{fill:color-mix(in srgb,var(--c1) 55%,transparent)}
+.mini{width:100%;height:auto;display:block}
+.mx{stroke:var(--line);stroke-width:1.5}
+.ar{stroke:var(--card);stroke-width:2}
+.k1{fill:color-mix(in srgb,var(--c1) 55%,var(--card))}
+.k2{fill:color-mix(in srgb,var(--c5) 55%,var(--card))}
+.k3{fill:color-mix(in srgb,var(--c3) 55%,var(--card))}
+.k4{fill:color-mix(in srgb,var(--c2) 60%,var(--card))}
+.art{fill:var(--ink);font-size:14px;font-weight:600;font-family:"STIX Two Text",serif}
+
+/* know cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.pc{background:var(--card);border:1px solid var(--line);border-top:5px solid var(--tc);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)}
+.pc h4{margin:0 0 6px;font-size:16px}
+.pc .fm{font-size:20px;color:var(--tx);margin:0 0 6px;line-height:1.35}
+.pc p{margin:0 0 6px;font-size:15px;color:var(--mute);line-height:1.5}
+.pc .ex{font-family:"STIX Two Text",serif;font-size:17px;background:var(--soft);border-radius:10px;padding:6px 10px;margin-top:8px}
+.pc .vz{margin-top:8px}
+.flow{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px 8px;align-items:stretch}
+.flow li{position:relative;background:var(--card);border:2px solid var(--tc);border-radius:14px;padding:10px 14px;font-size:15px;max-width:260px}
+.flow li b{display:block;color:var(--tx)}
+.flow li:not(:last-child)::after{content:"\203A";position:absolute;right:-14px;top:50%;transform:translateY(-50%);font-size:26px;color:var(--tc);font-weight:700}
+.flow li{margin-right:14px}
+@media (max-width:620px){.flow{flex-direction:column}.flow li{max-width:none;margin-right:0}.flow li:not(:last-child)::after{content:"\2193";right:auto;left:20px;top:auto;bottom:-24px;transform:none}.flow{gap:26px}}
+
+/* walkthrough */
+.steps{display:grid;gap:12px}
+.st{display:grid;grid-template-columns:44px 1fr;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;box-shadow:var(--shadow)}
+.st .nb{width:44px;height:44px;border-radius:50%;background:var(--tcd);color:#fff;display:grid;place-items:center;font-weight:700}
+.st .do{font-weight:600}
+.st .mt{font-family:"STIX Two Text",serif;font-size:22px;color:var(--tx);margin:4px 0}
+.st .wy{color:var(--mute);font-size:15px}
+.st .vz{margin-top:8px;max-width:520px}
+.st table{border-collapse:collapse;font-family:"STIX Two Text",serif;font-size:20px}
+.st td{padding:4px 12px;text-align:center}
+.st td.rt{border-right:2px solid var(--ink);color:var(--tx);font-weight:600}
+.st tr.sum td{border-top:2px solid var(--ink)}
+.walkbtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{border:2px solid var(--tcd);background:var(--card);color:var(--tx);border-radius:999px;padding:8px 20px;font-weight:600}
+.btn.fill{background:var(--tcd);color:#fff}
+.btn[disabled]{opacity:.4;cursor:default}
+
+/* practice */
+.qs{display:grid;gap:16px}
+.q{background:var(--card);border:1px solid var(--line);border-left:7px solid var(--tc);border-radius:18px;padding:16px 18px;box-shadow:var(--shadow)}
+.q.ok{border-left-color:var(--ok)}
+.q.bad{border-left-color:var(--bad)}
+.q .qt{font-size:18px;margin:0 0 12px}
+.q .qt .m{font-size:21px}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;border:2px solid var(--line);background:var(--card);border-radius:14px;padding:9px 14px;font-family:"STIX Two Text",serif;font-size:20px}
+.opt:hover{border-color:var(--tc)}
+.opt .lt{font-family:"Lexend",sans-serif;font-size:13px;font-weight:700;width:26px;height:26px;border-radius:50%;background:var(--soft);display:grid;place-items:center;flex:none}
+.opt.right{border-color:var(--ok);background:var(--okbg)}
+.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.ans{display:flex;gap:10px;flex-wrap:wrap}
+.ans input{font:inherit;font-size:18px;padding:8px 12px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);width:min(260px,100%)}
+.ans input.right{border-color:var(--ok);background:var(--okbg)}
+.ans input.wrong{border-color:var(--bad);background:var(--badbg)}
+.qa{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.qa button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 14px;font-size:14px}
+.qa button.go{background:var(--tcd);color:#fff;border-color:var(--tcd);font-weight:600}
+.fb{margin-top:12px;border-radius:12px;padding:10px 14px;font-size:15px}
+.fb.ok{background:var(--okbg);color:var(--ink);border:1px solid var(--ok)}
+.fb.bad{background:var(--badbg);border:1px solid var(--bad)}
+.fb.hint{background:var(--soft)}
+.fb .m{font-size:19px}
+.self-r{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+
+/* tutor */
+.trow{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin-bottom:14px}
+.trow h3{margin:0 0 8px}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.tc1{border:1px solid var(--line);border-left:5px solid var(--tc);border-radius:10px;padding:6px 10px;font-size:13px}
+.tc1 b{display:block;font-size:14px}
+.tag{display:inline-block;font-size:12px;border-radius:99px;padding:1px 8px;color:#fff}
+.tag.g{background:var(--d3)}.tag.y{background:var(--d2)}.tag.r{background:var(--d1)}
+.miss{font-size:14px;color:var(--mute);margin:8px 0 0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <button class="brand" data-act="home">MAT 171 Visual Study Guide<small>Precalculus Algebra &middot; CPCC</small></button>
+  <span class="sp"></span>
+  <span id="pill" class="pill">Saved on this device</span>
+  <button id="tbtn" class="tbtn" data-act="tutor" hidden>Tutor view</button>
+</div></header>
+<main class="wrap" id="main" aria-live="polite"></main>
+
+<script>
+(()=>{
+'use strict';
+/* ---------- tiny helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const f2=v=>{let s=(Math.round(v*100)/100).toString();return s.replace('-','\u2212');};
+const sg=(v,t)=>{ // signed term like " + 3x" or " − 2"
+  if(v===0)return '';const a=Math.abs(v);const c=(a===1&&t)?'':f2(a);return (v<0?' \u2212 ':' + ')+c+t;};
+const nice=(r,max)=>{for(const s of [1,2,5,10,20,50,100])if(r/s<=max)return s;return 200;};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+/* ---------- graph helpers ---------- */
+function mkG(w,h,x0,x1,y0,y1){return{w,h,x0,x1,y0,y1,sx:x=>(x-x0)/(x1-x0)*w,sy:y=>h-(y-y0)/(y1-y0)*h};}
+function axes(g){
+  const xs=nice(g.x1-g.x0,14),ys=nice(g.y1-g.y0,14);let s='';
+  const lx=(g.x1-g.x0)/xs>8,ly=(g.y1-g.y0)/ys>8;
+  for(let t=Math.ceil(g.x0/xs)*xs;t<=g.x1+1e-9;t+=xs){
+    s+=`<line class="${t===0?'ax':'gl0'}" x1="${g.sx(t).toFixed(1)}" y1="0" x2="${g.sx(t).toFixed(1)}" y2="${g.h}"/>`;
+    if(t!==0&&(!lx||(t/xs)%2===0))s+=`<text class="gt" x="${g.sx(t).toFixed(1)}" y="${clamp(g.sy(0)+14,12,g.h-4).toFixed(1)}" text-anchor="middle">${f2(t)}</text>`;}
+  for(let t=Math.ceil(g.y0/ys)*ys;t<=g.y1+1e-9;t+=ys){
+    s+=`<line class="${t===0?'ax':'gl0'}" x1="0" y1="${g.sy(t).toFixed(1)}" x2="${g.w}" y2="${g.sy(t).toFixed(1)}"/>`;
+    if(t!==0&&(!ly||(t/ys)%2===0))s+=`<text class="gt" x="${clamp(g.sx(0)-6,22,g.w-4).toFixed(1)}" y="${(g.sy(t)+4).toFixed(1)}" text-anchor="end">${f2(t)}</text>`;}
+  return s;
+}
+function curve(g,fn,cls,o){
+  o=o||{};const n=o.n||520;let d='',pen=false,py=null;
+  for(let i=0;i<=n;i++){
+    const x=g.x0+(g.x1-g.x0)*i/n;let y;try{y=fn(x);}catch(e){y=NaN;}
+    if(!isFinite(y)||Math.abs(y)>1e4){pen=false;py=null;continue;}
+    if(py!==null&&Math.abs(y-py)>(g.y1-g.y0)*(o.jump||0.7))pen=false;
+    d+=(pen?'L':'M')+g.sx(x).toFixed(1)+' '+g.sy(y).toFixed(1);pen=true;py=y;}
+  return d?`<path class="${cls}" d="${d}"/>`:'';
+}
+const vline=(g,x,c)=>`<line class="${c||'asy'}" x1="${g.sx(x).toFixed(1)}" y1="0" x2="${g.sx(x).toFixed(1)}" y2="${g.h}"/>`;
+const hline=(g,y,c)=>`<line class="${c||'asyb'}" x1="0" y1="${g.sy(y).toFixed(1)}" x2="${g.w}" y2="${g.sy(y).toFixed(1)}"/>`;
+const pt=(g,x,y,open)=>`<circle class="dot${open?' open':''}" cx="${g.sx(x).toFixed(1)}" cy="${g.sy(y).toFixed(1)}" r="6.5"/>`;
+const tx=(g,x,y,t,cls,dx,dy)=>`<text class="lab ${cls||''}" x="${(g.sx(x)+(dx||0)).toFixed(1)}" y="${(g.sy(y)+(dy||0)).toFixed(1)}">${t}</text>`;
+const svgWrap=(g,inner,label)=>`<svg class="gr" viewBox="0 0 ${g.w} ${g.h}" role="img" aria-label="${esc(label||'graph')}">${inner}</svg>`;
+function mini(fns,o){
+  o=o||{};const w=o.w||120,h=o.h||88;const g=mkG(w,h,o.x0===undefined?-3:o.x0,o.x1===undefined?3:o.x1,o.y0===undefined?-3:o.y0,o.y1===undefined?3:o.y1);
+  let s=`<line class="mx" x1="0" y1="${g.sy(0)}" x2="${w}" y2="${g.sy(0)}"/><line class="mx" x1="${g.sx(0)}" y1="0" x2="${g.sx(0)}" y2="${h}"/>`;
+  fns.forEach(f=>{s+=curve(g,f[0],f[1]||'cv',{n:140});});
+  return `<svg class="mini" viewBox="0 0 ${w} ${h}" aria-hidden="true">${s}</svg>`;
+}
+function nl(o){
+  const w=520,h=64,pad=o.pad===undefined?18:o.pad,y=32;
+  const sx=x=>pad+(x-o.min)/(o.max-o.min)*(w-2*pad);
+  let s=`<svg class="nl" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(o.label||'number line')}">`;
+  (o.shade||[]).forEach(r=>{const A=r[0]===-Infinity?0:sx(r[0]),B=r[1]===Infinity?w:sx(r[1]);s+=`<rect class="sh ${r[2]||''}" x="${A.toFixed(1)}" y="${y-6}" width="${Math.max(0,B-A).toFixed(1)}" height="12" rx="6"/>`;});
+  s+=`<line class="nll" x1="0" y1="${y}" x2="${w}" y2="${y}"/>`;
+  const st=o.step||1;
+  for(let t=Math.ceil(o.min);t<=o.max;t+=st){s+=`<line class="nlt" x1="${sx(t).toFixed(1)}" y1="${y-5}" x2="${sx(t).toFixed(1)}" y2="${y+5}"/>`;
+    if((t-Math.ceil(o.min))%(o.lab||st)===0)s+=`<text class="nlx" x="${sx(t).toFixed(1)}" y="${y+22}" text-anchor="middle">${f2(t)}</text>`;}
+  (o.pts||[]).forEach(p=>{s+=`<circle class="dot${p.open?' open':''}" cx="${sx(p.x).toFixed(1)}" cy="${y}" r="6.5"/>`;});
+  return s+'</svg>';
+}
+
+/* ---------- widget runner ---------- */
+function runWidget(el,spec){
+  const s={};spec.c.forEach(c=>{s[c.k]=c.v;});
+  el.innerHTML='<div class="wg"><div class="wg-plot"></div><div class="wg-side"><div class="wg-info" aria-live="polite"></div><div class="wg-ctl"></div></div></div>';
+  const plot=el.querySelector('.wg-plot'),info=el.querySelector('.wg-info'),ctl=el.querySelector('.wg-ctl');const inputs={};
+  spec.c.forEach(c=>{
+    const row=document.createElement('label');row.className='ctl';
+    if(c.type==='select'){
+      row.innerHTML=`<span>${c.label}</span><select>${c.opts.map(o=>`<option value="${o[0]}"${o[0]===c.v?' selected':''}>${o[1]}</option>`).join('')}</select>`;
+      const i=row.querySelector('select');i.addEventListener('change',()=>{s[c.k]=i.value;draw();});inputs[c.k]=i;
+    }else if(c.type==='check'){
+      row.className='ctl chk';row.innerHTML=`<input type="checkbox"${c.v?' checked':''}><span>${c.label}</span>`;
+      const i=row.querySelector('input');i.addEventListener('change',()=>{s[c.k]=i.checked;draw();});inputs[c.k]=i;
+    }else{
+      row.innerHTML=`<span>${c.label}: <b class="val"></b></span><input type="range" min="${c.min}" max="${c.max}" step="${c.step||1}" value="${c.v}">`;
+      const i=row.querySelector('input'),vb=row.querySelector('.val');
+      const upd=()=>{s[c.k]=parseFloat(i.value);vb.textContent=f2(s[c.k]);};
+      i.addEventListener('input',()=>{upd();draw();});upd();inputs[c.k]=i;
+    }
+    ctl.appendChild(row);
+  });
+  function draw(){const r=spec.draw(s);plot.innerHTML=r.svg;info.innerHTML=r.info;if(spec.after)spec.after(s,inputs);}
+  draw();
+}
+
+/* ---------- widgets ---------- */
+const W={};
+W.t1={c:[{k:'a',label:'Side strip a',min:1,max:6,v:3},{k:'b',label:'Side strip b',min:1,max:6,v:2}],
+ draw(s){
+  const a=s.a,b=s.b,u=17,X=120,ox=30,oy=26;const W0=270,H0=270;
+  const R=(x,y,w,h,cls,t)=>`<rect class="ar ${cls}" x="${x}" y="${y}" width="${w}" height="${h}" rx="6"/>`+((w>=30&&h>=20)?`<text class="art" x="${x+w/2}" y="${y+h/2+5}" text-anchor="middle">${t}</text>`:'');
+  let g=R(ox,oy,X,X,'k1','x\u00B2')+R(ox+X,oy,b*u,X,'k2',b+'x')+R(ox,oy+X,X,a*u,'k3',a+'x')+R(ox+X,oy+X,b*u,a*u,'k4',a*b);
+  g+=`<text class="lab" x="${ox+X/2}" y="16" text-anchor="middle">x</text><text class="lab" x="${ox+X+b*u/2}" y="16" text-anchor="middle">${b}</text>`;
+  g+=`<text class="lab" x="14" y="${oy+X/2+4}" text-anchor="middle">x</text><text class="lab" x="14" y="${oy+X+a*u/2+4}" text-anchor="middle">${a}</text>`;
+  return{svg:`<svg class="gr" viewBox="0 0 ${W0} ${H0}" role="img" aria-label="Area model of (x+${a})(x+${b})">${g}</svg>`,
+   info:`<p class="eq">(x + ${a})(x + ${b})</p><p class="eq">= x\u00B2 + ${a+b}x + ${a*b}</p>
+   <p>The rectangle has width <b>x + ${b}</b> and height <b>x + ${a}</b>. Its four pieces are the four terms you get when you multiply.</p>
+   <p>The two side strips (${b}x and ${a}x) <b>add</b> to make the middle term, ${a+b}x. The corner (${a}\u00B7${b}) is the last term, ${a*b}.</p>
+   <p><b>Factoring is this picture backwards:</b> to factor x\u00B2 + ${a+b}x + ${a*b}, find two numbers that multiply to ${a*b} and add to ${a+b}.${a===b?' Both strips match, so this is a perfect square.':''}</p>`};
+ }};
+W.t2={c:[{k:'b',label:'b (the x term)',min:-6,max:6,v:-1},{k:'c',label:'c (the number)',min:-8,max:8,v:-6}],
+ draw(s){
+  const b=s.b,c=s.c,g=mkG(520,330,-8,8,-10,10),disc=b*b-4*c;
+  const f=x=>x*x+b*x+c;let inner=axes(g)+curve(g,f,'cv');let nlx,txt;
+  const eqs=`y = x\u00B2${sg(b,'x')}${sg(c,'')}`;
+  if(disc>0){
+    const r1=(-b-Math.sqrt(disc))/2,r2=(-b+Math.sqrt(disc))/2;
+    inner+=pt(g,r1,0)+pt(g,r2,0);
+    nlx=nl({min:-8,max:8,lab:2,pts:[{x:r1},{x:r2}],shade:[[r1,r2,''],[-Infinity,r1,'neg'],[r2,Infinity,'neg']],label:'Where the parabola is below and above zero'});
+    txt=`<p class="eq">${eqs}</p><p>Discriminant b\u00B2 \u2212 4c = <b>${f2(disc)}</b> (positive), so there are <b>two</b> x-intercepts: x = ${f2(r1)} and x = ${f2(r2)}.</p>
+    <p><b style="color:var(--tx)">Colored</b> = f(x) &lt; 0 (below the axis): <span class="m">(${f2(r1)}, ${f2(r2)})</span></p>
+    <p><b style="color:var(--bad)">Red</b> = f(x) &gt; 0 (above the axis): <span class="m">(\u2212\u221E, ${f2(r1)}) \u222A (${f2(r2)}, \u221E)</span></p>`;
+  }else if(disc===0){
+    const r=-b/2;inner+=pt(g,r,0);
+    nlx=nl({min:-8,max:8,lab:2,pts:[{x:r}],shade:[[-Infinity,r,'neg'],[r,Infinity,'neg']],label:'Parabola touches zero at one point'});
+    txt=`<p class="eq">${eqs}</p><p>Discriminant = <b>0</b>, so the parabola just <b>touches</b> the x-axis at x = ${f2(r)}. One repeated solution.</p><p>f(x) is never below zero here.</p>`;
+  }else{
+    nlx=nl({min:-8,max:8,lab:2,shade:[[-Infinity,Infinity,'neg']],label:'Parabola is above zero everywhere'});
+    txt=`<p class="eq">${eqs}</p><p>Discriminant = <b>${f2(disc)}</b> (negative), so the parabola <b>never touches</b> the x-axis. No real solutions (the solutions are complex).</p><p>f(x) &gt; 0 for every x.</p>`;
+  }
+  return{svg:svgWrap(g,inner,'Parabola '+eqs)+nlx,info:txt};
+ }};
+const BASEF={
+ sq:{n:'x\u00B2',f:x=>x*x,t:s=>`${s}\u00B2`},ab:{n:'|x|',f:x=>Math.abs(x),t:s=>`|${s}|`},
+ rt:{n:'\u221Ax',f:x=>x<0?NaN:Math.sqrt(x),t:s=>`\u221A${s}`},cu:{n:'x\u00B3',f:x=>x*x*x,t:s=>`${s}\u00B3`},
+ inv:{n:'1/x',f:x=>1/x,t:s=>`1/${s}`}};
+W.t3={c:[{k:'fn',type:'select',label:'Parent function f(x)',v:'sq',opts:[['sq','x\u00B2'],['ab','|x|'],['rt','\u221Ax'],['cu','x\u00B3'],['inv','1/x']]},
+ {k:'a',label:'a (stretch / flip)',min:-3,max:3,step:.5,v:1},{k:'h',label:'h (left / right)',min:-5,max:5,v:2},{k:'k',label:'k (down / up)',min:-5,max:5,v:1}],
+ draw(s){
+  const B=BASEF[s.fn],g=mkG(520,360,-8,8,-8,8);
+  const T=x=>s.a*B.f(x-s.h)+s.k;
+  const inside=s.h===0?'x':(s.h>0?`(x \u2212 ${f2(s.h)})`:`(x + ${f2(-s.h)})`);
+  const aTxt=s.a===1?'':(s.a===-1?'\u2212':f2(s.a)+'\u00B7');
+  const eq=`y = ${aTxt}${B.t(inside)}${sg(s.k,'')}`;
+  const d=[];
+  if(s.h!==0)d.push(`<b>${s.h>0?'Right':'Left'} ${f2(Math.abs(s.h))}</b> (inside the parentheses, so it moves the <i>opposite</i> of the sign)`);
+  if(s.k!==0)d.push(`<b>${s.k>0?'Up':'Down'} ${f2(Math.abs(s.k))}</b>`);
+  if(s.a<0)d.push('<b>Flipped</b> over the x-axis');
+  if(Math.abs(s.a)>1)d.push(`<b>Stretched</b> taller by ${f2(Math.abs(s.a))}`);
+  if(Math.abs(s.a)<1&&s.a!==0)d.push(`<b>Squished</b> flatter by ${f2(Math.abs(s.a))}`);
+  if(s.a===0)d.push('a = 0 flattens everything into a line');
+  const svg=svgWrap(g,axes(g)+curve(g,B.f,'base')+curve(g,T,'cv')+(s.fn==='inv'?'':''),'Transformed graph '+eq);
+  return{svg,info:`<p class="eq">${eq}</p><p>Dashed gray is the parent f(x) = ${B.n}. The colored curve is what you built.</p><p>${d.length?d.join('<br>'):'No changes yet: move a slider.'}</p>`};
+ }};
+const nm=(r,s)=>{const x=Math.abs(r);const c=x===0?'x':(r>0?`(x \u2212 ${x})`:`(x + ${x})`);return c;};
+W.t4={c:[{k:'r1',label:'Zero 1',min:-4,max:4,v:-3},{k:'r2',label:'Zero 2',min:-4,max:4,v:1},{k:'r3',label:'Zero 3',min:-4,max:4,v:3},
+ {k:'a',type:'select',label:'Leading coefficient',v:'1',opts:[['1','positive'],['-1','negative']]}],
+ draw(s){
+  const a=parseFloat(s.a),rs=[s.r1,s.r2,s.r3].sort((p,q)=>p-q);
+  const f=x=>a*(x-rs[0])*(x-rs[1])*(x-rs[2]);
+  let mx=1;for(let x=-5.5;x<=5.5;x+=.1)mx=Math.max(mx,Math.abs(f(x)));
+  const Y=clamp(Math.ceil(mx*1.1),6,120),g=mkG(520,360,-6,6,-Y,Y);
+  const cnt={};rs.forEach(r=>{cnt[r]=(cnt[r]||0)+1;});
+  let inner=axes(g)+curve(g,f,'cv');Object.keys(cnt).forEach(r=>{inner+=pt(g,+r,0);});
+  const eq='f(x) = '+(a<0?'\u2212':'')+rs.map(r=>nm(r)).join('');
+  const lines=Object.keys(cnt).map(Number).sort((p,q)=>p-q).map(r=>{const m=cnt[r];
+    return `<p>x = <b>${r}</b>: ${m===1?'the graph <b>crosses</b> the axis (multiplicity 1)':m===2?'the graph <b>touches and turns back</b> (multiplicity 2)':'the graph <b>flattens as it crosses</b> (multiplicity 3)'}</p>`;}).join('');
+  return{svg:svgWrap(g,inner,'Cubic polynomial '+eq),
+   info:`<p class="eq">${eq}</p>${lines}<p>Degree 3, ${a>0?'positive':'negative'} leading coefficient: the left end goes <b>${a>0?'down':'up'}</b> and the right end goes <b>${a>0?'up':'down'}</b>.</p>`};
+ }};
+W.t5={c:[{k:'m',type:'select',label:'Top of the fraction',v:'2',opts:[['2','two factors (degree 2)'],['1','one factor (degree 1)'],['0','just the number k (degree 0)']]},
+ {k:'k',label:'k (the multiplier)',min:-3,max:3,v:1},{k:'p',label:'Top zero p',min:-5,max:5,v:2},{k:'r',label:'Top zero r',min:-5,max:5,v:-2},
+ {k:'q',label:'Bottom zero q',min:-5,max:5,v:2},{k:'t',label:'Bottom zero s',min:-5,max:5,v:-1}],
+ draw(s){
+  const k=s.k===0?1:s.k;const m=parseInt(s.m,10);
+  let nr=[s.p,s.r].slice(0,m),dr=[s.q,s.t];const holes=[];
+  for(let i=nr.length-1;i>=0;i--){const j=dr.indexOf(nr[i]);if(j>=0){holes.push(nr[i]);nr.splice(i,1);dr.splice(j,1);}}
+  const f=x=>k*nr.reduce((a,r)=>a*(x-r),1)/dr.reduce((a,r)=>a*(x-r),1);
+  const g=mkG(520,360,-8,8,-8,8);let inner=axes(g);
+  const vas=[...new Set(dr)];vas.forEach(v=>{inner+=vline(g,v);});
+  let ha=null;if(nr.length<dr.length)ha=0;else if(nr.length===dr.length)ha=k;
+  if(ha!==null)inner+=hline(g,ha);
+  inner+=curve(g,f,'cv',{jump:.5,n:900});
+  const hl=[];holes.forEach(h=>{const y=f(h);if(isFinite(y)){inner+=pt(g,h,y,true);hl.push(`(${h}, ${f2(y)})`);}});
+  const xi=[...new Set(nr)];xi.forEach(x=>{inner+=pt(g,x,0);});
+  const num=[...(m>=1?[s.p]:[]),...(m>=2?[s.r]:[])].map(r=>nm(r)).join('')||'1';
+  const eq=`f(x) = ${k===1?'':f2(k)+'\u00B7'}${m>0?num:'1'} / ${nm(s.q)}${nm(s.t)}`;
+  const fy=isFinite(f(0))?f2(f(0)):'none';
+  return{svg:svgWrap(g,inner,'Rational function '+eq),
+   info:`<p class="eq">${eq}</p>
+   <p><b style="color:var(--bad)">Vertical asymptotes</b> (red dashes): ${vas.length?vas.map(v=>'x = '+v).join(', '):'none'}</p>
+   <p><b style="color:var(--c5)">Horizontal asymptote</b> (blue dashes): ${ha===null?'none':'y = '+f2(ha)}</p>
+   <p><b>Holes</b> (open dots): ${hl.length?hl.join(', '):'none'}${holes.length?' \u2013 a factor cancelled, so there is no wall, just a missing point.':''}</p>
+   <p><b>x-intercepts:</b> ${xi.length?xi.join(', '):'none'} &nbsp; <b>y-intercept:</b> ${fy}</p>
+   <p class="lead">Tip: set a top zero equal to a bottom zero to make a hole.</p>`};
+ }};
+W.t6={c:[{k:'b',label:'Base b',min:.2,max:5,step:.1,v:2},{k:'lg',type:'check',label:'Show the log (inverse)',v:true},{k:'mr',type:'check',label:'Show the mirror line y = x',v:true}],
+ draw(s){
+  const b=Math.round(s.b*10)/10,g=mkG(440,440,-5,7,-5,7);let inner=axes(g);
+  const flat=Math.abs(b-1)<.01;
+  if(s.mr)inner+=`<line class="base" x1="${g.sx(-5)}" y1="${g.sy(-5)}" x2="${g.sx(7)}" y2="${g.sy(7)}"/>`;
+  inner+=curve(g,x=>Math.pow(b,x),'cv',{n:600,jump:.9});
+  inner+=pt(g,0,1)+pt(g,1,Math.min(b,6.9));
+  if(s.lg&&!flat){inner+=curve(g,x=>x<=0?NaN:Math.log(x)/Math.log(b),'cv3',{n:600,jump:.9});inner+=pt(g,1,0)+pt(g,Math.min(b,6.9),1);inner+=vline(g,0);}
+  inner+=hline(g,0,'asyb');
+  const grow=b>1?'<b>growth</b> (b &gt; 1): rises to the right':'<b>decay</b> (0 &lt; b &lt; 1): falls to the right';
+  return{svg:svgWrap(g,inner,'Exponential and logarithm with base '+b),
+   info:flat?`<p class="eq">b = 1</p><p>A base of 1 is not allowed for an exponential function: 1 to any power is just 1, so the graph is a flat line. Move the slider.</p>`:
+   `<p class="eq">y = ${f2(b)}<sup>x</sup> &nbsp;and&nbsp; y = log<sub>${f2(b)}</sub>(x)</p>
+   <p>The colored curve is exponential: ${grow}. It passes through <b>(0, 1)</b> and <b>(1, ${f2(b)})</b> and never goes below the x-axis (horizontal asymptote y = 0).</p>
+   ${s.lg?`<p>The red curve is its inverse, the log. The points flip: <b>(1, 0)</b> and <b>(${f2(b)}, 1)</b>. It has a vertical wall at x = 0, so you can only take the log of <b>positive</b> numbers.</p>`:'<p>Turn on the log to see the mirror image.</p>'}
+   <p>Logs and exponentials are mirror images across the line y = x.</p>`};
+ }};
+W.t7={c:[{k:'mode',type:'select',label:'What to graph',v:'ll',opts:[['ll','Two lines'],['lp','A line and the parabola y = x\u00B2 \u2212 2']]},
+ {k:'m1',label:'Line 1 slope',min:-4,max:4,step:.5,v:1},{k:'b1',label:'Line 1 y-intercept',min:-6,max:6,v:-1},
+ {k:'m2',label:'Line 2 slope (lines mode)',min:-4,max:4,step:.5,v:-1},{k:'b2',label:'Line 2 y-intercept (lines mode)',min:-6,max:6,v:5}],
+ after(s,inp){const d=s.mode==='lp';inp.m2.disabled=d;inp.b2.disabled=d;},
+ draw(s){
+  const g=mkG(520,360,-8,8,-8,8);let inner=axes(g);
+  const L1=x=>s.m1*x+s.b1,L2=x=>s.m2*x+s.b2;let txt;
+  inner+=curve(g,L1,'cv');
+  if(s.mode==='ll'){
+    inner+=curve(g,L2,'cv3');
+    if(s.m1===s.m2){txt=s.b1===s.b2?`<p><b>Infinitely many solutions.</b> Both equations are the same line.</p>`:`<p><b>No solution.</b> The lines have the same slope, so they are parallel and never meet.</p>`;}
+    else{const x=(s.b2-s.b1)/(s.m1-s.m2),y=L1(x);inner+=pt(g,x,y);txt=`<p><b>One solution:</b> the lines cross at</p><p class="eq">(${f2(x)}, ${f2(y)})</p><p>Different slopes always cross exactly once.</p>`;}
+    txt=`<p class="eq">y = ${f2(s.m1)}x${sg(s.b1,'')}</p><p class="eq" style="color:var(--bad)">y = ${f2(s.m2)}x${sg(s.b2,'')}</p>`+txt;
+  }else{
+    inner+=curve(g,x=>x*x-2,'cv3');
+    const A=1,B=-s.m1,C=-(2+s.b1),d=B*B-4*A*C;const ps=[];
+    if(d>=0){const r=d===0?[-B/2]:[(-B-Math.sqrt(d))/2,(-B+Math.sqrt(d))/2];r.forEach(x=>{const y=L1(x);inner+=pt(g,x,y);ps.push(`(${f2(x)}, ${f2(y)})`);});}
+    txt=`<p class="eq">y = ${f2(s.m1)}x${sg(s.b1,'')}</p><p class="eq" style="color:var(--bad)">y = x\u00B2 \u2212 2</p>`+
+      (ps.length?`<p><b>${ps.length===2?'Two solutions':'One solution (the line just touches)'}:</b> ${ps.join(' and ')}</p>`:`<p><b>No solution.</b> The line misses the parabola.</p>`)+
+      `<p>Set them equal: x\u00B2 \u2212 2 = ${f2(s.m1)}x${sg(s.b1,'')}. The discriminant tells you how many solutions: ${f2(d)}.</p>`;
+  }
+  return{svg:svgWrap(g,inner,'System of equations'),info:txt};
+ }};
+
+/* ---------- topic content ---------- */
+const G=(p)=>`<svg viewBox="0 0 120 70" aria-hidden="true">${p}</svg>`;
+const st=(c,w)=>`fill="none" stroke="${c}" stroke-width="${w||5}" stroke-linecap="round" stroke-linejoin="round"`;
+const TOP=[
+{id:'t1',n:'Algebra tools',goal:'Take expressions apart and put them back together.',
+ glyph:G(`<rect x="22" y="8" width="52" height="52" rx="6" fill="var(--c1)" opacity=".7"/><rect x="74" y="8" width="24" height="52" rx="6" fill="var(--c5)" opacity=".7"/><rect x="22" y="60" width="52" height="8" rx="3" fill="var(--c3)" opacity=".7"/>`),
+ widget:'t1',
+ notice:['Slide a and b. The middle term is always the two side strips added together.','The corner piece is always a \u00D7 b.','When you factor, you are asking: which two numbers multiply to the corner and add to the middle?'],
+ rules:[
+  {h:'Factoring patterns',cards:[
+   {t:'Always start here: the GCF',f:'6x\u00B3 + 9x\u00B2 = 3x\u00B2(2x + 3)',n:'Pull out whatever every term shares. Do this before any other pattern.'},
+   {t:'Difference of squares',f:'a\u00B2 \u2212 b\u00B2 = (a \u2212 b)(a + b)',n:'Two perfect squares with a minus between. It splits into one minus and one plus.',ex:'x\u00B2 \u2212 25 = (x \u2212 5)(x + 5)'},
+   {t:'Perfect square',f:'a\u00B2 + 2ab + b\u00B2 = (a + b)\u00B2',n:'The middle term is twice the product of the two roots.',ex:'x\u00B2 + 6x + 9 = (x + 3)\u00B2'},
+   {t:'Sum and difference of cubes',f:'a\u00B3 \u00B1 b\u00B3 = (a \u00B1 b)(a\u00B2 \u2213 ab + b\u00B2)',n:'Memory trick SOAP: the first sign is the Same, the middle is Opposite, the last is Always Positive.',ex:'x\u00B3 + 8 = (x + 2)(x\u00B2 \u2212 2x + 4)'},
+   {t:'Trinomial x\u00B2 + bx + c',f:'x\u00B2 + 5x + 6 = (x + 2)(x + 3)',n:'Find two numbers that multiply to c and add to b.'},
+   {t:'Four terms: group',f:'x\u00B3 + 3x\u00B2 \u2212 4x \u2212 12',n:'Group in pairs, pull out each GCF, and the same bracket should appear twice.',ex:'x\u00B2(x + 3) \u2212 4(x + 3) = (x + 3)(x \u2212 2)(x + 2)'}]},
+  {h:'Exponent rules',cards:[
+   {t:'Multiply: add exponents',f:'x\u1D43 \u00B7 x\u1D47 = x\u1D43\u207A\u1D47',n:'Same base, multiplying: add the powers.',ex:'x\u00B3 \u00B7 x\u2074 = x\u2077'},
+   {t:'Divide: subtract exponents',f:'x\u1D43 / x\u1D47 = x\u1D43\u207B\u1D47',n:'Same base, dividing: top minus bottom.',ex:'x\u2075 / x\u00B2 = x\u00B3'},
+   {t:'Power of a power: multiply',f:'(x\u1D43)\u1D47 = x\u1D43\u1D47',n:'A power on top of a power: multiply them.',ex:'(x\u00B2)\u00B3 = x\u2076'},
+   {t:'Negative exponent: flip',f:'x\u207B\u1D43 = 1 / x\u1D43',n:'A negative exponent does not make the number negative. It moves it to the other side of the fraction bar.',ex:'2\u207B\u00B3 = 1/8'},
+   {t:'Fraction exponent: root',f:'x^(m/n) = (\u207F\u221Ax)\u1D50',n:'The bottom of the fraction is the root. The top is the power.',ex:'8^(2/3) = (\u221B8)\u00B2 = 4'}]}],
+ flow:[['Step 1','Pull out the GCF'],['Step 2','Count the terms'],['2 terms','Squares or cubes?'],['3 terms','Find two numbers (or AC method)'],['4 terms','Group in pairs'],['Last','Multiply back to check']],
+ ex:{title:'Factor 6x\u00B2 + 11x \u2212 10',steps:[
+  {d:'Check for a GCF',m:'6x\u00B2 + 11x \u2212 10',w:'Nothing is shared by all three terms, so move on.'},
+  {d:'Multiply a \u00D7 c',m:'6 \u00B7 (\u221210) = \u221260',w:'We need two numbers that multiply to \u221260 and add to the middle number, 11.'},
+  {d:'Find the pair',m:'15 and \u22124',w:'15 \u00B7 (\u22124) = \u221260 and 15 + (\u22124) = 11. It works.'},
+  {d:'Split the middle term',m:'6x\u00B2 + 15x \u2212 4x \u2212 10',w:'Same value, just written in two pieces.'},
+  {d:'Group in pairs and pull out each GCF',m:'3x(2x + 5) \u2212 2(2x + 5)',w:'Both groups now contain the bracket (2x + 5). That is the sign you did it right.'},
+  {d:'Pull out the shared bracket',m:'(3x \u2212 2)(2x + 5)',w:'This is the factored form.'},
+  {d:'Check by multiplying',m:'6x\u00B2 + 15x \u2212 4x \u2212 10 = 6x\u00B2 + 11x \u2212 10 \u2713',w:'Always check. It takes ten seconds.'}]},
+ qs:[
+  {id:'1a',t:'mc',q:'Factor x\u00B2 \u2212 49.',o:['(x \u2212 7)\u00B2','(x \u2212 7)(x + 7)','(x + 7)\u00B2','It cannot be factored'],a:1,hint:'Two perfect squares with a minus between: a difference of squares.',sol:'49 = 7\u00B2, so x\u00B2 \u2212 49 = (x \u2212 7)(x + 7).'},
+  {id:'1b',t:'mc',q:'Factor 4x\u00B3 \u2212 16x completely.',o:['4x(x\u00B2 \u2212 4)','4x(x \u2212 2)(x + 2)','4(x\u00B3 \u2212 4x)','x(4x\u00B2 \u2212 16)'],a:1,hint:'Take out the GCF first, then look at what is left.',sol:'GCF is 4x: 4x(x\u00B2 \u2212 4). Then x\u00B2 \u2212 4 is a difference of squares: 4x(x \u2212 2)(x + 2).'},
+  {id:'1c',t:'mc',q:'Expand (x + 3)(x \u2212 5).',o:['x\u00B2 + 2x \u2212 15','x\u00B2 \u2212 2x \u2212 15','x\u00B2 \u2212 2x + 15','x\u00B2 \u2212 8x \u2212 15'],a:1,hint:'Use the area picture: x\u00B2, then 3x and \u22125x, then 3\u00B7(\u22125).',sol:'x\u00B2 \u2212 5x + 3x \u2212 15 = x\u00B2 \u2212 2x \u2212 15.'},
+  {id:'1d',t:'num',q:'x\u2075 \u00B7 x\u207B\u00B2 = x\u207F. What is n?',a:[3],hint:'Same base, multiplying: add the exponents.',sol:'5 + (\u22122) = 3, so the answer is x\u00B3.'},
+  {id:'1e',t:'num',q:'Evaluate 8^(2/3).',a:[4],hint:'The bottom of the fraction (3) is the root. Take the cube root first, then square.',sol:'\u221B8 = 2, and 2\u00B2 = 4.'},
+  {id:'1f',t:'self',q:'Factor x\u00B3 + 27 completely.',ans:'(x + 3)(x\u00B2 \u2212 3x + 9)',hint:'Sum of cubes: a\u00B3 + b\u00B3 with a = x and b = 3. Use SOAP for the signs.',sol:'a\u00B3 + b\u00B3 = (a + b)(a\u00B2 \u2212 ab + b\u00B2) gives (x + 3)(x\u00B2 \u2212 3x + 9). The second factor does not factor further.'}]},
+
+{id:'t2',n:'Equations & inequalities',goal:'Find the x that makes a statement true, or the whole zone of x values that does.',
+ glyph:G(`<path d="M18 12 Q60 98 102 12" ${st('var(--c2)')}/><line x1="8" y1="40" x2="112" y2="40" stroke="var(--mute)" stroke-width="2"/><circle cx="36" cy="40" r="5" fill="var(--c2)"/><circle cx="84" cy="40" r="5" fill="var(--c2)"/>`),
+ widget:'t2',
+ notice:['Move b and c until the parabola just touches the axis. What is the discriminant right then?','Where the curve is below the axis is where x\u00B2 + bx + c < 0. The number line underneath shows that zone.','No x-intercepts means a negative discriminant.'],
+ rules:[
+  {h:'Solving quadratics: pick a tool',cards:[
+   {t:'1. Factor',f:'x\u00B2 \u2212 5x + 6 = 0 \u2192 (x \u2212 2)(x \u2212 3) = 0',n:'Set one side to zero, factor, then set each factor equal to zero.'},
+   {t:'2. Square root',f:'(x \u2212 1)\u00B2 = 9 \u2192 x \u2212 1 = \u00B13',n:'Works when you have something squared on one side and a number on the other. Do not forget the \u00B1.'},
+   {t:'3. Quadratic formula',f:'x = (\u2212b \u00B1 \u221A(b\u00B2 \u2212 4ac)) / 2a',n:'Always works. Write a, b, c first, and keep their signs.'},
+   {t:'The discriminant',f:'b\u00B2 \u2212 4ac',n:'Positive: two real solutions. Zero: one repeated solution. Negative: no real solutions.'}]},
+  {h:'Absolute value on a number line',cards:[
+   {t:'|x| = 3 means two points',f:'x = \u22123 or x = 3',n:'Distance from zero equals 3.',viz:nl({min:-5,max:5,pts:[{x:-3},{x:3}],label:'Two points'})},
+   {t:'|x| < 3 means between',f:'\u22123 < x < 3',n:'Less than 3 away from zero. One connected piece.',viz:nl({min:-5,max:5,pts:[{x:-3,open:1},{x:3,open:1}],shade:[[-3,3,'']],label:'Between'})},
+   {t:'|x| > 3 means outside',f:'x < \u22123 or x > 3',n:'More than 3 away from zero. Two pieces going outward.',viz:nl({min:-5,max:5,pts:[{x:-3,open:1},{x:3,open:1}],shade:[[-Infinity,-3,''],[3,Infinity,'']],label:'Outside'})}]},
+  {h:'Watch out',cards:[
+   {t:'Extraneous solutions',f:'Always plug answers back in',n:'Squaring both sides (radical equations) or multiplying by an expression with x (rational equations) can create fake answers.'},
+   {t:'Flip the sign',f:'\u22122x > 6 \u2192 x < \u22123',n:'Multiply or divide an inequality by a negative number and the inequality sign turns around.'},
+   {t:'Open or closed dots',f:'< or > : open dot, \u2264 or \u2265 : closed dot',n:'Open dots use parentheses ( ), closed dots use brackets [ ]. Infinity always gets a parenthesis.'}]}],
+ flow:[['Step 1','Move everything to one side'],['Step 2','Factor'],['Step 3','Find the critical values'],['Step 4','Test a point in each zone'],['Step 5','Shade the zones that work'],['Step 6','Write interval notation']],
+ ex:{title:'Solve x\u00B2 \u2212 x \u2212 6 \u2265 0',steps:[
+  {d:'Zero on one side',m:'x\u00B2 \u2212 x \u2212 6 \u2265 0',w:'It is already set up. If not, add or subtract until one side is 0.'},
+  {d:'Factor',m:'(x \u2212 3)(x + 2) \u2265 0',w:'Now the question is: when is this product positive or zero?'},
+  {d:'Find the critical values',m:'x = 3 and x = \u22122',w:'These are where each factor equals zero. They cut the number line into three zones.',viz:nl({min:-5,max:6,pts:[{x:-2},{x:3}],label:'Critical values at -2 and 3'})},
+  {d:'Test one point in each zone',m:'x = \u22123: (\u22126)(\u22121) = +6 \u2713   x = 0: (\u22123)(2) = \u22126 \u2717   x = 4: (1)(6) = +6 \u2713',w:'You only need the sign. Positive means the zone works.'},
+  {d:'Shade the zones that work',m:'\u2265 includes the endpoints, so closed dots',w:'The outside zones are positive.',viz:nl({min:-5,max:6,pts:[{x:-2},{x:3}],shade:[[-Infinity,-2,''],[3,Infinity,'']],label:'Solution outside -2 and 3'})},
+  {d:'Write the answer',m:'(\u2212\u221E, \u22122] \u222A [3, \u221E)',w:'Two pieces, joined by the union symbol \u222A.'}]},
+ qs:[
+  {id:'2a',t:'mc',q:'Solve x\u00B2 \u2212 5x + 6 = 0.',o:['x = 2 or x = 3','x = \u22122 or x = \u22123','x = 1 or x = 6','x = \u22121 or x = \u22126'],a:0,hint:'Two numbers that multiply to 6 and add to \u22125.',sol:'(x \u2212 2)(x \u2212 3) = 0, so x = 2 or x = 3.'},
+  {id:'2b',t:'mc',q:'The discriminant of x\u00B2 + 4x + 4 is 0. How many real solutions does the equation have?',o:['None','One (repeated)','Two','Infinitely many'],a:1,hint:'Zero discriminant means the parabola only touches the x-axis.',sol:'x\u00B2 + 4x + 4 = (x + 2)\u00B2, so x = \u22122 is the only solution.'},
+  {id:'2c',t:'mc',q:'Which describes the solutions of |x \u2212 4| = 6?',o:['x = 10 or x = \u22122','x = 10 only','x = 2 or x = \u221210','x = \u22122 only'],a:0,hint:'x \u2212 4 can be 6 or \u22126.',sol:'x \u2212 4 = 6 gives x = 10. x \u2212 4 = \u22126 gives x = \u22122.'},
+  {id:'2d',t:'mc',q:'Solve |x \u2212 2| < 3.',o:['(\u22121, 5)','(\u2212\u221E, \u22121) \u222A (5, \u221E)','[\u22121, 5]','(\u22125, 1)'],a:0,hint:'Less than means between: \u22123 < x \u2212 2 < 3.',sol:'Add 2 to all parts: \u22121 < x < 5, which is (\u22121, 5).'},
+  {id:'2e',t:'num',q:'Solve \u221A(x + 7) = x + 1. Give the one answer that works.',a:[2],hint:'Square both sides, solve the quadratic, then test both answers in the original equation.',sol:'x + 7 = x\u00B2 + 2x + 1 gives x\u00B2 + x \u2212 6 = 0, so x = 2 or x = \u22123. Check x = \u22123: \u221A4 = 2 but x + 1 = \u22122, so reject. x = 2 works.'},
+  {id:'2f',t:'self',q:'Solve x\u00B2 \u2212 4x \u2212 5 > 0. Write the answer in interval notation.',ans:'(\u2212\u221E, \u22121) \u222A (5, \u221E)',hint:'Factor, find the critical values, then test a point in each of the three zones.',sol:'(x \u2212 5)(x + 1) > 0. Critical values \u22121 and 5. The product is positive outside them, with open dots because the sign is >.'}]},
+
+{id:'t3',n:'Functions',goal:'A function is a machine: one input goes in, exactly one output comes out.',
+ glyph:G(`<path d="M12 62 Q40 62 40 38 T68 14" ${st('var(--c3)')}/><path d="M42 66 Q70 66 70 42 T100 18" ${st('var(--ink)',3)} stroke-dasharray="2 7"/>`),
+ widget:'t3',
+ notice:['Change h: the graph moves the opposite way from the sign inside the parentheses.','Change k: the graph moves exactly the way you expect.','Make a negative. Which direction does it flip?'],
+ rules:[
+  {h:'The basics',cards:[
+   {t:'Vertical line test',f:'One x \u2192 one y',n:'If any vertical line touches the graph twice, it is not a function.',viz:mini([[x=>Math.sqrt(Math.max(0,x))*1.5,'cv'],[x=>-Math.sqrt(Math.max(0,x))*1.5,'cv']],{x0:-1,x1:3})},
+   {t:'Domain red flags',f:'\u00F7 0   \u221A(negative)   log(\u2264 0)',n:'Domain = allowed inputs. Remove any x that divides by zero, puts a negative under an even root, or makes a log argument zero or negative.',ex:'\u221A(x \u2212 3): x \u2265 3  \u2192  [3, \u221E)'},
+   {t:'Average rate of change',f:'(f(b) \u2212 f(a)) / (b \u2212 a)',n:'It is the slope of the line connecting two points on the graph.'},
+   {t:'Difference quotient',f:'(f(x + h) \u2212 f(x)) / h',n:'Replace every x with (x + h), subtract f(x), simplify so h cancels.',ex:'f = x\u00B2: (2xh + h\u00B2)/h = 2x + h'}]},
+  {h:'Machines',cards:[
+   {t:'Composition: inside out',f:'(f \u2218 g)(x) = f(g(x))',n:'Work on the inside function first, then feed the result into the outside one.',ex:'g(2) = 4, f(4) = 5'},
+   {t:'Inverse: swap and solve',f:'swap x and y, solve for y',n:'The inverse undoes the function. Its graph is the mirror image across y = x.',viz:mini([[x=>x*x,'cv'],[x=>x<0?NaN:Math.sqrt(x),'cv3'],[x=>x,'base']],{x0:-1,x1:3,y0:-1,y1:3,w:120,h:120})},
+   {t:'Even and odd',f:'even: f(\u2212x) = f(x)\u2003odd: f(\u2212x) = \u2212f(x)',n:'Even is symmetric across the y-axis (like x\u00B2). Odd is symmetric through the origin (like x\u00B3).'}]},
+  {h:'Transformations cheat sheet',cards:[
+   {t:'Inside the parentheses',f:'f(x \u2212 3)',n:'Changes x, so it does the OPPOSITE of what you expect. f(x \u2212 3) moves right 3.'},
+   {t:'Outside',f:'f(x) + 2',n:'Changes y, so it does what you expect. +2 moves up 2.'},
+   {t:'Flips',f:'\u2212f(x) flips over the x-axis',n:'f(\u2212x) flips over the y-axis.'},
+   {t:'Stretch',f:'a \u00B7 f(x)',n:'If |a| > 1 the graph gets taller. If 0 < |a| < 1 it gets flatter.'}]}],
+ flow:[['Inverse','Write y = f(x)'],['Then','Swap x and y'],['Then','Solve for y'],['Name it','y = f\u207B\u00B9(x)'],['Check','f(f\u207B\u00B9(x)) = x']],
+ ex:{title:'Find the inverse of f(x) = 2x \u2212 3',steps:[
+  {d:'Write it with y',m:'y = 2x \u2212 3',w:'Replace f(x) with y.'},
+  {d:'Swap x and y',m:'x = 2y \u2212 3',w:'The inverse reverses inputs and outputs, so swap them.'},
+  {d:'Solve for y',m:'x + 3 = 2y  \u2192  y = (x + 3)/2',w:'Get y alone using the usual steps.'},
+  {d:'Name it',m:'f\u207B\u00B9(x) = (x + 3)/2',w:'This is the inverse function. The two lines are mirror images over y = x.',viz:svgWrap(mkG(300,260,-4,6,-4,6),(g=>{return axes(g)+curve(g,x=>2*x-3,'cv')+curve(g,x=>(x+3)/2,'cv3')+curve(g,x=>x,'base');})(mkG(300,260,-4,6,-4,6)),'f and its inverse')},
+  {d:'Check',m:'f(f\u207B\u00B9(x)) = 2\u00B7(x + 3)/2 \u2212 3 = x \u2713',w:'If you get x back, it is right.'}]},
+ qs:[
+  {id:'3a',t:'mc',q:'Which relation is NOT a function?',o:['{(1, 2), (2, 3), (3, 4)}','{(1, 2), (1, 3), (2, 4)}','y = x\u00B2','y = |x|'],a:1,hint:'Look for the same x paired with two different y values.',sol:'x = 1 goes to both 2 and 3, so one input has two outputs.'},
+  {id:'3b',t:'mc',q:'What is the domain of f(x) = \u221A(x \u2212 3)?',o:['(\u2212\u221E, 3]','[3, \u221E)','(3, \u221E)','All real numbers'],a:1,hint:'The inside of a square root cannot be negative.',sol:'x \u2212 3 \u2265 0 gives x \u2265 3.'},
+  {id:'3c',t:'mc',q:'How does y = (x + 2)\u00B2 \u2212 1 compare to y = x\u00B2?',o:['Right 2, down 1','Left 2, down 1','Left 2, up 1','Right 2, up 1'],a:1,hint:'Inside the parentheses does the opposite. Outside does what you expect.',sol:'x + 2 moves left 2. The \u22121 moves down 1.'},
+  {id:'3d',t:'num',q:'f(x) = x\u00B2 \u2212 1 and g(x) = x + 3. Find f(g(1)).',a:[15],hint:'Inside first: find g(1). Then put that into f.',sol:'g(1) = 4. f(4) = 16 \u2212 1 = 15.'},
+  {id:'3e',t:'num',q:'If f(x) = 2x \u2212 3, what is f\u207B\u00B9(7)?',a:[5],hint:'Either find the inverse formula, or ask: what input makes f equal 7?',sol:'f\u207B\u00B9(x) = (x + 3)/2, so f\u207B\u00B9(7) = 5. Check: f(5) = 7.'},
+  {id:'3f',t:'self',q:'Find the domain of h(x) = \u221A(x + 1) / (x \u2212 2).',ans:'[\u22121, 2) \u222A (2, \u221E)',hint:'Two red flags: the square root needs x + 1 \u2265 0, and the bottom cannot be 0.',sol:'x \u2265 \u22121 from the root, and x \u2260 2 from the denominator. In interval notation: [\u22121, 2) \u222A (2, \u221E).'}]},
+
+{id:'t4',n:'Polynomial functions',goal:'Polynomials are smooth curves. The zeros are where they hit the x-axis.',
+ glyph:G(`<path d="M10 60 C34 -10 56 90 80 28 C90 6 98 8 110 14" ${st('var(--c4)')}/>`),
+ widget:'t4',
+ notice:['Make two zeros equal. The graph touches instead of crossing.','Make all three equal. It flattens as it crosses.','Flip the leading coefficient and watch the ends swap.'],
+ rules:[
+  {h:'End behavior: the ends only depend on the leading term',cards:[
+   {t:'Odd degree, positive',f:'falls left, rises right',n:'Like x\u00B3.',viz:mini([[x=>x*x*x/9]])},
+   {t:'Odd degree, negative',f:'rises left, falls right',n:'Like \u2212x\u00B3.',viz:mini([[x=>-x*x*x/9]])},
+   {t:'Even degree, positive',f:'both ends up',n:'Like x\u00B2.',viz:mini([[x=>x*x/3-2]])},
+   {t:'Even degree, negative',f:'both ends down',n:'Like \u2212x\u00B2.',viz:mini([[x=>-x*x/3+2]])}]},
+  {h:'Multiplicity: what happens at a zero',cards:[
+   {t:'Multiplicity 1',f:'(x \u2212 1)',n:'Crosses the axis straight through.',viz:mini([[x=>x*1.2]])},
+   {t:'Multiplicity 2',f:'(x \u2212 1)\u00B2',n:'Touches the axis and turns around.',viz:mini([[x=>x*x/3]],{y0:-1.5,y1:3})},
+   {t:'Multiplicity 3',f:'(x \u2212 1)\u00B3',n:'Flattens out as it crosses.',viz:mini([[x=>x*x*x/9]])}]},
+  {h:'Key theorems',cards:[
+   {t:'Remainder Theorem',f:'f(x) \u00F7 (x \u2212 c) has remainder f(c)',n:'To find the remainder, just plug c into the function.'},
+   {t:'Factor Theorem',f:'f(c) = 0  \u21D4  (x \u2212 c) is a factor',n:'If plugging in c gives zero, c is a zero and (x \u2212 c) divides evenly.'},
+   {t:'Rational Root Theorem',f:'\u00B1 (factors of constant) / (factors of leading)',n:'This builds your list of possible rational zeros to test.',ex:'2x\u00B3 + \u2026 \u2212 6: \u00B11, \u00B12, \u00B13, \u00B16, \u00B11/2, \u00B13/2'},
+   {t:'Fundamental Theorem',f:'degree n \u2192 n zeros',n:'Counting multiplicity and complex numbers, a degree n polynomial has exactly n zeros. Complex zeros come in conjugate pairs: a + bi and a \u2212 bi.'}]}],
+ flow:[['Step 1','List possible zeros \u00B1p/q'],['Step 2','Test one with synthetic division'],['Step 3','Remainder 0? You found a zero'],['Step 4','Repeat on the quotient'],['Step 5','Finish with factoring or the formula']],
+ ex:{title:'Find all zeros of f(x) = x\u00B3 \u2212 2x\u00B2 \u2212 5x + 6',steps:[
+  {d:'List the possible rational zeros',m:'\u00B11, \u00B12, \u00B13, \u00B16',w:'Factors of the constant 6 over factors of the leading coefficient 1.'},
+  {d:'Test x = 1',m:'f(1) = 1 \u2212 2 \u2212 5 + 6 = 0',w:'Zero! So (x \u2212 1) is a factor.'},
+  {d:'Divide with synthetic division',m:'',w:'Bring down the 1. Multiply by 1 and add, again and again.',viz:'<table aria-label="Synthetic division"><tr><td class="rt">1</td><td>1</td><td>\u22122</td><td>\u22125</td><td>6</td></tr><tr><td class="rt"></td><td></td><td>1</td><td>\u22121</td><td>\u22126</td></tr><tr class="sum"><td class="rt"></td><td>1</td><td>\u22121</td><td>\u22126</td><td>0</td></tr></table>'},
+  {d:'Read the quotient',m:'x\u00B2 \u2212 x \u2212 6',w:'The last number (0) is the remainder. The others are the coefficients of what is left.'},
+  {d:'Factor what is left',m:'(x \u2212 3)(x + 2)',w:'Two numbers that multiply to \u22126 and add to \u22121.'},
+  {d:'List every zero',m:'x = 1, x = 3, x = \u22122',w:'Each of the three factors gives one zero. Degree 3 means three zeros.'},
+  {d:'Sketch it',m:'',w:'Positive leading coefficient: starts low, ends high, crosses at \u22122, 1, and 3.',viz:svgWrap(mkG(360,240,-4,5,-10,10),(g=>axes(g)+curve(g,x=>(x-1)*(x-3)*(x+2),'cv')+pt(g,-2,0)+pt(g,1,0)+pt(g,3,0))(mkG(360,240,-4,5,-10,10)),'Graph with zeros at -2, 1, 3')}]},
+ qs:[
+  {id:'4a',t:'mc',q:'What is the end behavior of f(x) = \u22122x\u2074 + x \u2212 1?',o:['Both ends go up','Both ends go down','Left up, right down','Left down, right up'],a:1,hint:'Look only at the leading term: even degree, negative coefficient.',sol:'\u22122x\u2074 is an upside-down U shape, so both ends go down.'},
+  {id:'4b',t:'mc',q:'f(x) = (x \u2212 1)\u00B2(x + 3). At x = 1, the graph\u2026',o:['crosses the x-axis','touches the x-axis and turns around','has a vertical asymptote','is undefined'],a:1,hint:'The factor (x \u2212 1) is squared. What does even multiplicity do?',sol:'Multiplicity 2 means the graph touches and bounces back.'},
+  {id:'4c',t:'num',q:'What is the remainder when x\u00B3 \u2212 2x + 5 is divided by x \u2212 2?',a:[9],hint:'Remainder Theorem: just compute f(2).',sol:'f(2) = 8 \u2212 4 + 5 = 9.'},
+  {id:'4d',t:'mc',q:'Which is NOT a possible rational zero of 3x\u00B3 + x\u00B2 \u2212 5x + 2?',o:['2/3','1/3','3/2','\u22122'],a:2,hint:'Possible zeros are factors of 2 over factors of 3.',sol:'The list is \u00B11, \u00B12, \u00B11/3, \u00B12/3. 3/2 has 3 on top, which is not a factor of 2.'},
+  {id:'4e',t:'num',q:'How many complex zeros (counting multiplicity) does a degree-5 polynomial have?',a:[5],hint:'Fundamental Theorem of Algebra.',sol:'A degree n polynomial has exactly n zeros, counting repeats and complex ones.'},
+  {id:'4f',t:'self',q:'Find all zeros of x\u00B3 \u2212 x\u00B2 \u2212 4x + 4.',ans:'x = 1, x = 2, x = \u22122',hint:'Four terms: factor by grouping.',sol:'x\u00B2(x \u2212 1) \u2212 4(x \u2212 1) = (x \u2212 1)(x\u00B2 \u2212 4) = (x \u2212 1)(x \u2212 2)(x + 2).'}]},
+
+{id:'t5',n:'Rational functions',goal:'A fraction of polynomials. Look for walls (asymptotes) and holes.',
+ glyph:G(`<line x1="60" y1="2" x2="60" y2="68" stroke="var(--c1)" stroke-width="2.5" stroke-dasharray="5 4"/><line x1="4" y1="36" x2="116" y2="36" stroke="var(--c5)" stroke-width="2.5" stroke-dasharray="5 4"/><path d="M64 4 Q66 34 112 34" ${st('var(--c5)',4.5)}/><path d="M56 66 Q54 38 8 38" ${st('var(--c5)',4.5)}/>`),
+ widget:'t5',
+ notice:['Set a top zero equal to a bottom zero. The wall turns into a hole.','Change the top to degree 1, then degree 0. Watch the horizontal asymptote drop to y = 0.','The curve never crosses a vertical asymptote.'],
+ rules:[
+  {h:'Walls vs. holes',cards:[
+   {t:'Factor first',f:'(x\u00B2 \u2212 4)/(x\u00B2 \u2212 x \u2212 2) = (x \u2212 2)(x + 2)/((x \u2212 2)(x + 1))',n:'You cannot see the features until everything is factored.'},
+   {t:'A factor that cancels: hole',f:'x = 2',n:'The factor is gone, so the graph is continuous except for a single missing point. Find its height by plugging into the simplified version.'},
+   {t:'A factor that stays on the bottom: wall',f:'x = \u22121',n:'This is a vertical asymptote. The curve shoots up or down next to it.'}]},
+  {h:'Horizontal asymptote: compare the degrees',cards:[
+   {t:'Top smaller than bottom',f:'y = 0',n:'The bottom wins, so the fraction shrinks to zero.',ex:'(x + 5)/(x\u00B2 + 1)'},
+   {t:'Same degree',f:'y = (top leading) / (bottom leading)',n:'Divide the leading coefficients.',ex:'(4x\u00B2 + 1)/(2x\u00B2 \u2212 7): y = 2'},
+   {t:'Top is exactly 1 bigger',f:'slant asymptote',n:'Do long division. The quotient (without the remainder) is the slanted line.',ex:'(x\u00B2 + 1)/(x \u2212 1): y = x + 1'},
+   {t:'Top is 2 or more bigger',f:'no horizontal asymptote',n:'The graph grows without leveling off.'}]},
+  {h:'Intercepts',cards:[
+   {t:'x-intercepts',f:'zeros of the top that stayed',n:'Set the simplified numerator equal to 0.'},
+   {t:'y-intercept',f:'f(0)',n:'Plug in 0. If the bottom is 0 there, there is no y-intercept.'}]}],
+ flow:[['Step 1','Factor top and bottom'],['Step 2','Cancel: holes'],['Step 3','What is left on the bottom: walls'],['Step 4','Compare degrees: horizontal / slant'],['Step 5','Find the intercepts'],['Step 6','Sketch']],
+ ex:{title:'Analyze f(x) = (x\u00B2 \u2212 4)/(x\u00B2 \u2212 x \u2212 2)',steps:[
+  {d:'Factor top and bottom',m:'(x \u2212 2)(x + 2) / ((x \u2212 2)(x + 1))',w:'Difference of squares on top, trinomial on the bottom.'},
+  {d:'Cancel the common factor: a hole',m:'hole at x = 2',w:'Plug 2 into what is left, (x + 2)/(x + 1): that gives 4/3. The hole is at (2, 4/3).'},
+  {d:'What stays on the bottom: a wall',m:'vertical asymptote x = \u22121',w:'(x + 1) did not cancel, so x = \u22121 is a wall.'},
+  {d:'Compare degrees',m:'horizontal asymptote y = 1',w:'Both degree 2, so divide the leading coefficients: 1/1 = 1.'},
+  {d:'Intercepts',m:'x-intercept (\u22122, 0)   y-intercept (0, 2)',w:'The remaining numerator x + 2 is zero at \u22122. f(0) = \u22124/\u22122 = 2.'},
+  {d:'Sketch it',m:'',w:'Walls and level line first, then the curve, then the open hole.',viz:svgWrap(mkG(400,280,-6,6,-6,6),(g=>axes(g)+vline(g,-1)+hline(g,1)+curve(g,x=>(x+2)/(x+1),'cv',{jump:.5,n:700})+pt(g,2,4/3,true)+pt(g,-2,0)+pt(g,0,2))(mkG(400,280,-6,6,-6,6)),'Graph with hole at (2, 4/3)')}]},
+ qs:[
+  {id:'5a',t:'mc',q:'What is the vertical asymptote of f(x) = (x + 1)/(x \u2212 4)?',o:['x = \u22121','x = 4','y = 1','There is none'],a:1,hint:'Where is the bottom zero (and nothing cancels)?',sol:'x \u2212 4 = 0 gives x = 4.'},
+  {id:'5b',t:'mc',q:'f(x) = (x \u2212 3)/(x\u00B2 \u2212 9). What features does it have?',o:['Hole at x = 3, vertical asymptote at x = \u22123','Vertical asymptotes at x = 3 and x = \u22123','Hole at x = \u22123, vertical asymptote at x = 3','Holes at x = 3 and x = \u22123'],a:0,hint:'Factor the bottom: x\u00B2 \u2212 9 = (x \u2212 3)(x + 3). What cancels?',sol:'(x \u2212 3) cancels, leaving a hole at x = 3. (x + 3) stays on the bottom: wall at x = \u22123.'},
+  {id:'5c',t:'mc',q:'What is the horizontal asymptote of (4x\u00B2 + 1)/(2x\u00B2 \u2212 7)?',o:['y = 0','y = 2','y = 4','None'],a:1,hint:'Same degree: divide the leading coefficients.',sol:'4/2 = 2, so y = 2.'},
+  {id:'5d',t:'mc',q:'What is the horizontal asymptote of (x + 5)/(x\u00B2 + 1)?',o:['y = 0','y = 1','y = 5','None'],a:0,hint:'Compare the degrees: top 1, bottom 2.',sol:'The bottom has the bigger degree, so the fraction shrinks to y = 0.'},
+  {id:'5e',t:'num',q:'What is the y-intercept of f(x) = (x \u2212 6)/(x + 2)?',a:[-3],hint:'The y-intercept is f(0).',sol:'f(0) = (0 \u2212 6)/(0 + 2) = \u22123.'},
+  {id:'5f',t:'self',q:'Find the slant asymptote of f(x) = (x\u00B2 + 1)/(x \u2212 1).',ans:'y = x + 1',hint:'Top degree is exactly one bigger: do long division and ignore the remainder.',sol:'x\u00B2 + 1 \u00F7 (x \u2212 1) = x + 1 with remainder 2. The slant asymptote is y = x + 1.'}]},
+
+{id:'t6',n:'Exponentials & logs',goal:'Exponentials grow fast. A logarithm asks: what power do I need?',
+ glyph:G(`<path d="M8 60 Q60 58 90 10" ${st('var(--c6)')}/><path d="M12 62 Q14 14 66 10" ${st('var(--c1)',4)}/><line x1="8" y1="64" x2="62" y2="8" stroke="var(--mute)" stroke-width="2" stroke-dasharray="4 5"/>`),
+ widget:'t6',
+ notice:['Try b below 1. The exponential flips from growth to decay.','The log is the exponential reflected over the dashed line.','Notice the points: (0, 1) becomes (1, 0).'],
+ rules:[
+  {h:'A log is an exponent question',cards:[
+   {t:'Two ways to say the same thing',f:'log\u2082 8 = 3  \u21D4  2\u00B3 = 8',n:'Read log\u2082 8 as: 2 to what power gives 8? The log is the exponent.'},
+   {t:'Two powerful facts',f:'log\u2090(1) = 0 and log\u2090(a) = 1',n:'Any base to the 0 is 1. Any base to the 1 is itself.'},
+   {t:'Domain',f:'log\u2090(x) needs x > 0',n:'You can never take the log of zero or a negative. Always check your answers.'}]},
+  {h:'Three log properties',cards:[
+   {t:'Product: becomes a sum',f:'log(MN) = log M + log N',n:'Multiplying inside means adding outside.'},
+   {t:'Quotient: becomes a difference',f:'log(M/N) = log M \u2212 log N',n:'Dividing inside means subtracting outside.'},
+   {t:'Power: comes to the front',f:'log(M\u1D56) = p \u00B7 log M',n:'An exponent hops to the front as a multiplier.'},
+   {t:'Change of base',f:'log\u2090 x = ln x / ln a',n:'Lets you compute any log on a calculator.'}]},
+  {h:'Money and growth',cards:[
+   {t:'Compound interest',f:'A = P(1 + r/n)^(nt)',n:'P = start, r = rate as a decimal, n = times per year, t = years.'},
+   {t:'Continuous',f:'A = Pe^(rt)',n:'Used when growth happens continuously. Also the model for growth and decay.'}]}],
+ flow:[['Same base?','Set exponents equal'],['Different bases?','Take ln of both sides'],['Then','Bring the exponent down'],['Logs in the equation?','Combine into one log'],['Then','Rewrite as an exponential'],['Always','Check the log domain']],
+ ex:{title:'Solve 3^(x + 1) = 20',steps:[
+  {d:'Different bases, so take the natural log of both sides',m:'ln(3^(x + 1)) = ln 20',w:'Whatever you do to one side you must do to the other.'},
+  {d:'Bring the exponent down',m:'(x + 1) \u00B7 ln 3 = ln 20',w:'Power property of logs.'},
+  {d:'Divide by ln 3',m:'x + 1 = ln 20 / ln 3 \u2248 2.727',w:'ln 3 is just a number, about 1.0986.'},
+  {d:'Subtract 1',m:'x \u2248 1.727',w:'Now x is alone.'},
+  {d:'Check',m:'3^2.727 \u2248 20 \u2713',w:'Quick check on a calculator.'}]},
+ qs:[
+  {id:'6a',t:'mc',q:'What is log\u2082 32?',o:['4','5','6','16'],a:1,hint:'2 to what power equals 32?',sol:'2\u2075 = 32, so log\u2082 32 = 5.'},
+  {id:'6b',t:'mc',q:'Which is log\u2085 25 = 2 written in exponential form?',o:['2\u2075 = 25','5\u00B2 = 25','25\u2075 = 2','5\u00B2\u2075 = 2'],a:1,hint:'The base of the log is the base of the power. The answer to the log is the exponent.',sol:'Base 5, exponent 2: 5\u00B2 = 25.'},
+  {id:'6c',t:'mc',q:'log(x) + log(5) equals\u2026',o:['log(x + 5)','log(5x)','5 log x','log(x) \u00B7 log(5)'],a:1,hint:'Adding logs means multiplying inside.',sol:'Product property: log x + log 5 = log(5x).'},
+  {id:'6d',t:'num',q:'Solve 2^(x \u2212 1) = 16.',a:[5],hint:'Write 16 as a power of 2.',sol:'16 = 2\u2074, so x \u2212 1 = 4 and x = 5.'},
+  {id:'6e',t:'num',q:'Solve log\u2083(x + 1) = 2.',a:[8],hint:'Rewrite in exponential form: 3\u00B2 = x + 1.',sol:'3\u00B2 = 9 = x + 1, so x = 8.'},
+  {id:'6f',t:'self',q:'Solve ln(x) + ln(x \u2212 2) = ln 8.',ans:'x = 4',hint:'Combine the left side into one log, then drop the ln from both sides. Check the domain!',sol:'ln(x(x \u2212 2)) = ln 8, so x\u00B2 \u2212 2x = 8, x\u00B2 \u2212 2x \u2212 8 = 0, giving x = 4 or x = \u22122. x = \u22122 makes ln(x) undefined, so reject it. x = 4.'}]},
+
+{id:'t7',n:'Systems',goal:'Where do two graphs meet? The meeting points are the solutions.',
+ glyph:G(`<line x1="10" y1="62" x2="104" y2="8" ${st('var(--c7)',5)}/><line x1="10" y1="14" x2="106" y2="60" ${st('var(--ink)',4)}/><circle cx="58" cy="36" r="7" fill="var(--c7)" stroke="var(--card)" stroke-width="3"/>`),
+ widget:'t7',
+ notice:['Make the slopes equal. What happens to the intersection?','Slide the line until it just touches the parabola. That is exactly one solution.','Solving a system algebraically finds the same points you can see here.'],
+ rules:[
+  {h:'Three possible outcomes for two lines',cards:[
+   {t:'One solution',f:'different slopes',n:'The lines cross at a single point.',viz:mini([[x=>x,'cv'],[x=>-x/2+1,'cv3']])},
+   {t:'No solution',f:'same slope, different intercept',n:'Parallel lines. You will get a false statement like 0 = 5.',viz:mini([[x=>x+1,'cv'],[x=>x-1,'cv3']])},
+   {t:'Infinitely many',f:'same line',n:'Both equations describe the same line. You will get a true statement like 0 = 0.',viz:mini([[x=>x,'cv'],[x=>x,'base']])}]},
+  {h:'Two methods',cards:[
+   {t:'Substitution',f:'solve one equation for a variable, plug it in',n:'Best when one equation already has x or y alone. Also the go-to for nonlinear systems.'},
+   {t:'Elimination',f:'add the equations to cancel a variable',n:'Best when both equations are in the form Ax + By = C. Multiply first to make a variable cancel.'},
+   {t:'Always finish',f:'plug back in to find the other variable',n:'A solution is a point (x, y). Check it in both equations.'}]}],
+ flow:[['Step 1','Pick a method'],['Step 2','Get one variable alone or cancel one'],['Step 3','Solve for it'],['Step 4','Plug back for the other'],['Step 5','Check in both equations']],
+ ex:{title:'Solve 2x + 3y = 12 and 4x \u2212 y = 10',steps:[
+  {d:'Plan: eliminate y',m:'multiply the second equation by 3',w:'That makes the y terms \u22123y and +3y, which cancel when we add.'},
+  {d:'Multiply',m:'12x \u2212 3y = 30',w:'Every term gets multiplied, including the right side.'},
+  {d:'Add the equations',m:'(2x + 3y) + (12x \u2212 3y) = 12 + 30  \u2192  14x = 42',w:'The y terms cancel.'},
+  {d:'Solve for x',m:'x = 3',w:'Divide both sides by 14.'},
+  {d:'Plug back in to find y',m:'4(3) \u2212 y = 10  \u2192  y = 2',w:'Use whichever original equation is easier.'},
+  {d:'The solution is a point',m:'(3, 2)',w:'This is where the two lines cross.',viz:svgWrap(mkG(300,260,-2,7,-3,7),(g=>axes(g)+curve(g,x=>(12-2*x)/3,'cv')+curve(g,x=>4*x-10,'cv3')+pt(g,3,2))(mkG(300,260,-2,7,-3,7)),'Lines cross at (3, 2)')}]},
+ qs:[
+  {id:'7a',t:'mc',q:'Solve y = 2x \u2212 1 and y = \u2212x + 5.',o:['(1, 4)','(2, 3)','(3, 2)','(\u22122, 7)'],a:1,hint:'Both equal y, so set them equal to each other.',sol:'2x \u2212 1 = \u2212x + 5 gives x = 2, then y = 3.'},
+  {id:'7b',t:'mc',q:'How many solutions: y = 3x + 1 and y = 3x \u2212 4?',o:['One','None','Infinitely many','Two'],a:1,hint:'Compare the slopes and the intercepts.',sol:'Same slope (3), different intercepts: parallel lines that never meet.'},
+  {id:'7c',t:'mc',q:'Solve x + y = 6 and x \u2212 y = 2.',o:['(3, 3)','(4, 2)','(5, 1)','(2, 4)'],a:1,hint:'Add the two equations: the y terms cancel.',sol:'2x = 8 gives x = 4. Then y = 2.'},
+  {id:'7d',t:'num',q:'Solve 3x + y = 11 and x \u2212 y = 1. What is y?',a:[2],hint:'Add the equations to cancel y, solve for x, then go back for y.',sol:'4x = 12 so x = 3. Then 3 \u2212 y = 1 gives y = 2.'},
+  {id:'7e',t:'num',q:'Two numbers add to 15 and differ by 3. What is the larger number?',a:[9],hint:'Let the numbers be x and y: x + y = 15 and x \u2212 y = 3.',sol:'Adding: 2x = 18, so x = 9. The other is 6.'},
+  {id:'7f',t:'self',q:'Solve x\u00B2 + y\u00B2 = 25 and y = x + 1.',ans:'(3, 4) and (\u22124, \u22123)',hint:'Substitute y = x + 1 into the circle equation.',sol:'x\u00B2 + (x + 1)\u00B2 = 25 gives 2x\u00B2 + 2x \u2212 24 = 0, so x\u00B2 + x \u2212 12 = 0, x = 3 or x = \u22124. Then y = 4 or y = \u22123.'}]}
+];
+TOP.forEach((t,i)=>{t.i=i+1;t.col=`var(--c${i+1})`;t.cold=`var(--d${i+1})`;});
+const QTOTAL=TOP.reduce((a,t)=>a+t.qs.length,0);
+
+/* ---------- state + saving ---------- */
+const KEY='mat171-visual-v1';
+let S={q:{},conf:{},last:null,updated:0};
+try{const r=localStorage.getItem(KEY);if(r){const d=JSON.parse(r);if(d&&typeof d==='object')S=Object.assign(S,d);}}catch(e){}
+let view='home',tab='see',walk={},tutorDocs=[],names={},tutorErr='',resetArm=false;
+let dbDoc=null,DB=null,USER=null,isOwner=false,cloudT=null,writing=false,again=false,tutorSub=false;
+function setPill(k){
+  const p=$('#pill');if(!p)return;p.className='pill';
+  if(k==='cloud'){p.classList.add('cloud');p.textContent='Saved to your account';}
+  else if(k==='saving'){p.textContent='Saving\u2026';}
+  else if(k==='err'){p.classList.add('err');p.textContent='Saved on this device only';}
+  else p.textContent='Saved on this device';
+}
+function persistLocal(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function save(){S.updated=Date.now();persistLocal();if(dbDoc)queueCloud();else setPill('device');}
+function queueCloud(){setPill('saving');clearTimeout(cloudT);cloudT=setTimeout(flush,1200);}
+async function flush(){
+  if(!dbDoc)return;if(writing){again=true;return;}writing=true;
+  try{await dbDoc.set({v:1,updated:S.updated,q:S.q,conf:S.conf,last:S.last});setPill('cloud');}catch(e){setPill('err');}
+  writing=false;if(again){again=false;flush();}
+}
+async function initCloud(){
+  if(!window.claude||!claude.use)return;
+  try{
+    const r=await Promise.all([claude.use('db'),claude.use('user')]);
+    DB=r[0];USER=r[1];if(!DB||!USER)return;
+    isOwner=await USER.isOwner();const uid=await USER.id();
+    if(uid){
+      dbDoc=DB.doc('progress/'+uid);const snap=await dbDoc.get();
+      if(snap.exists){const d=snap.data()||{};
+        if((d.updated||0)>(S.updated||0)){S={q:d.q||{},conf:d.conf||{},last:d.last||null,updated:d.updated||0};persistLocal();}
+        else if((S.updated||0)>(d.updated||0))queueCloud();
+      }else if(Object.keys(S.q).length||Object.keys(S.conf).length)queueCloud();
+      if(!(S.updated>0&&cloudT))setPill('cloud');
+    }
+    $('#tbtn').hidden=!isOwner;render();
+  }catch(e){setPill('err');}
+}
+function loadTutor(){
+  if(!DB||tutorSub)return;tutorSub=true;
+  try{DB.collection('progress').onSnapshot(snap=>{
+    tutorDocs=snap.docs.map(d=>Object.assign({id:d.id},d.data()));
+    if(USER)USER.profiles(tutorDocs.map(d=>d.id)).then(ps=>{names={};Object.keys(ps||{}).forEach(k=>{names[k]=ps[k].name||'';});if(view==='tutor')render();}).catch(()=>{});
+    if(view==='tutor')render();
+  },e=>{tutorErr=(e&&e.code)||'error';if(view==='tutor')render();});}catch(e){tutorErr='error';}
+}
+
+/* ---------- progress helpers ---------- */
+const qdone=(id)=>{const r=S.q[id];return !!(r&&(r.ok||r.self==='got'));};
+const topicDone=t=>t.qs.filter(q=>qdone(q.id)).length;
+const allDone=()=>TOP.reduce((a,t)=>a+topicDone(t),0);
+let shareOpen=false;
+function summary(){
+  const L=['MAT 171 progress: '+allDone()+' of '+QTOTAL+' questions solved'];
+  TOP.forEach(t=>{const c=S.conf[t.id];L.push(t.n+': '+topicDone(t)+' of '+t.qs.length+(c?' ('+({g:'feels clear',y:'a bit shaky',r:'feeling lost'})[c]+')':''));});
+  const miss=[],retry=[];
+  TOP.forEach(t=>t.qs.forEach(q=>{const r=S.q[q.id];if(!r)return;if(!qdone(q.id)&&(r.tries>0||r.self==='missed'))miss.push(t.n+': '+q.q);else if(qdone(q.id)&&r.tries>1)retry.push(t.n+': '+q.q);}));
+  if(miss.length){L.push('','Still working on:');miss.forEach(m=>L.push('- '+m));}
+  if(retry.length){L.push('','Took more than one try:');retry.forEach(m=>L.push('- '+m));}
+  return L.join('\n');
+}
+
+/* ---------- rendering ---------- */
+function tcStyle(t){return `--tc:${t.col};--tcd:${t.cold}`;}
+function renderHome(){
+  const d=allDone(),pct=Math.round(d/QTOTAL*100);
+  return `<section class="hero"><h1>Precalculus Algebra, picture by picture</h1>
+  <p>Seven topics, each with a graph you can play with, plain-English rules, a step-by-step example, and practice questions that save your answers.</p>
+  <div class="overall" style="--tc:var(--c5);--tcd:var(--d5)"><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><span>${d} of ${QTOTAL} questions solved</span></div></section>
+  <div class="tiles">${TOP.map(t=>{const n=topicDone(t),p=Math.round(n/t.qs.length*100);
+   return `<button class="tile" style="${tcStyle(t)}" data-act="topic" data-id="${t.id}"><div class="gl">${t.glyph}</div><div class="tb"><h3>${esc(t.n)}</h3><p>${esc(t.goal)}</p><div class="bar"><i style="width:${p}%"></i></div><div class="cnt">${n} of ${t.qs.length} solved${S.conf[t.id]?' \u00B7 '+({g:'feels clear',y:'a bit shaky',r:'feeling lost'})[S.conf[t.id]]:''}</div></div></button>`;}).join('')}</div>
+  <div class="how"><b>Each topic:</b> Picture it <span class="ar">\u203A</span> Remember it <span class="ar">\u203A</span> Walk through it <span class="ar">\u203A</span> Your turn</div>
+  <div class="foot"><span>Your answers save automatically in this browser.</span><button data-act="share">${shareOpen?'Hide progress summary':'Share my progress'}</button><button data-act="reset">${resetArm?'Tap again to erase all my progress':'Reset my progress'}</button></div>${shareOpen?`<div class="notice" style="--tc:var(--c5);--tx:var(--d5)"><b>Copy this and text or email it to your tutor</b><textarea id="sharebox" readonly rows="12" style="width:100%;margin-top:8px;font:inherit;font-size:14px;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink)">${esc(summary())}</textarea><div class="walkbtns" style="--tcd:var(--d5);--tx:var(--d5)"><button class="btn fill" data-act="copy">Copy</button></div></div>`:''}`;
+}
+function renderTopic(t){
+  const tabs=[['see','Picture it'],['know','Remember it'],['walk','Walk through it'],['try','Your turn']];
+  const cf=S.conf[t.id];
+  let body='';
+  if(tab==='see')body=`<p class="lead">Drag the sliders and watch what changes.</p><div id="wgbox"></div><div class="notice"><b>What to notice</b><ul>${t.notice.map(n=>`<li>${esc(n)}</li>`).join('')}</ul></div>`;
+  else if(tab==='know')body=t.rules.map(g=>`<h3 class="gh">${esc(g.h)}</h3><div class="cards">${g.cards.map(c=>`<div class="pc"><h4>${esc(c.t)}</h4><p class="fm">${esc(c.f)}</p>${c.n?`<p>${esc(c.n)}</p>`:''}${c.ex?`<div class="ex">${esc(c.ex)}</div>`:''}${c.viz?`<div class="vz">${c.viz}</div>`:''}</div>`).join('')}</div>`).join('')+
+    `<h3 class="gh">The game plan</h3><ol class="flow">${t.flow.map(f=>`<li><b>${esc(f[0])}</b>${esc(f[1])}</li>`).join('')}</ol>`;
+  else if(tab==='walk'){
+    const n=walk[t.id]||1,steps=t.ex.steps;
+    body=`<h3 class="gh" style="margin-top:4px">${esc(t.ex.title)}</h3><div class="steps">${steps.slice(0,n).map((s,i)=>`<div class="st"><div class="nb">${i+1}</div><div><div class="do">${esc(s.d)}</div>${s.m?`<div class="mt">${esc(s.m)}</div>`:''}<div class="wy">${esc(s.w)}</div>${s.viz?`<div class="vz">${s.viz}</div>`:''}</div></div>`).join('')}</div>
+    <div class="walkbtns"><button class="btn" data-act="wback" ${n<=1?'disabled':''}>Back</button><button class="btn fill" data-act="wnext" ${n>=steps.length?'disabled':''}>${n>=steps.length?'Done':'Show next step'}</button><button class="btn" data-act="wall" ${n>=steps.length?'disabled':''}>Show all</button><button class="btn" data-act="wtry">Go to practice</button></div>`;
+  }else body=`<p class="lead">${topicDone(t)} of ${t.qs.length} solved. Wrong answers are fine, they save too so you can see what to review.</p><div class="qs">${t.qs.map(q=>renderQ(t,q)).join('')}</div>`;
+  return `<div class="tview" style="${tcStyle(t)}"><button class="back" data-act="home">\u2039 All topics</button>
+  <div class="thead"><h2>${esc(t.n)}</h2><p>${esc(t.goal)}</p>
+  <div class="conf"><span>How does this topic feel?</span>
+   <button class="cb g" data-act="conf" data-v="g" aria-pressed="${cf==='g'}">Clear</button><button class="cb y" data-act="conf" data-v="y" aria-pressed="${cf==='y'}">A bit shaky</button><button class="cb r" data-act="conf" data-v="r" aria-pressed="${cf==='r'}">Lost</button></div></div>
+  <div class="tabs" role="tablist">${tabs.map(x=>`<button role="tab" data-act="tab" data-v="${x[0]}" aria-selected="${tab===x[0]}">${x[1]}</button>`).join('')}</div>${body}</div>`;
+}
+function renderQ(t,q){
+  const r=S.q[q.id]||{};const ok=r.ok||r.self==='got';const bad=!ok&&((r.tries>0&&q.t!=='self')||r.self==='missed');
+  const L='ABCD';let ui='';
+  if(q.t==='mc'){
+    ui=`<div class="opts">${q.o.map((o,i)=>`<button class="opt${r.pick===i&&r.ok?' right':''}${r.pick===i&&r.tries>0&&!r.ok?' wrong':''}" data-act="pick" data-q="${q.id}" data-v="${i}" ${r.ok?'disabled':''}><span class="lt">${L[i]}</span><span>${esc(o)}</span></button>`).join('')}</div>`;
+  }else if(q.t==='num'){
+    ui=`<div class="ans"><input type="text" inputmode="text" autocomplete="off" aria-label="Your answer" placeholder="Type your answer" value="${esc(r.val||'')}" data-q="${q.id}" class="${r.ok?'right':(r.tries>0&&!r.ok?'wrong':'')}" ${r.ok?'disabled':''}><button class="btn fill" data-act="check" data-q="${q.id}" ${r.ok?'disabled':''}>Check</button></div>`;
+  }else{
+    ui=`<p class="lead" style="margin-bottom:0">Work it out on paper first, then check yourself.</p>`+(r.rev?`<div class="fb hint"><b>Answer:</b> <span class="m">${esc(q.ans)}</span></div><div class="self-r"><button class="btn${r.self==='got'?' fill':''}" data-act="self" data-q="${q.id}" data-v="got">I got it</button><button class="btn${r.self==='missed'?' fill':''}" data-act="self" data-q="${q.id}" data-v="missed">I missed it</button></div>`:`<div class="qa"><button class="go" data-act="reveal" data-q="${q.id}">Reveal answer</button></div>`);
+  }
+  let fb='';
+  if(r.hint&&!ok)fb+=`<div class="fb hint"><b>Hint:</b> ${esc(q.hint)}</div>`;
+  if(q.t!=='self'&&r.tries>0&&!r.ok)fb+=`<div class="fb bad">Not quite. Try again, or open the hint.</div>`;
+  if(ok&&q.t!=='self')fb+=`<div class="fb ok"><b>Yes!</b> ${esc(q.sol)}</div>`;
+  if((q.t==='self'&&r.rev)||(q.t!=='self'&&r.sol&&!ok))fb+=`<div class="fb hint"><b>How it works:</b> ${esc(q.sol)}</div>`;
+  const acts=[];
+  if(!ok&&q.t!=='self')acts.push(`<button data-act="hint" data-q="${q.id}">Hint</button>`);
+  if(q.t!=='self'&&!ok)acts.push(`<button data-act="sol" data-q="${q.id}">Show solution</button>`);
+  return `<div class="q${ok?' ok':(bad?' bad':'')}" id="q-${q.id}"><p class="qt">${esc(q.q)}</p>${ui}${acts.length?`<div class="qa">${acts.join('')}</div>`:''}${fb}</div>`;
+}
+function renderTutor(){
+  let h=`<button class="back" data-act="home">\u2039 Back</button><div class="hero" style="padding-top:6px"><h1 style="font-size:32px;max-width:none">Tutor view</h1><p>Everyone who has used this page with saved progress. Students need Contributor access to save to your page.</p></div>`;
+  if(tutorErr)h+=`<div class="notice" style="--tc:var(--c1)"><b>Could not load.</b> ${esc(tutorErr)}</div>`;
+  if(!tutorDocs.length&&!tutorErr)h+=`<div class="notice" style="--tc:var(--c5)">No saved progress yet. Once Hana answers a question while signed in, it will appear here.</div>`;
+  h+=tutorDocs.map(d=>{
+    const q=d.q||{},cf=d.conf||{};
+    const total=TOP.reduce((a,t)=>a+t.qs.filter(x=>q[x.id]&&(q[x.id].ok||q[x.id].self==='got')).length,0);
+    const miss=[];TOP.forEach(t=>t.qs.forEach(x=>{const r=q[x.id];if(r&&((r.tries>=2)||(r.self==='missed')||(r.tries>0&&!r.ok)))miss.push(`${t.n}: ${x.q}`);}));
+    return `<div class="trow"><h3>${esc(names[d.id]||'Student')} \u2014 ${total} of ${QTOTAL} solved</h3><div class="tgrid">${TOP.map(t=>{const n=t.qs.filter(x=>q[x.id]&&(q[x.id].ok||q[x.id].self==='got')).length;const c=cf[t.id];
+      return `<div class="tc1" style="${tcStyle(t)}"><b>${esc(t.n)}</b>${n} of ${t.qs.length}${c?` <span class="tag ${c}">${({g:'clear',y:'shaky',r:'lost'})[c]}</span>`:''}</div>`;}).join('')}</div>
+      ${miss.length?`<p class="miss"><b>Needs review:</b> ${miss.map(esc).join(' \u00B7 ')}</p>`:''}</div>`;
+  }).join('');
+  return h;
+}
+function render(){
+  const main=$('#main');
+  if(view==='home')main.innerHTML=renderHome();
+  else if(view==='tutor')main.innerHTML=renderTutor();
+  else{const t=TOP.find(x=>x.id===view);if(!t){view='home';main.innerHTML=renderHome();}else main.innerHTML=renderTopic(t);
+    if(t&&tab==='see'){const spec=W[t.widget];const box=$('#wgbox');if(spec&&box)runWidget(box,spec);}}
+}
+function go(v,tb,noHash){
+  view=v;if(tb)tab=tb;resetArm=false;
+  if(TOP.find(x=>x.id===v)){S.last=v;}
+  render();window.scrollTo(0,0);
+  if(!noHash){try{const h=v==='home'||v==='tutor'?v:v+'-'+tab;if(location.hash!=='#'+h)location.hash=h;}catch(e){}}
+  if(v==='tutor')loadTutor();
+}
+function fromHash(){
+  let h='';try{h=(location.hash||'').replace('#','');}catch(e){}
+  const m=/^(t[1-7])-(see|know|walk|try)$/.exec(h);
+  if(m){view=m[1];tab=m[2];}else if(h==='tutor'&&isOwner){view='tutor';loadTutor();}else if(h==='home'||!h){view='home';}
+}
+
+/* ---------- answer checking ---------- */
+function parseNum(s){
+  s=String(s).toLowerCase().replace(/\s+/g,'').replace(/\u2212/g,'-').replace(/^[a-z]=/,'').replace(/,/g,'');
+  let m=/^(-?\d*\.?\d+)\/(-?\d*\.?\d+)$/.exec(s);if(m)return parseFloat(m[1])/parseFloat(m[2]);
+  if(/^-?\d*\.?\d+$/.test(s))return parseFloat(s);return NaN;
+}
+function findQ(id){for(const t of TOP)for(const q of t.qs)if(q.id===id)return{t,q};return null;}
+function rec(id){return S.q[id]||(S.q[id]={});}
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;
+  const a=b.dataset.act;
+  if(a==='home')return go('home');
+  if(a==='tutor')return go('tutor');
+  if(a==='topic'){return go(b.dataset.id,'see');}
+  if(a==='tab'){tab=b.dataset.v;return go(view,tab);}
+  if(a==='conf'){S.conf[view]=S.conf[view]===b.dataset.v?undefined:b.dataset.v;if(S.conf[view]===undefined)delete S.conf[view];save();return render();}
+  if(a==='wnext'){walk[view]=(walk[view]||1)+1;return render();}
+  if(a==='wback'){walk[view]=Math.max(1,(walk[view]||1)-1);return render();}
+  if(a==='wall'){walk[view]=99;return render();}
+  if(a==='wtry'){return go(view,'try');}
+  if(a==='share'){shareOpen=!shareOpen;return render();}
+  if(a==='copy'){const ta=document.getElementById('sharebox');if(ta){ta.select();let ok=false;try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(ta.value);ok=true;}else ok=document.execCommand('copy');}catch(er){try{ok=document.execCommand('copy');}catch(e2){}}b.textContent=ok?'Copied':'Select the text and copy it';}return;}
+  if(a==='reset'){if(!resetArm){resetArm=true;return render();}S={q:{},conf:{},last:null,updated:Date.now()};persistLocal();if(dbDoc)queueCloud();resetArm=false;return render();}
+  const qid=b.dataset.q;const f=qid&&findQ(qid);
+  if(!f)return;const q=f.q,r=rec(qid);
+  const redo=()=>{const el=$('#q-'+qid);if(el){const tmp=document.createElement('div');tmp.innerHTML=renderQ(f.t,q);el.replaceWith(tmp.firstElementChild);}};
+  if(a==='pick'){r.pick=parseInt(b.dataset.v,10);r.tries=(r.tries||0)+1;r.ok=r.pick===q.a;save();redo();}
+  else if(a==='check'){const inp=document.querySelector(`input[data-q="${qid}"]`);const v=inp?inp.value:'';if(!v.trim())return;r.val=v;r.tries=(r.tries||0)+1;const n=parseNum(v);r.ok=!isNaN(n)&&q.a.some(x=>Math.abs(x-n)<1e-6);save();redo();}
+  else if(a==='hint'){r.hint=true;save();redo();}
+  else if(a==='sol'){r.sol=true;save();redo();}
+  else if(a==='reveal'){r.rev=true;save();redo();}
+  else if(a==='self'){r.self=b.dataset.v;save();redo();}
+  if(a==='pick'||a==='check'||a==='self'){/* update progress count text */const lead=document.querySelector('.tview .lead');if(lead&&f.t)lead.textContent=`${topicDone(f.t)} of ${f.t.qs.length} solved. Wrong answers are fine, they save too so you can see what to review.`;}
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.matches&&e.target.matches('.ans input')){const b=document.querySelector(`[data-act="check"][data-q="${e.target.dataset.q}"]`);if(b)b.click();}
+});
+window.addEventListener('hashchange',()=>{fromHash();render();});
+
+/* ---------- start ---------- */
+fromHash();setPill('device');render();initCloud();
+})();
+</script>
+</body>
+</html>
