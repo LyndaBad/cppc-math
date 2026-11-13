@@ -214,6 +214,46 @@ h3.gh{font-size:19px;margin:28px 0 12px;color:var(--tx)}
 .tag.g{background:var(--d3)}.tag.y{background:var(--d2)}.tag.r{background:var(--d1)}
 .miss{font-size:14px;color:var(--mute);margin:8px 0 0}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* proper powers and fractions */
+sup{font-size:.72em;line-height:0;position:relative;vertical-align:baseline;top:-.5em}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .12em;font-size:.86em;line-height:1.15}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding:0 .2em .05em}
+.fr>span:last-child{padding:.05em .2em 0}
+sup .fr{font-size:1em;vertical-align:.15em}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92em;background:var(--soft);padding:1px 6px;border-radius:6px}
+/* practice test */
+.ptest{display:flex;align-items:center;gap:16px;width:100%;text-align:left;margin-top:20px;padding:18px 22px;border-radius:22px;border:2px solid var(--d5);background:var(--card);color:var(--ink);box-shadow:var(--shadow);font:inherit}
+.ptest:hover{border-color:var(--c5)}
+.ptest .pi{flex:none;width:52px;height:52px;border-radius:16px;background:var(--d5);color:#fff;display:grid;place-items:center;font-size:24px;font-weight:700}
+.ptest b{display:block;font-size:20px;margin-bottom:2px}
+.ptest span.d{color:var(--mute);font-size:15px}
+.ptest .ar{margin-left:auto;font-size:28px;color:var(--d5)}
+.tbar{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--hh,76px));z-index:5;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;background:var(--bg);padding:10px 0;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.tbar .pt{font-weight:700;font-size:18px}
+.tbar .tm{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:700;font-size:20px;padding:4px 12px;border-radius:999px;background:var(--card);border:2px solid var(--line)}
+.tbar .tm.low{border-color:var(--bad);color:var(--bad)}
+.tbar .cnt{color:var(--mute);font-size:15px}
+.tnum{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--tcd);margin-bottom:6px}
+.opt.sel{border-color:var(--d5);background:var(--soft)}
+.tsub{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:20px}
+.tcard{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:20px 22px;margin-bottom:16px;box-shadow:var(--shadow)}
+.tcard.main{border-color:var(--d5)}
+.tcard h3{margin:0 0 6px;font-size:20px}
+.tcard p{margin:0 0 10px;color:var(--mute)}
+.tcard ul{margin:0 0 12px;padding-left:20px;display:grid;gap:4px}
+.tparts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:14px 0}
+.tparts .tcard{margin:0}
+.tst{display:inline-block;font-size:13px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--soft);color:var(--mute)}
+.tst.done{background:var(--okbg);color:var(--ok)}
+.tst.now{background:var(--d5);color:#fff}
+.big{font-size:clamp(32px,6vw,46px);font-weight:700;line-height:1;margin:4px 0 6px}
+.big small{font-size:18px;font-weight:500;color:var(--mute)}
+.tbt{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-top:14px}
+.tbt a{display:block;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-left:6px solid var(--tc);border-radius:12px;padding:8px 12px;font-size:15px;font-variant-numeric:tabular-nums}
+.tbt a b{display:block;font-size:14px}
+.tbt a.weak{border-left-color:var(--bad)}
+.tset{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:6px 0 4px}
+.tset select{font:inherit;font-size:15px;padding:7px 10px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
 </style>
 </head>
 <body>
@@ -964,6 +1004,7 @@ function renderHome(){
   return `<section class="hero"><h1>Precalculus Algebra, picture by picture</h1>
   <p>Seven topics, each with a graph you can play with, plain-English rules, a step-by-step example, and practice questions that save your answers. Tap New numbers on any question to get a fresh version of the same kind of problem.</p>
   <div class="overall" style="--tc:var(--c5);--tcd:var(--d5)"><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><span>${d} of ${QTOTAL} questions solved</span></div></section>
+  ${(()=>{const lt=(S.tests||[]).slice(-1)[0];return `<button class="ptest" data-act="test"><span class="pi" aria-hidden="true">\u2713</span><span><b>Practice test</b><span class="d">Part A and Part B, 1 hour each, covering all seven topics, plus a retake for each part. Marked at the end with full solutions.${lt?` Last score: ${lt.c} of ${lt.n}.`:''}</span></span><span class="ar" aria-hidden="true">\u203A</span></button>`;})()}
   <div class="tiles">${TOP.map(t=>{const n=topicDone(t),p=Math.round(n/t.qs.length*100);
    return `<button class="tile" style="${tcStyle(t)}" data-act="topic" data-id="${t.id}"><div class="gl">${t.glyph}</div><div class="tb"><h3>${esc(t.n)}</h3><p>${esc(t.goal)}</p><div class="bar"><i style="width:${p}%"></i></div><div class="cnt">${n} of ${t.qs.length} solved${S.conf[t.id]?' \u00B7 '+({g:'feels clear',y:'a bit shaky',r:'feeling lost'})[S.conf[t.id]]:''}</div></div></button>`;}).join('')}</div>
   <div class="how"><b>Each topic:</b> Picture it <span class="ar">\u203A</span> Remember it <span class="ar">\u203A</span> Walk through it <span class="ar">\u203A</span> Your turn</div>
@@ -1028,6 +1069,7 @@ function render(){
   const main=$('#main');
   if(view==='home')main.innerHTML=renderHome();
   else if(view==='tutor')main.innerHTML=renderTutor();
+  else if(view==='test')main.innerHTML=renderTest();
   else{const t=TOP.find(x=>x.id===view);if(!t){view='home';main.innerHTML=renderHome();}else main.innerHTML=renderTopic(t);
     if(t&&tab==='see'){const spec=W[t.widget];const box=$('#wgbox');if(spec&&box)runWidget(box,spec);}}
 }
@@ -1035,14 +1077,177 @@ function go(v,tb,noHash){
   view=v;if(tb)tab=tb;resetArm=false;
   if(TOP.find(x=>x.id===v)){S.last=v;}
   render();window.scrollTo(0,0);
-  if(!noHash){try{const h=v==='home'||v==='tutor'?v:v+'-'+tab;if(location.hash!=='#'+h)location.hash=h;}catch(e){}}
+  if(!noHash){try{const h=v==='home'||v==='tutor'||v==='test'?v:v+'-'+tab;if(location.hash!=='#'+h)location.hash=h;}catch(e){}}
   if(v==='tutor')loadTutor();
 }
 function fromHash(){
   let h='';try{h=(location.hash||'').replace('#','');}catch(e){}
   const m=/^(t[1-7])-(see|know|walk|try)$/.exec(h);
-  if(m){view=m[1];tab=m[2];}else if(h==='tutor'&&isOwner){view='tutor';loadTutor();}else if(h==='home'||!h){view='home';}
+  if(m){view=m[1];tab=m[2];}else if(h==='tutor'&&isOwner){view='tutor';loadTutor();}else if(h==='test'){view='test';}else if(h==='home'||!h){view='home';}
 }
+
+/* ---------- practice test: Part A and Part B, 1 hour each ---------- */
+const TKEY='mat171-test-v1',PART_MIN=60,PN=['A','B'];
+let T=null;
+try{const r=localStorage.getItem(TKEY);if(r)T=JSON.parse(r);}catch(e){T=null;}
+function tSave(){try{localStorage.setItem(TKEY,JSON.stringify(T));}catch(e){}}
+function tFresh(per){
+  per=per||(T&&T.per)||15;
+  const R=rng((Date.now()^Math.floor(Math.random()*4294967295))>>>0);
+  const pools=TOP.map(t=>R.shuffle(t.qs.filter(q=>q.t!=='self').map(q=>({tid:t.id,qid:q.id}))));
+  const flat=[];let k=0;while(flat.length<per*2&&pools.some(x=>x.length)){const pl=pools[k%pools.length];k++;if(pl.length)flat.push(pl.pop());}
+  const parts=[[],[]];flat.forEach((it,i)=>{it.seed=R.i(1,2147483646);parts[i%2].push(it);});
+  const ord=it=>TOP.findIndex(t=>t.id===it.tid);parts.forEach(pt=>pt.sort((a,b)=>ord(a)-ord(b)));
+  T={per,parts:parts.map(items=>({items,ans:{},start:0,end:0,done:false})),cur:0};tSave();
+}
+const tCache={};
+function tItem(it){const key=it.qid+':'+it.seed;if(tCache[key])return tCache[key];
+  const t=TOP.find(x=>x.id===it.tid);const q0=t.qs.find(q=>q.id===it.qid);let q=q0;
+  if(q0.g){try{q=Object.assign({},q0,q0.g(rng(it.seed)));}catch(e){q=q0;}}
+  return tCache[key]={t,q};}
+function tGrade(P,i){const {q}=tItem(P.items[i]);const a=P.ans[i];
+  if(q.t==='mc')return a===q.a;
+  if(a==null||!String(a).trim())return false;const n=parseNum(a);return !isNaN(n)&&q.a.some(x=>Math.abs(x-n)<1e-6);}
+const tAns=P=>P.items.filter((_,i)=>P.ans[i]!=null&&String(P.ans[i]).trim()!=='').length;
+const tLeftMs=P=>Math.max(0,P.start+PART_MIN*60000-Date.now());
+const mmss=ms=>{const s=Math.ceil(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
+const used=P=>mmss(Math.min(PART_MIN*60000,(P.end||Date.now())-P.start));
+let tArm=false;
+function tFinish(pi){const P=T.parts[pi];if(P.done)return;P.done=true;P.end=Math.min(Date.now(),P.start+PART_MIN*60000);tArm=false;
+  let pc=0;P.items.forEach((_,i)=>{if(tGrade(P,i))pc++;});
+  T.hist=T.hist||[[],[]];T.hist[pi].push({c:pc,n:P.items.length,t:used(P),a:P.attempt||1});
+  if(!P.retake&&pi===0&&!T.parts[1].done)T.cur=1;
+  if(T.parts.every(x=>x.done)){let c=0,n=0;T.parts.forEach(x=>x.items.forEach((_,i)=>{n++;if(tGrade(x,i))c++;}));S.tests=(S.tests||[]).concat([{d:Date.now(),c,n}]).slice(-10);save();}
+  tSave();}
+function tRetake(pi){const P=T.parts[pi];const R=rng((Date.now()^Math.floor(Math.random()*4294967295))>>>0);
+  P.items=P.items.map(it=>({tid:it.tid,qid:it.qid,seed:R.i(1,2147483646)}));P.ans={};P.start=Date.now();P.end=0;P.done=false;P.retake=true;P.attempt=(P.attempt||1)+1;
+  T.cur=pi;T.pend=null;tArm=false;tSave();}
+const pLabel=P=>P.retake?' retake':'';
+const histLine=pi=>{const h=(T.hist&&T.hist[pi])||[];if(!h.length)return '';return h.map((x,k)=>`${k===0?'First try':'Retake'+(h.length>2?' '+k:'')}: ${x.c} of ${x.n} in ${x.t}`).join(' · ');};
+function retakeCards(){return `<div class="tparts">${[0,1].map(i=>{const P=T.parts[i];const can=P.done;
+  return `<div class="tcard"><h3>Retake Part ${PN[i]}</h3><p>${can?'Same kinds of questions as Part '+PN[i]+' with new numbers · 1 hour':'Available after you submit Part '+PN[i]+'.'}</p>${can&&histLine(i)?`<p style="font-size:14px">${histLine(i)}</p>`:''}${can?`<button class="btn" data-act="tretake" data-p="${i}">Retake Part ${PN[i]}</button>`:'<span class="tst">Locked</span>'}</div>`;}).join('')}</div>`;}
+function qBlock(P,i,showRes){const {t,q}=tItem(P.items[i]);const a=P.ans[i];const L='ABCD';const ok=showRes&&tGrade(P,i);let ui;
+  if(q.t==='mc')ui=`<div class="opts">${q.o.map((o,j)=>{let c='';if(showRes){if(j===q.a)c=' right';else if(j===a)c=' wrong';}else if(j===a)c=' sel';
+    return `<button class="opt${c}" data-act="tpick" data-i="${i}" data-v="${j}" aria-pressed="${j===a}" ${showRes?'disabled':''}><span class="lt">${L[j]}</span><span>${esc(o)}</span></button>`;}).join('')}</div>`;
+  else ui=`<div class="ans"><input type="text" autocomplete="off" aria-label="Answer to question ${i+1}" placeholder="Type your answer" value="${esc(a||'')}" data-ti="${i}" class="${showRes?(ok?'right':'wrong'):''}" ${showRes?'disabled':''}></div>`;
+  let fb='';
+  if(showRes){const blank=a==null||String(a).trim()==='';
+    fb=ok?`<div class="fb ok"><b>Correct.</b> ${esc(q.sol)}</div>`
+      :`<div class="fb bad"><b>${blank?'Not answered.':'Not quite.'}</b> ${q.t==='mc'?`The right answer is ${L[q.a]}.`:`The answer is ${q.a.map(f2).join(' or ')}.`}</div><div class="fb hint"><b>How it works:</b> ${esc(q.sol)}</div>`;}
+  return `<div class="q${showRes?(ok?' ok':' bad'):''}" style="${tcStyle(t)}"><div class="tnum">Part ${PN[T.cur]}${pLabel(P)} \u00B7 Question ${i+1} \u00B7 ${esc(t.n)}</div><p class="qt">${esc(q.q)}</p>${ui}${fb}</div>`;}
+function renderTest(){
+  if(!T||!T.parts)tFresh();
+  T.parts.forEach((P,i)=>{if(P.start&&!P.done&&tLeftMs(P)<=0)tFinish(i);});
+  const back=`<button class="back" data-act="home">\u2039 All topics</button>`;
+  if(T.pend!=null&&T.parts[T.pend].done){const pi=T.pend;
+    return back+`<section class="hero" style="padding-top:6px"><h1 style="max-width:none">Retake Part ${PN[pi]}</h1>
+    <p>The same kinds of questions as Part ${PN[pi]}, with new numbers. You get a fresh 1-hour timer. Your earlier score is kept so you can compare.</p></section>
+    <div class="tcard main"><h3>Before you start</h3><ul><li>${T.parts[pi].items.length} questions \u00B7 1 hour. The part submits itself when time runs out.</li>${histLine(pi)?`<li>So far: ${histLine(pi)}</li>`:''}<li>Type fractions with a slash, like <code>3/4</code>.</li></ul>
+    <div class="tsub" style="--tcd:var(--d5)"><button class="btn fill" data-act="tstart">Start Part ${PN[pi]} retake (1 hour)</button><button class="btn" data-act="tcancel">Cancel</button></div></div>`;}
+  const allDone=T.parts.every(x=>x.done);
+  const st=i=>{const P=T.parts[i];return P.done?'<span class="tst done">Submitted</span>':(P.start?'<span class="tst now">In progress</span>':'<span class="tst">Not started</span>');};
+  if(allDone){
+    let c=0,n=0;const by={};const pc=T.parts.map(P=>{let pcount=0;P.items.forEach((it,i)=>{const {t}=tItem(it);const ok=tGrade(P,i);n++;if(ok){c++;pcount++;}const b=by[t.id]||(by[t.id]={t,n:0,c:0});b.n++;if(ok)b.c++;});return pcount;});
+    const order=TOP.filter(t=>by[t.id]).map(t=>by[t.id]);
+    let h=back+`<section class="hero" style="padding-top:6px"><h1 style="max-width:none">Practice test results</h1></section>
+    <div class="tcard main"><div class="tnum" style="--tcd:var(--d5)">Total score</div><div class="big">${c} out of ${n} <small>${Math.round(c/n*100)}%</small></div>
+    <p>Part A${pLabel(T.parts[0])}: ${pc[0]} of ${T.parts[0].items.length} in ${used(T.parts[0])} \u00B7 Part B${pLabel(T.parts[1])}: ${pc[1]} of ${T.parts[1].items.length} in ${used(T.parts[1])}</p>
+    ${[0,1].map(i=>(T.hist&&T.hist[i]&&T.hist[i].length>1)?`<p style="font-size:14px">Part ${PN[i]} history: ${histLine(i)}</p>`:'').join('')}
+    <p>${order.some(b=>b.c<b.n)?'Topics marked in red need review. Tap one to go straight to its practice questions.':'Every topic fully correct.'}</p>
+    <div class="tbt">${order.map(b=>`<a href="#${b.t.id}-try" class="${b.c<b.n?'weak':''}" style="${tcStyle(b.t)}"><b>${esc(b.t.n)}</b>${b.c} of ${b.n} correct</a>`).join('')}</div>
+    <div class="tsub" style="--tcd:var(--d5)"><button class="btn fill" data-act="tretake" data-p="0">Retake Part A</button><button class="btn fill" data-act="tretake" data-p="1">Retake Part B</button><button class="btn" data-act="tnew">Start a new practice test</button></div></div>`;
+    const keep=T.cur;
+    T.parts.forEach((P,pi)=>{T.cur=pi;h+=`<h3 class="gh">Part ${PN[pi]}${pLabel(P)} solutions</h3><div class="qs">${P.items.map((_,i)=>qBlock(P,i,true)).join('')}</div>`;});
+    T.cur=keep;return h;}
+  const P=T.parts[T.cur];
+  if(!P.start){
+    const first=T.cur===0;
+    return back+`<section class="hero" style="padding-top:6px"><h1 style="max-width:none">Practice test</h1>
+    <p>Two parts, like the real exam. Each part has its own 1-hour timer and covers all seven topics. You won't see any marks until both parts are submitted.</p></section>
+    <div class="tparts">${[0,1].map(i=>`<div class="tcard${i===T.cur?' main':''}"><h3>Part ${PN[i]}</h3><p>${T.parts[i].items.length} questions \u00B7 1 hour</p>${st(i)}</div>`).join('')}</div>
+    <div class="tcard main"><h3>${first?'Before you start':'Part A is submitted'}</h3>
+    <ul>${first?'<li>Find a quiet place and have paper, a pencil and your calculator ready.</li><li>The clock starts when you press Start and keeps running if you leave the page.</li><li>When time runs out, the part submits itself. Unanswered questions are marked wrong.</li><li>Type fractions with a slash, like <code>3/4</code>, and negatives with a minus sign, like <code>-2</code>.</li>':'<li>Take a short break if you need one. Part B\u2019s timer starts only when you press Start.</li><li>Your Part A answers are locked in.</li>'}</ul>
+    ${first?`<div class="tset"><label for="tper">Questions per part</label><select id="tper">${[10,15].map(v=>`<option value="${v}"${v===T.per?' selected':''}>${v} questions</option>`).join('')}</select></div>`:''}
+    <div class="tsub" style="--tcd:var(--d5)"><button class="btn fill" data-act="tstart">Start Part ${PN[T.cur]} (1 hour)</button>${first?'':'<button class="btn" data-act="tnew">Start over</button>'}</div></div>
+    <h3 class="gh">Retakes</h3>${retakeCards()}`;}
+  const left=P.items.length-tAns(P);
+  return `<div class="tbar"><span class="pt">Part ${PN[T.cur]}${pLabel(P)}</span><span class="cnt" id="tleft">${tAns(P)} of ${P.items.length} answered</span><span class="tm${tLeftMs(P)<300000?' low':''}" id="tclock" aria-label="Time remaining">${mmss(tLeftMs(P))}</span></div>
+  <div class="qs">${P.items.map((_,i)=>qBlock(P,i,false)).join('')}</div>
+  <div class="tsub" style="--tcd:var(--d5)"><button class="btn fill" data-act="tsub">${tArm?`Submit Part ${PN[T.cur]} anyway`:`Submit Part ${PN[T.cur]}`}</button><span style="color:var(--mute)">${tArm&&left?`You have ${left} unanswered. Unanswered questions are marked wrong.`:`Answers save as you go.`}</span></div>`;
+}
+const setHH=()=>{const h=document.querySelector('header.top');if(h)document.documentElement.style.setProperty('--hh',h.offsetHeight+'px');};window.addEventListener('resize',setHH);setTimeout(setHH,0);
+setInterval(()=>{setHH();if(view!=='test'||!T)return;const P=T.parts[T.cur];if(!P||!P.start||P.done)return;const ms=tLeftMs(P);
+  if(ms<=0){tFinish(T.cur);render();window.scrollTo(0,0);return;}
+  const c=document.getElementById('tclock');if(c){c.textContent=mmss(ms);c.classList.toggle('low',ms<300000);}},1000);
+document.addEventListener('input',e=>{const el=e.target;if(el&&el.dataset&&el.dataset.ti!==undefined&&T){const P=T.parts[T.cur];if(P.done)return;P.ans[+el.dataset.ti]=el.value;tArm=false;tSave();const l=document.getElementById('tleft');if(l)l.textContent=`${tAns(P)} of ${P.items.length} answered`;}});
+document.addEventListener('change',e=>{if(e.target&&e.target.id==='tper'){tFresh(parseInt(e.target.value,10));render();}});
+
+/* ---------- write powers and fractions properly ---------- */
+const TOKC=/[0-9A-Za-z.\u00B9\u00B2\u00B3\u2070-\u209F\u1D2C-\u1D6A\u221A\u221B\u221C\u03C0]/;
+function splitSup(s){const out=[];let buf='',i=0;
+  while(i<s.length){const c=s[i];
+    if(c==='^'){const j=i+1;let ex='',ni=i;
+      if(s[j]==='('){let d=0,k=j;for(;k<s.length;k++){if(s[k]==='(')d++;else if(s[k]===')'){d--;if(d===0)break;}}if(k<s.length){ex=s.slice(j+1,k);ni=k+1;}}
+      else{const m=/^[-\u2212]?[0-9A-Za-z.]+/.exec(s.slice(j));if(m){ex=m[0].replace(/\.+$/,'');ni=j+ex.length;}}
+      if(ex){if(buf)out.push(buf);buf='';out.push({s:ex});i=ni;continue;}}
+    buf+=c;i++;}
+  if(buf)out.push(buf);return out;}
+const WORD=/[A-Za-z]{3,}/,MATHW=s=>s.replace(/\b(log|ln|sin|cos|tan)\b/g,'');
+function pgrp(s,k,dir){let d=0;if(dir<0){for(;k>=0;k--){if(s[k]===')')d++;else if(s[k]==='('){d--;if(d===0)return k;}}return -1;}
+  for(;k<s.length;k++){if(s[k]==='(')d++;else if(s[k]===')'){d--;if(d===0)return k;}}return -1;}
+function leftOp(s,a){let L=a+1,k=a;
+  while(k>=0){
+    if(s[k]===')'){const g=pgrp(s,k,-1);if(g<0)return -1;k=g-1;L=g;while(k>=0&&/[A-Za-z\u2080-\u209C]/.test(s[k])){k--;L=k+1;}continue;}
+    if(TOKC.test(s[k])){while(k>=0&&TOKC.test(s[k]))k--;L=k+1;continue;}
+    if(/[\u221A\u221B\u221C\u00B7]/.test(s[k])&&L<=a){k--;L=k+1;continue;}
+    break;}
+  if(L>a)return -1;
+  if((s[L-1]==='\u2212'||s[L-1]==='-')&&(L-1===0||/[ (=]/.test(s[L-2])))L--;
+  return L;}
+function rightOp(s,b){let k=b;if(s[k]==='\u2212'||s[k]==='-')k++;let any=false;
+  while(k<s.length){
+    if(s[k]==='('){const g=pgrp(s,k,1);if(g<0)break;k=g+1;any=true;continue;}
+    if(/[\u221A\u221B\u221C]/.test(s[k])){k++;continue;}
+    if(TOKC.test(s[k])){while(k<s.length&&TOKC.test(s[k]))k++;any=true;continue;}
+    break;}
+  if(!any)return -1;while(k>b+1&&s[k-1]==='.')k--;return k;}
+function stripP(x){if(x[0]==='('&&x[x.length-1]===')'&&pgrp(x,0,1)===x.length-1)return x.slice(1,-1);return x;}
+function fracSpan(s,mathCtx){
+  for(let i=0;i<s.length;i++){if(s[i]!=='/')continue;
+    if(s[i-1]===' '&&s[i+1]===' '){
+      let l=i-2,dp=0;for(;l>=0;l--){const c=s[l];if(c===')')dp++;else if(c==='('){if(dp>0)dp--;else break;}else if(dp===0&&/[=:\u00B1\u2192;,\u2248<>\u2264\u2265]/.test(c))break;}let L0=l+1;while(s[L0]===' ')L0++;
+      let r=i+2,R1=s.length,dq=0;for(;r<s.length;r++){const c=s[r];if(c==='(')dq++;else if(c===')'){if(dq>0)dq--;else{R1=r;break;}}else if(dq===0&&(/[,\u2192;:\u2248<>\u2264\u2265]/.test(c)||(c===' '&&/[=\u2248]/.test(s[r+1]||'')))){R1=r;break;}}
+      const denRaw=s.slice(i+2,R1);let num=s.slice(L0,i-1).trim(),den=denRaw.trim();let end=i+2+denRaw.replace(/\s+$/,'').length;
+      if(!num||!den)continue;
+      if(!mathCtx&&(WORD.test(MATHW(num))||WORD.test(MATHW(den))))continue;
+      if(den.length>1&&den.endsWith('.')){den=den.slice(0,-1);end--;}
+      return {pre:s.slice(0,L0),num:stripP(num),den:stripP(den),post:s.slice(end)};}
+    const a=i-1,b=i+1;if(a<0||b>=s.length||s[a]===' '||s[b]===' ')continue;
+    const L0=leftOp(s,a),R1=rightOp(s,b);if(L0<0||R1<0)continue;
+    const num=s.slice(L0,a+1),den=s.slice(b,R1);
+    if(/^[A-Za-z]+$/.test(num)&&/^[A-Za-z]+$/.test(den)&&(num.length>1||den.length>1))continue;
+    if(!mathCtx&&(WORD.test(MATHW(num))||WORD.test(MATHW(den))))continue;
+    return {pre:s.slice(0,L0),num:stripP(num),den:stripP(den),post:s.slice(R1)};}
+  return null;}
+function mkFrac(n,d){const f=document.createElement('span');f.className='fr';const a=document.createElement('span'),b=document.createElement('span');a.textContent=n;b.textContent=d;f.append(a,b);
+  f.setAttribute('aria-label',n+' over '+d);return f;}
+function fixNode(n){
+  const p=n.parentNode;if(!p||(p.closest&&p.closest('textarea,script,style,code')||(p.parentNode&&p.parentNode.classList&&p.parentNode.classList.contains('fr'))))return;
+  const svg=p.namespaceURI==='http://www.w3.org/2000/svg';const v=n.nodeValue;
+  if(v.indexOf('^')>=0){const parts=splitSup(v);if(!(parts.length===1&&typeof parts[0]==='string')){const fr=document.createDocumentFragment();const kids=[];
+    parts.forEach(pt=>{let e;if(typeof pt==='string')e=document.createTextNode(pt);else{if(svg){e=document.createElementNS('http://www.w3.org/2000/svg','tspan');e.setAttribute('baseline-shift','super');e.setAttribute('font-size','70%');e.textContent=pt.s;}else{e=document.createElement('sup');e.textContent=pt.s;}}fr.appendChild(e);kids.push(e);});
+    p.replaceChild(fr,n);kids.forEach(k=>{if(k.nodeType===3)fixNode(k);else if(k.firstChild)fixNode(k.firstChild);});return;}}
+  if(svg||v.indexOf('/')<0)return;
+  const f=fracSpan(v,!!(p.closest&&p.closest('.fm,.ex,.mt,.fr')));if(!f)return;
+  const pre=document.createTextNode(f.pre),post=document.createTextNode(f.post),fe=mkFrac(f.num,f.den);
+  const fr=document.createDocumentFragment();fr.append(pre,fe,post);p.replaceChild(fr,n);fixNode(post);
+}
+function mathify(root){if(!root)return;
+  if(root.nodeType===3){fixNode(root);return;}
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const list=[];
+  while(w.nextNode()){const v=w.currentNode.nodeValue;if(v.indexOf('^')>=0||v.indexOf('/')>=0)list.push(w.currentNode);}
+  list.forEach(fixNode);}
+try{new MutationObserver(ms=>{ms.forEach(m=>m.addedNodes.forEach(nd=>{if(nd.nodeType===1||nd.nodeType===3)mathify(nd);}));}).observe(document.body,{childList:true,subtree:true});}catch(e){}
 
 /* ---------- answer checking ---------- */
 function parseNum(s){
@@ -1069,6 +1274,17 @@ document.addEventListener('click',e=>{
   if(a==='share'){shareOpen=!shareOpen;return render();}
   if(a==='copy'){const ta=document.getElementById('sharebox');if(ta){ta.select();let ok=false;try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(ta.value);ok=true;}else ok=document.execCommand('copy');}catch(er){try{ok=document.execCommand('copy');}catch(e2){}}b.textContent=ok?'Copied':'Select the text and copy it';}return;}
   if(a==='reset'){if(!resetArm){resetArm=true;return render();}S={q:{},conf:{},last:null,updated:Date.now()};persistLocal();if(dbDoc)queueCloud();resetArm=false;return render();}
+  if(a==='test'){return go('test');}
+  if(a==='tnew'){tFresh();tArm=false;render();window.scrollTo(0,0);return;}
+  if(a==='tretake'){T.pend=+b.dataset.p;tSave();render();window.scrollTo(0,0);return;}
+  if(a==='tcancel'){T.pend=null;tSave();render();window.scrollTo(0,0);return;}
+  if(a==='tstart'&&T.pend!=null&&T.parts[T.pend].done){tRetake(T.pend);render();window.scrollTo(0,0);return;}
+  if(a==='tstart'){const P=T.parts[T.cur];if(!P.start){P.start=Date.now();tSave();}render();window.scrollTo(0,0);return;}
+  if(a==='tpick'){const P=T.parts[T.cur];if(!P||P.done)return;const i=+b.dataset.i,v=+b.dataset.v;P.ans[i]=v;tArm=false;tSave();
+    b.parentNode.querySelectorAll('.opt').forEach(o=>{const on=o===b;o.classList.toggle('sel',on);o.setAttribute('aria-pressed',on);});
+    const l=document.getElementById('tleft');if(l)l.textContent=`${tAns(P)} of ${P.items.length} answered`;return;}
+  if(a==='tsub'){const P=T.parts[T.cur];if(P.done)return;const left=P.items.length-tAns(P);if(left&&!tArm){tArm=true;return render();}
+    tFinish(T.cur);render();window.scrollTo(0,0);return;}
   const qid=b.dataset.q;const f=qid&&findQ(qid);
   if(!f)return;const r=rec(qid);const q=eff(f.q,r);
   const redo=()=>{const el=$('#q-'+qid);if(el){const tmp=document.createElement('div');tmp.innerHTML=renderQ(f.t,f.q);el.replaceWith(tmp.firstElementChild);}};
@@ -1087,7 +1303,7 @@ document.addEventListener('keydown',e=>{
 window.addEventListener('hashchange',()=>{fromHash();render();});
 
 /* ---------- start ---------- */
-fromHash();setPill('device');render();initCloud();
+fromHash();setPill('device');render();mathify(document.body);initCloud();
 })();
 </script>
 </body>
