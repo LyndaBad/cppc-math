@@ -219,7 +219,11 @@ sup{font-size:.72em;line-height:0;position:relative;vertical-align:baseline;top:
 .fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .12em;font-size:.86em;line-height:1.15}
 .fr>span:first-child{border-bottom:1.5px solid currentColor;padding:0 .2em .05em}
 .fr>span:last-child{padding:.05em .2em 0}
-sup .fr{font-size:1em;vertical-align:.15em}
+sup .fr{font-size:1em;vertical-align:baseline;line-height:1.05}
+sup.frsup{font-size:.72em;display:inline-block;vertical-align:top;position:relative;top:-.55em;margin:0 .1em 0 .06em;line-height:1}
+sup.frsup .fr{vertical-align:top}
+sup.frsup .fr{margin:0}
+sup.frsup .fr>span:first-child{border-bottom-width:1.2px}
 code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92em;background:var(--soft);padding:1px 6px;border-radius:6px}
 /* practice test */
 .ptest{display:flex;align-items:center;gap:16px;width:100%;text-align:left;margin-top:20px;padding:18px 22px;border-radius:22px;border:2px solid var(--d5);background:var(--card);color:var(--ink);box-shadow:var(--shadow);font:inherit}
@@ -254,6 +258,7 @@ code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92em;backgroun
 .tbt a.weak{border-left-color:var(--bad)}
 .tset{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:6px 0 4px}
 .tset select{font:inherit;font-size:15px;padding:7px 10px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.fbk{margin-top:10px;padding:12px 14px;border-radius:14px;background:var(--soft);border-left:6px solid var(--fbc);font-size:16px}
 </style>
 </head>
 <body>
@@ -772,7 +777,7 @@ const GEN={
   const a=R.i(2,7),b=R.i(2,7),n=a+b;
   return{q:`x${sup(a)} \u00B7 x${sup(b)} = x\u207F. What is n?`,a:[n],hint:'Same base, multiplying: add the exponents.',sol:`${a} + ${b} = ${n}, so the answer is x${sup(n)}.`};},
 '1e':R=>{const T=[[8,3,2],[27,3,3],[64,3,4],[125,3,5],[16,4,2],[81,4,3],[4,2,2],[9,2,3],[25,2,5],[36,2,6],[32,5,2]];
-  const t=R.pick(T),B=t[0],n=t[1],r=t[2],m=R.i(2,3),v=Math.pow(r,m);
+  const t=R.pick(T),B=t[0],n=t[1],r=t[2],m=R.pick([2,3].filter(k=>k!==n&&n%k!==0&&k%n!==0)),v=Math.pow(r,m);
   return{q:`Evaluate ${B}^(${m}/${n}).`,a:[v],hint:`The bottom of the fraction (${n}) is the root. Take that root first, then raise it to the power ${m}.`,
    sol:`The ${n===2?'square':n===3?'cube':n+'th'} root of ${B} is ${r}, and ${r}^${m} = ${v}.`};},
 '1f':R=>{const b=R.i(2,6),s=R.pick([1,-1]),v=b*b*b,sg1=s>0?'+':MN;
@@ -1004,7 +1009,7 @@ function renderHome(){
   return `<section class="hero"><h1>Precalculus Algebra, picture by picture</h1>
   <p>Seven topics, each with a graph you can play with, plain-English rules, a step-by-step example, and practice questions that save your answers. Tap New numbers on any question to get a fresh version of the same kind of problem.</p>
   <div class="overall" style="--tc:var(--c5);--tcd:var(--d5)"><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><span>${d} of ${QTOTAL} questions solved</span></div></section>
-  ${(()=>{const lt=(S.tests||[]).slice(-1)[0];return `<button class="ptest" data-act="test"><span class="pi" aria-hidden="true">\u2713</span><span><b>Practice test</b><span class="d">Part A and Part B, 1 hour each, covering all seven topics, plus a retake for each part. Marked at the end with full solutions.${lt?` Last score: ${lt.c} of ${lt.n}.`:''}</span></span><span class="ar" aria-hidden="true">\u203A</span></button>`;})()}
+  ${(()=>{const lt=(S.tests||[]).slice(-1)[0];return `<button class="ptest" data-act="test"><span class="pi" aria-hidden="true">\u2713</span><span><b>Practice test</b><span class="d">Part A and Part B, 1 hour each, covering all seven topics, plus a retake for each part. Marked at the end with full solutions.${lt?` Last score: ${lt.c} of ${lt.n} (${Math.round(lt.c/lt.n*100)}%).`:''}</span></span><span class="ar" aria-hidden="true">\u203A</span></button>`;})()}
   <div class="tiles">${TOP.map(t=>{const n=topicDone(t),p=Math.round(n/t.qs.length*100);
    return `<button class="tile" style="${tcStyle(t)}" data-act="topic" data-id="${t.id}"><div class="gl">${t.glyph}</div><div class="tb"><h3>${esc(t.n)}</h3><p>${esc(t.goal)}</p><div class="bar"><i style="width:${p}%"></i></div><div class="cnt">${n} of ${t.qs.length} solved${S.conf[t.id]?' \u00B7 '+({g:'feels clear',y:'a bit shaky',r:'feeling lost'})[S.conf[t.id]]:''}</div></div></button>`;}).join('')}</div>
   <div class="how"><b>Each topic:</b> Picture it <span class="ar">\u203A</span> Remember it <span class="ar">\u203A</span> Walk through it <span class="ar">\u203A</span> Your turn</div>
@@ -1117,13 +1122,14 @@ function tFinish(pi){const P=T.parts[pi];if(P.done)return;P.done=true;P.end=Math
   let pc=0;P.items.forEach((_,i)=>{if(tGrade(P,i))pc++;});
   T.hist=T.hist||[[],[]];T.hist[pi].push({c:pc,n:P.items.length,t:used(P),a:P.attempt||1});
   if(!P.retake&&pi===0&&!T.parts[1].done)T.cur=1;
+  T.show=pi;
   if(T.parts.every(x=>x.done)){let c=0,n=0;T.parts.forEach(x=>x.items.forEach((_,i)=>{n++;if(tGrade(x,i))c++;}));S.tests=(S.tests||[]).concat([{d:Date.now(),c,n}]).slice(-10);save();}
   tSave();}
 function tRetake(pi){const P=T.parts[pi];const R=rng((Date.now()^Math.floor(Math.random()*4294967295))>>>0);
   P.items=P.items.map(it=>({tid:it.tid,qid:it.qid,seed:R.i(1,2147483646)}));P.ans={};P.start=Date.now();P.end=0;P.done=false;P.retake=true;P.attempt=(P.attempt||1)+1;
   T.cur=pi;T.pend=null;tArm=false;tSave();}
 const pLabel=P=>P.retake?' retake':'';
-const histLine=pi=>{const h=(T.hist&&T.hist[pi])||[];if(!h.length)return '';return h.map((x,k)=>`${k===0?'First try':'Retake'+(h.length>2?' '+k:'')}: ${x.c} of ${x.n} in ${x.t}`).join(' · ');};
+const histLine=pi=>{const h=(T.hist&&T.hist[pi])||[];if(!h.length)return '';return h.map((x,k)=>`${k===0?'First try':'Retake'+(h.length>2?' '+k:'')}: ${x.c} of ${x.n} (${Math.round(x.c/x.n*100)}%) in ${x.t}`).join(' · ');};
 function retakeCards(){return `<div class="tparts">${[0,1].map(i=>{const P=T.parts[i];const can=P.done;
   return `<div class="tcard"><h3>Retake Part ${PN[i]}</h3><p>${can?'Same kinds of questions as Part '+PN[i]+' with new numbers · 1 hour':'Available after you submit Part '+PN[i]+'.'}</p>${can&&histLine(i)?`<p style="font-size:14px">${histLine(i)}</p>`:''}${can?`<button class="btn" data-act="tretake" data-p="${i}">Retake Part ${PN[i]}</button>`:'<span class="tst">Locked</span>'}</div>`;}).join('')}</div>`;}
 function qBlock(P,i,showRes){const {t,q}=tItem(P.items[i]);const a=P.ans[i];const L='ABCD';const ok=showRes&&tGrade(P,i);let ui;
@@ -1135,6 +1141,34 @@ function qBlock(P,i,showRes){const {t,q}=tItem(P.items[i]);const a=P.ans[i];cons
     fb=ok?`<div class="fb ok"><b>Correct.</b> ${esc(q.sol)}</div>`
       :`<div class="fb bad"><b>${blank?'Not answered.':'Not quite.'}</b> ${q.t==='mc'?`The right answer is ${L[q.a]}.`:`The answer is ${q.a.map(f2).join(' or ')}.`}</div><div class="fb hint"><b>How it works:</b> ${esc(q.sol)}</div>`;}
   return `<div class="q${showRes?(ok?' ok':' bad'):''}" style="${tcStyle(t)}"><div class="tnum">Part ${PN[T.cur]}${pLabel(P)} \u00B7 Question ${i+1} \u00B7 ${esc(t.n)}</div><p class="qt">${esc(q.q)}</p>${ui}${fb}</div>`;}
+function fbBand(pct){
+  if(pct>=90)return {h:'Excellent work',m:'You are exam-ready on this material. Keep it fresh with a retake every few days.',c:'var(--ok)'};
+  if(pct>=75)return {h:'Good work',m:'You have a solid grasp of most topics. Go over the questions you missed, then retake to lock it in.',c:'var(--ok)'};
+  if(pct>=60)return {h:'Getting there',m:'You know the core ideas, but some topics need more practice. Work through the red topics below, then retake.',c:'var(--d5)'};
+  if(pct>=40)return {h:'Keep going',m:'Several topics still need work. Start with the red topics: read Picture it and Walk through it, then try Your turn before retaking.',c:'var(--bad)'};
+  return {h:'Time to rebuild the basics',m:'Go back through each red topic from the start: Picture it, Remember it, Walk through it. Then retake this part with new numbers.',c:'var(--bad)'};}
+function scoreBox(label,c,n,extra){const pct=n?Math.round(c/n*100):0;const f=fbBand(pct);
+  return `<div class="tnum" style="--tcd:var(--d5)">${label}</div><div class="big">${c} out of ${n} <small>${pct}%</small></div>
+  <div class="fbk" style="--fbc:${f.c}"><b>${f.h}.</b> ${f.m}</div>${extra||''}`;}
+function topicFeedback(by){const order=TOP.filter(t=>by[t.id]).map(t=>by[t.id]);
+  const weak=order.filter(b=>b.c<b.n).sort((a,b)=>a.c/a.n-b.c/b.n);
+  return `<p style="margin-top:12px">${weak.length?`<b>Focus next on:</b> ${weak.slice(0,3).map(b=>esc(b.t.n)).join(', ')}. Tap a topic in red to practise it.`:'Every topic fully correct.'}</p>
+  <div class="tbt">${order.map(b=>`<a href="#${b.t.id}-try" class="${b.c<b.n?'weak':''}" style="${tcStyle(b.t)}"><b>${esc(b.t.n)}</b>${b.c} of ${b.n} correct (${Math.round(b.c/b.n*100)}%)</a>`).join('')}</div>`;}
+function partResults(pi){const P=T.parts[pi];let c=0;const by={};
+  P.items.forEach((it,i)=>{const {t}=tItem(it);const ok=tGrade(P,i);if(ok)c++;const b=by[t.id]||(by[t.id]={t,n:0,c:0});b.n++;if(ok)b.c++;});
+  const n=P.items.length,other=1-pi,allDone=T.parts.every(x=>x.done);
+  const h=(T.hist&&T.hist[pi])||[];let cmp='';
+  if(h.length>1){const prev=h[h.length-2],d=Math.round(c/n*100)-Math.round(prev.c/prev.n*100);
+    cmp=`<p style="margin-top:8px">${d>0?`Up ${d} percentage points from your last attempt.`:d<0?`Down ${-d} percentage points from your last attempt. Go over the solutions below, then try again.`:'Same percentage as your last attempt.'} <span style="font-size:14px">(${histLine(pi)})</span></p>`;}
+  let next='';
+  if(!T.parts[other].done&&!T.parts[other].start)next=`<button class="btn fill" data-act="tview">Go to Part ${PN[other]}</button>`;
+  else if(!T.parts[other].done)next=`<button class="btn fill" data-act="tview">Back to Part ${PN[other]}</button>`;
+  else if(allDone)next=`<button class="btn fill" data-act="tview">See combined results (Parts A and B)</button>`;
+  const keep=T.cur;T.cur=pi;
+  const sols=`<h3 class="gh">Part ${PN[pi]}${pLabel(P)}: every question with feedback</h3><div class="qs">${P.items.map((_,i)=>qBlock(P,i,true)).join('')}</div>`;T.cur=keep;
+  return `<button class="back" data-act="home">\u2039 All topics</button><section class="hero" style="padding-top:6px"><h1 style="max-width:none">Part ${PN[pi]}${pLabel(P)} results</h1></section>
+  <div class="tcard main">${scoreBox(`Part ${PN[pi]} score \u00B7 finished in ${used(P)}`,c,n,cmp)}${topicFeedback(by)}
+  <div class="tsub" style="--tcd:var(--d5)">${next}<button class="btn${next?'':' fill'}" data-act="tretake" data-p="${pi}">Retake Part ${PN[pi]} with new numbers</button></div></div>${sols}`;}
 function renderTest(){
   if(!T||!T.parts)tFresh();
   T.parts.forEach((P,i)=>{if(P.start&&!P.done&&tLeftMs(P)<=0)tFinish(i);});
@@ -1144,26 +1178,27 @@ function renderTest(){
     <p>The same kinds of questions as Part ${PN[pi]}, with new numbers. You get a fresh 1-hour timer. Your earlier score is kept so you can compare.</p></section>
     <div class="tcard main"><h3>Before you start</h3><ul><li>${T.parts[pi].items.length} questions \u00B7 1 hour. The part submits itself when time runs out.</li>${histLine(pi)?`<li>So far: ${histLine(pi)}</li>`:''}<li>Type fractions with a slash, like <code>3/4</code>.</li></ul>
     <div class="tsub" style="--tcd:var(--d5)"><button class="btn fill" data-act="tstart">Start Part ${PN[pi]} retake (1 hour)</button><button class="btn" data-act="tcancel">Cancel</button></div></div>`;}
+  if(T.show!=null&&T.parts[T.show]&&T.parts[T.show].done)return partResults(T.show);
   const allDone=T.parts.every(x=>x.done);
   const st=i=>{const P=T.parts[i];return P.done?'<span class="tst done">Submitted</span>':(P.start?'<span class="tst now">In progress</span>':'<span class="tst">Not started</span>');};
   if(allDone){
     let c=0,n=0;const by={};const pc=T.parts.map(P=>{let pcount=0;P.items.forEach((it,i)=>{const {t}=tItem(it);const ok=tGrade(P,i);n++;if(ok){c++;pcount++;}const b=by[t.id]||(by[t.id]={t,n:0,c:0});b.n++;if(ok)b.c++;});return pcount;});
     const order=TOP.filter(t=>by[t.id]).map(t=>by[t.id]);
     let h=back+`<section class="hero" style="padding-top:6px"><h1 style="max-width:none">Practice test results</h1></section>
-    <div class="tcard main"><div class="tnum" style="--tcd:var(--d5)">Total score</div><div class="big">${c} out of ${n} <small>${Math.round(c/n*100)}%</small></div>
-    <p>Part A${pLabel(T.parts[0])}: ${pc[0]} of ${T.parts[0].items.length} in ${used(T.parts[0])} \u00B7 Part B${pLabel(T.parts[1])}: ${pc[1]} of ${T.parts[1].items.length} in ${used(T.parts[1])}</p>
+    <div class="tcard main">${scoreBox('Total score \u00B7 Parts A and B',c,n)}
+    <p style="margin-top:10px">Part A${pLabel(T.parts[0])}: ${pc[0]} of ${T.parts[0].items.length} (${Math.round(pc[0]/T.parts[0].items.length*100)}%) in ${used(T.parts[0])} \u00B7 Part B${pLabel(T.parts[1])}: ${pc[1]} of ${T.parts[1].items.length} (${Math.round(pc[1]/T.parts[1].items.length*100)}%) in ${used(T.parts[1])}</p>
     ${[0,1].map(i=>(T.hist&&T.hist[i]&&T.hist[i].length>1)?`<p style="font-size:14px">Part ${PN[i]} history: ${histLine(i)}</p>`:'').join('')}
-    <p>${order.some(b=>b.c<b.n)?'Topics marked in red need review. Tap one to go straight to its practice questions.':'Every topic fully correct.'}</p>
-    <div class="tbt">${order.map(b=>`<a href="#${b.t.id}-try" class="${b.c<b.n?'weak':''}" style="${tcStyle(b.t)}"><b>${esc(b.t.n)}</b>${b.c} of ${b.n} correct</a>`).join('')}</div>
-    <div class="tsub" style="--tcd:var(--d5)"><button class="btn fill" data-act="tretake" data-p="0">Retake Part A</button><button class="btn fill" data-act="tretake" data-p="1">Retake Part B</button><button class="btn" data-act="tnew">Start a new practice test</button></div></div>`;
+    ${topicFeedback(by)}
+    <div class="tsub" style="--tcd:var(--d5)"><button class="btn fill" data-act="tretake" data-p="0">Retake Part A (new numbers)</button><button class="btn fill" data-act="tretake" data-p="1">Retake Part B (new numbers)</button><button class="btn" data-act="tnew">Start a whole new test</button></div></div>`;
     const keep=T.cur;
     T.parts.forEach((P,pi)=>{T.cur=pi;h+=`<h3 class="gh">Part ${PN[pi]}${pLabel(P)} solutions</h3><div class="qs">${P.items.map((_,i)=>qBlock(P,i,true)).join('')}</div>`;});
     T.cur=keep;return h;}
+  if(T.parts[T.cur].done){const nd=T.parts.findIndex(x=>!x.done);if(nd>=0)T.cur=nd;}
   const P=T.parts[T.cur];
   if(!P.start){
     const first=T.cur===0;
     return back+`<section class="hero" style="padding-top:6px"><h1 style="max-width:none">Practice test</h1>
-    <p>Two parts, like the real exam. Each part has its own 1-hour timer and covers all seven topics. You won't see any marks until both parts are submitted.</p></section>
+    <p>Two parts, like the real exam. Each part has its own 1-hour timer and covers all seven topics. When you submit a part you get your score, percentage and feedback straight away. Every retake uses new numbers.</p></section>
     <div class="tparts">${[0,1].map(i=>`<div class="tcard${i===T.cur?' main':''}"><h3>Part ${PN[i]}</h3><p>${T.parts[i].items.length} questions \u00B7 1 hour</p>${st(i)}</div>`).join('')}</div>
     <div class="tcard main"><h3>${first?'Before you start':'Part A is submitted'}</h3>
     <ul>${first?'<li>Find a quiet place and have paper, a pencil and your calculator ready.</li><li>The clock starts when you press Start and keeps running if you leave the page.</li><li>When time runs out, the part submits itself. Unanswered questions are marked wrong.</li><li>Type fractions with a slash, like <code>3/4</code>, and negatives with a minus sign, like <code>-2</code>.</li>':'<li>Take a short break if you need one. Part B\u2019s timer starts only when you press Start.</li><li>Your Part A answers are locked in.</li>'}</ul>
@@ -1236,7 +1271,7 @@ function fixNode(n){
   const svg=p.namespaceURI==='http://www.w3.org/2000/svg';const v=n.nodeValue;
   if(v.indexOf('^')>=0){const parts=splitSup(v);if(!(parts.length===1&&typeof parts[0]==='string')){const fr=document.createDocumentFragment();const kids=[];
     parts.forEach(pt=>{let e;if(typeof pt==='string')e=document.createTextNode(pt);else{if(svg){e=document.createElementNS('http://www.w3.org/2000/svg','tspan');e.setAttribute('baseline-shift','super');e.setAttribute('font-size','70%');e.textContent=pt.s;}else{e=document.createElement('sup');e.textContent=pt.s;}}fr.appendChild(e);kids.push(e);});
-    p.replaceChild(fr,n);kids.forEach(k=>{if(k.nodeType===3)fixNode(k);else if(k.firstChild)fixNode(k.firstChild);});return;}}
+    p.replaceChild(fr,n);kids.forEach(k=>{if(k.nodeType===3)fixNode(k);else if(k.firstChild){fixNode(k.firstChild);if(k.querySelector&&k.querySelector('.fr'))k.classList.add('frsup');}});return;}}
   if(svg||v.indexOf('/')<0)return;
   const f=fracSpan(v,!!(p.closest&&p.closest('.fm,.ex,.mt,.fr')));if(!f)return;
   const pre=document.createTextNode(f.pre),post=document.createTextNode(f.post),fe=mkFrac(f.num,f.den);
@@ -1276,7 +1311,8 @@ document.addEventListener('click',e=>{
   if(a==='reset'){if(!resetArm){resetArm=true;return render();}S={q:{},conf:{},last:null,updated:Date.now()};persistLocal();if(dbDoc)queueCloud();resetArm=false;return render();}
   if(a==='test'){return go('test');}
   if(a==='tnew'){tFresh();tArm=false;render();window.scrollTo(0,0);return;}
-  if(a==='tretake'){T.pend=+b.dataset.p;tSave();render();window.scrollTo(0,0);return;}
+  if(a==='tview'){T.show=null;tSave();render();window.scrollTo(0,0);return;}
+  if(a==='tretake'){T.show=null;T.pend=+b.dataset.p;tSave();render();window.scrollTo(0,0);return;}
   if(a==='tcancel'){T.pend=null;tSave();render();window.scrollTo(0,0);return;}
   if(a==='tstart'&&T.pend!=null&&T.parts[T.pend].done){tRetake(T.pend);render();window.scrollTo(0,0);return;}
   if(a==='tstart'){const P=T.parts[T.cur];if(!P.start){P.start=Date.now();tSave();}render();window.scrollTo(0,0);return;}
