@@ -1023,7 +1023,7 @@ function renderHome(){
   return `<section class="hero"><h1>Precalculus Algebra, picture by picture</h1>
   <p>Seven topics, each with a graph you can play with, plain-English rules, a step-by-step example, and practice questions that save your answers. Tap New numbers on any question to get a fresh version of the same kind of problem.</p>
   <div class="overall" style="--tc:var(--c5);--tcd:var(--d5)"><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><span>${d} of ${QTOTAL} questions solved</span></div></section>
-  ${(()=>{const fh=(F&&F.hist||[]).slice(-1)[0];return `<button class="ptest pfinal" data-act="final"><span class="pi" aria-hidden="true">A+</span><span><b>Mock final exam</b><span class="d">40 multiple-choice questions, 2 hours, the whole course, set out like the CPCC final. Score, letter grade and feedback at the end.${fh?` Last score: ${fh.c} of ${fh.n} (${Math.round(fh.c/fh.n*100)}%).`:''}</span></span><span class="ar" aria-hidden="true">\u203A</span></button>`;})()}
+  ${(()=>{const fh=(F&&F.hist||[]).slice(-1)[0];return `<button class="ptest pfinal" data-act="final"><span class="pi" aria-hidden="true">A+</span><span><b>Mock final exam</b><span class="d">40 multiple-choice questions, including word problems, 2 hours, the whole course, set out like the CPCC final. Score, letter grade and feedback at the end.${fh?` Last score: ${fh.c} of ${fh.n} (${Math.round(fh.c/fh.n*100)}%).`:''}</span></span><span class="ar" aria-hidden="true">\u203A</span></button>`;})()}
   ${(()=>{const lt=(S.tests||[]).slice(-1)[0];return `<button class="ptest" data-act="test"><span class="pi" aria-hidden="true">\u2713</span><span><b>Practice test</b><span class="d">Part A and Part B, 1 hour each, covering all seven topics, plus a retake for each part. Marked at the end with full solutions.${lt?` Last score: ${lt.c} of ${lt.n} (${Math.round(lt.c/lt.n*100)}%).`:''}</span></span><span class="ar" aria-hidden="true">\u203A</span></button>`;})()}
   <div class="tiles">${TOP.map(t=>{const n=topicDone(t),p=Math.round(n/t.qs.length*100);
    return `<button class="tile" style="${tcStyle(t)}" data-act="topic" data-id="${t.id}"><div class="gl">${t.glyph}</div><div class="tb"><h3>${esc(t.n)}</h3><p>${esc(t.goal)}</p><div class="bar"><i style="width:${p}%"></i></div><div class="cnt">${n} of ${t.qs.length} solved${S.conf[t.id]?' \u00B7 '+({g:'feels clear',y:'a bit shaky',r:'feeling lost'})[S.conf[t.id]]:''}</div></div></button>`;}).join('')}</div>
@@ -1348,20 +1348,18 @@ const FG=[
   return fMC(R,`Solve: ${rad} = ${xm(q)}`,`x = ${fN(s)}`,[`x = ${fN(e)}`,`x = ${fN(s)} or x = ${fN(e)}`,'No real solution',`x = ${fN(s+1)}`],
    `Square both sides: ${p===0?'x':xm(-p)} = (${xm(q)})². This gives ${fpoly([1,-(2*q+1),q*q-p])} = 0, so x = ${fN(s)} or x = ${fN(e)}. Check each in the original: x = ${fN(e)} makes the right side ${fN(e-q)}, which is negative, but a square root cannot be negative. So x = ${fN(e)} is extraneous and the only solution is x = ${fN(s)}.`);}],
 /* ===== Section 2: Functions & models ===== */
-['s2','t3',R=>{const c=R.i(-2,3),a=R.i(-4,4),m=R.nz(-3,4),d=R.i(-6,6),v=R.pick([c,c-R.i(1,3),c+R.i(1,3)]);const lo=v<c;
-  const f1=v*v+a,f2v=m*v+d;const ans=lo?f1:f2v,other=lo?f2v:f1;
-  return fMC(R,`f(x) = x²${sg(a,'')} if x < ${fN(c)}, and f(x) = ${fpoly([m,d])} if x ≥ ${fN(c)}. Find f(${fN(v)}).`,fN(ans),[fN(other),fN(ans+1),fN(-ans),fN(v*v),fN(ans-1),fN(ans+2),fN(other+1)],
-   `${fN(v)} is ${lo?'less than':'greater than or equal to'} ${fN(c)}, so use ${lo?'x²'+sg(a,''):fpoly([m,d])}: ${lo?`(${fN(v)})²${sg(a,'')}`:`${fN(m)}(${fN(v)})${sg(d,'')}`} = ${fN(ans)}.`);}],
-['s2','t3',R=>{const a=R.i(-4,3),b=a+R.i(1,5);const A=fN(a),B=fN(b);
+['s2','t3',R=>{const B=R.pick([25,30,35,40,45]),G=R.pick([3,5,10]),r=R.pick([5,8,10,12,15]),x=R.pick([G-R.i(1,2),G+R.i(1,6),G+R.i(2,8)]);const over=x>G;
+  const C=over?B+r*(x-G):B,m=v=>'$'+v;
+  return fMC(R,`A phone plan costs C(x) = ${B} dollars if 0 ≤ x ≤ ${G}, and C(x) = ${B} + ${r}(x ${MN} ${G}) dollars if x > ${G}, where x is the gigabytes of data used in a month. What does a month with ${x} GB cost?`,m(C),[m(B+r*x),m(r*Math.max(x-G,1)),over?m(B):m(B+r*(G-x)),m(C+r),m(B+r*(x+G))],
+   `${x} is ${over?`more than ${G}, so use the second rule: ${B} + ${r}(${x} ${MN} ${G}) = ${B} + ${r*(x-G)} = ${C}`:`between 0 and ${G}, so use the first rule: the cost is the flat ${B}`}. The month costs $${C}.`);}],['s2','t3',R=>{const a=R.i(-4,3),b=a+R.i(1,5);const A=fN(a),B=fN(b);
   return fMC(R,`Find the domain of f(x) = √(${xm(a)})/(${xm(b)}).`,`[${A}, ${B})${UN}(${B}, ∞)`,[`[${A}, ∞)`,`(${A}, ${B})${UN}(${B}, ∞)`,`(${MN}∞, ${B})${UN}(${B}, ∞)`,`[${B}, ∞)`],
    `Two rules: the square root needs ${xm(a)} ≥ 0, so x ≥ ${A}. The denominator cannot be zero, so x ≠ ${B}. Together: [${A}, ${B})${UN}(${B}, ∞).`);}],
 ['s2','t3',R=>{const a=R.nz(-3,4),b=R.i(-6,6),c=R.i(-5,5);
   return fMC(R,`Find the difference quotient (f(x + h) ${MN} f(x))/h for f(x) = ${fpoly([a,b,c])}, h ≠ 0.`,flin([[2*a,'x'],[a,'h'],[b,'']]),[flin([[2*a,'x'],[b,'']]),flin([[a,'x'],[a,'h'],[b,'']]),flin([[2*a,'x'],[a,'h'],[b+c,'']]),flin([[2*a,'x'],[2*a,'h'],[b,'']])],
    `f(x + h) = ${fN(a)}(x + h)²${sg(b,'(x + h)')}${sg(c,'')}. Subtract f(x): the x² terms and constants cancel, leaving ${flin([[2*a,'xh'],[a,'h²'],[b,'h']])}. Divide by h: ${flin([[2*a,'x'],[a,'h'],[b,'']])}.`);}],
-['s2','t3',R=>{const b=R.i(-5,5),c=R.i(-6,6),p=R.i(-3,2),q=p+R.i(1,4);const f=x=>x*x+b*x+c,ans=(f(q)-f(p))/(q-p);
-  return fMC(R,`Find the average rate of change of f(x) = ${fpoly([1,b,c])} from x = ${fN(p)} to x = ${fN(q)}.`,fN(ans),[fN(f(q)-f(p)),fN(-ans),fN(2*q+b),fN(ans+1),fN(ans+2),fN(ans-1)],
-   `(f(${fN(q)}) ${MN} f(${fN(p)}))/(${fN(q)} ${MN} (${fN(p)})) = (${fN(f(q))} ${MN} (${fN(f(p))}))/${q-p} = ${fN(ans)}.`);}],
-['s2','t3',R=>{const a=R.nz(-4,4),b=R.nz(-6,6),ty=R.pick(['e','o','n1','n2']);
+['s2','t3',R=>{const a=R.i(1,3),b=R.i(0,10),c=R.i(10,50),p=R.i(0,2),q=p+R.i(2,4);const N=t=>a*t*t+b*t+c,ch=N(q)-N(p),ans=ch/(q-p);const u=v=>`${f2(v)} thousand subscribers per year`;
+  return fMC(R,`A streaming service has N(t) = ${fpoly([a,b,c],'t')} thousand subscribers t years after it launched. Find the average rate of change of N from t = ${p} to t = ${q}, and say what it means.`,u(ans),[u(ch),u(-ans),u(Math.round(N(q)/q*100)/100),u(2*a*q+b),`${f2(ans)} years per thousand subscribers`],
+   `Average rate of change = (N(${q}) ${MN} N(${p}))/(${q} ${MN} ${p}) = (${N(q)} ${MN} ${N(p)})/${q-p} = ${f2(ans)}. Units are output over input: on average the service gained ${f2(ans)} thousand subscribers per year over those ${q-p} years.`);}],['s2','t3',R=>{const a=R.nz(-4,4),b=R.nz(-6,6),ty=R.pick(['e','o','n1','n2']);
   const F={e:fpoly([a,0,b,0,0]),o:fpoly([a,0,b,0]),n1:fpoly([a,0,0,b]),n2:fpoly([a,b,0])}[ty];
   const L=['Even','Odd','Neither even nor odd','Both even and odd'];const corr=L[{e:0,o:1,n1:2,n2:2}[ty]];
   return fMC(R,`Is f(x) = ${F} even, odd, or neither?`,corr,L.filter(x=>x!==corr),
@@ -1374,24 +1372,19 @@ const FG=[
   return fMC(R,`A rectangle has a perimeter of ${P} feet. Express its area A as a function of its width w.`,`A(w) = ${half}w ${MN} w²`,[`A(w) = ${P}w ${MN} w²`,`A(w) = ${half}w ${MN} 2w²`,`A(w) = ${P} ${MN} 2w`,`A(w) = ${half}w + w²`],
    `Perimeter: 2w + 2L = ${P}, so L = ${half} ${MN} w. Area = width × length = w(${half} ${MN} w) = ${half}w ${MN} w².`);}],
 /* ===== Section 3: Linear, quadratic & systems ===== */
-['s3','t2',R=>{const m=R.nz(-4,4),b=R.i(-6,6),x1=R.i(-4,1),x2=x1+R.i(1,4);const y1=m*x1+b,y2=m*x2+b;
-  return fMC(R,`Find the equation of the line through (${fN(x1)}, ${fN(y1)}) and (${fN(x2)}, ${fN(y2)}).`,fline(m,1,b),[fline(-m,1,b),fline(m,1,-b),fline(1,m,b),fline(m,1,b+m),fline(-m,1,-b),fline(m,1,b-m),fline(m+1,1,b)],
-   `Slope m = (${fN(y2)} ${MN} (${fN(y1)}))/(${fN(x2)} ${MN} (${fN(x1)})) = ${fN(m)}. Then b = y ${MN} mx = ${fN(y1)} ${MN} (${fN(m)})(${fN(x1)}) = ${fN(b)}. So ${fline(m,1,b)}.`);}],
-['s3','t2',R=>{const p=R.pick([1,2,3,-1,-2,-3]),q=R.pick([2,3,4,5]);const r=R.i(-8,8);const x0=p*R.i(-2,2),y0=R.i(-5,5);const b=y0+q*x0/p;
+['s3','t2',R=>{const r=R.pick([45,55,60,65,75,80,90]),F=R.pick([40,50,60,75,80,95]),h1=R.i(1,3),h2=h1+R.i(2,4),h=h2+R.i(1,4);const c1=F+r*h1,c2=F+r*h2,ans=F+r*h,m=v=>'$'+v;
+  return fMC(R,`A plumber charges a fixed call-out fee plus an hourly rate. A ${h1}-hour job costs $${c1} and a ${h2}-hour job costs $${c2}. Assuming the cost is linear, how much does a job lasting ${h} hours cost?`,m(ans),[m(r*h),m(Math.round(c2/h2*h)),m(F*h+r),m(c1+c2),m(ans+r),m(ans-r),m(c2+r*(h-h1)),m(ans+F)],
+   `Slope = rate = (${c2} ${MN} ${c1})/(${h2} ${MN} ${h1}) = ${r} dollars per hour. Fee: ${c1} ${MN} ${r}(${h1}) = ${F}. So C(h) = ${F} + ${r}h and C(${h}) = ${F} + ${r}(${h}) = $${ans}.`);}],['s3','t2',R=>{const p=R.pick([1,2,3,-1,-2,-3]),q=R.pick([2,3,4,5]);const r=R.i(-8,8);const x0=p*R.i(-2,2),y0=R.i(-5,5);const b=y0+q*x0/p;
   return fMC(R,`Find the equation of the line perpendicular to ${fpoly([p,0])} ${MN} ${q}y = ${fN(r)} that passes through (${fN(x0)}, ${fN(y0)}).`,fline(-q,p,b),[fline(p,q,b),fline(q,p,b),fline(-q,p,-b),fline(-p,q,b),fline(-q,p,b+1),fline(-q,p,b-1),fline(q,p,-b)],
    `Solve for y: ${q}y = ${fpoly([p,0])}${sg(-r,'')}, so the slope of the given line is ${fFR(p,q)}. A perpendicular slope is the negative reciprocal, ${fFR(-q,p)}. Use the point: b = ${fN(y0)} ${MN} (${fFR(-q,p)})(${fN(x0)}) = ${fN(b)}.`);}],
-['s3','t7',R=>{let a1,b1,a2,b2;do{a1=R.nz(-4,4);b1=R.nz(-4,4);a2=R.nz(-4,4);b2=R.nz(-4,4);}while(a1*b2-a2*b1===0);const x=R.i(-5,5),y=R.i(-5,5);const c1=a1*x+b1*y,c2=a2*x+b2*y;
-  const P=(u,v)=>`(${fN(u)}, ${fN(v)})`;
-  return fMC(R,`Solve the system: ${flin([[a1,'x'],[b1,'y']])} = ${fN(c1)} and ${flin([[a2,'x'],[b2,'y']])} = ${fN(c2)}.`,P(x,y),[P(y,x),P(-x,y),P(x,-y),'No solution',P(-x,-y),P(x+1,y),P(y,-x),P(x,y+1),P(x-1,y+1)],
-   `Eliminate one variable (or substitute) to get x = ${fN(x)}, then substitute to get y = ${fN(y)}. Check in the first equation: ${fN(a1)}(${fN(x)}) ${b1<0?MN:'+'} ${Math.abs(b1)}(${fN(y)}) = ${fN(c1)}.`);}],
-['s3','t4',R=>{const h=R.nz(-6,6),c=R.i(-9,9),b=2*h,k=c-h*h;const V=(hh,kk)=>`(${xm(-hh)})²${sg(kk,'')}`;
+['s3','t7',R=>{const a=R.pick([12,14,15,18,20]),s=R.pick([6,7,8,9,10]),A=R.i(40,160),S=R.i(40,160);const N=A+S,T=a*A+s*S;
+  return fMC(R,`A theater sold ${N} tickets for one show. Adult tickets cost $${a} and student tickets cost $${s}. Ticket sales totaled $${T.toLocaleString('en-US')}. How many adult tickets were sold?`,`${A} adult tickets`,[`${S} adult tickets`,`${Math.round(T/a)} adult tickets`,`${Math.round(N/2)} adult tickets`,`${A+10} adult tickets`,`${Math.round(T/(a+s))} adult tickets`,`${A-10} adult tickets`,`${N-A+5} adult tickets`,`${A+20} adult tickets`],
+   `Let x = adult tickets and y = student tickets. Then x + y = ${N} and ${a}x + ${s}y = ${T}. Substitute y = ${N} ${MN} x: ${a}x + ${s}(${N} ${MN} x) = ${T}, so ${a-s}x = ${T-s*N} and x = ${A}. (Student tickets: y = ${S}.)`);}],['s3','t4',R=>{const h=R.nz(-6,6),c=R.i(-9,9),b=2*h,k=c-h*h;const V=(hh,kk)=>`(${xm(-hh)})²${sg(kk,'')}`;
   return fMC(R,`Write x²${sg(b,'x')}${sg(c,'')} in the form (x ${MN} h)² + k by completing the square.`,V(h,k),[V(-h,k),V(h,c+h*h),V(2*h,c-b*b),V(h,-k)],
    `Half of ${fN(b)} is ${fN(h)}, and (${fN(h)})² = ${h*h}. Add and subtract ${h*h}: (x²${sg(b,'x')} + ${h*h})${sg(c-h*h,'')} = ${V(h,k)}.`);}],
-['s3','t4',R=>{const a=R.pick([1,2,3,-1,-2,-3]),h=R.nz(-4,4),k=R.i(-9,9),b=-2*a*h,c=a*h*h+k;const mm=a>0?'minimum':'maximum',ot=a>0?'maximum':'minimum';
-  const S=(w,v,x)=>`It has a ${w} value of ${fN(v)} at x = ${fN(x)}`;
-  return fMC(R,`For f(x) = ${fpoly([a,b,c])}, which statement is true?`,S(mm,k,h),[S(ot,k,h),S(mm,k,-h),S(mm,c,0),S(ot,c,-h)],
-   `x = ${MN}b/(2a) = ${MN}(${fN(b)})/(2·${fN(a)}) = ${fN(h)}. f(${fN(h)}) = ${fN(k)}. Since a = ${fN(a)} is ${a>0?'positive, the parabola opens up, so this is a minimum':'negative, the parabola opens down, so this is a maximum'}.`);}],
-['s3','t4',R=>{const m=R.i(1,4),v=32*m,h0=R.pick([0,6,16,48,64,80]),H=h0+16*m*m;
+['s3','t4',R=>{const k=R.i(10,60),P=4*k;
+  return fMC(R,`A farmer has ${P} feet of fencing to make a rectangular pen along a straight river. No fence is needed on the river side. What is the largest area the pen can have?`,`${(2*k*k).toLocaleString('en-US')} square feet`,[`${(k*k).toLocaleString('en-US')} square feet`,`${(3*k*k).toLocaleString('en-US')} square feet`,`${(4*k*k).toLocaleString('en-US')} square feet`,`${(Math.round(P*P/9)).toLocaleString('en-US')} square feet`],
+   `Let x be each side perpendicular to the river. The side along the river is ${P} ${MN} 2x, so A(x) = x(${P} ${MN} 2x) = ${MN}2x² + ${P}x. The vertex is at x = ${MN}${P}/(2(${MN}2)) = ${k} feet, giving a ${k} by ${P-2*k} pen and A = ${k}·${P-2*k} = ${(2*k*k).toLocaleString('en-US')} square feet.`);}],['s3','t4',R=>{const m=R.i(1,4),v=32*m,h0=R.pick([0,6,16,48,64,80]),H=h0+16*m*m;
   return fMC(R,`A ball is thrown upward. Its height in feet after t seconds is h(t) = ${MN}16t² + ${v}t${sg(h0,'')}. What is its maximum height?`,`${H} feet`,[`${h0+32*m*m} feet`,`${16*m*m} feet`,`${h0+v*m} feet`,`${m} feet`,`${H+16} feet`,`${h0} feet`],
    `The maximum is at the vertex: t = ${MN}b/(2a) = ${MN}${v}/(2·(${MN}16)) = ${m} seconds. h(${m}) = ${MN}16(${m})² + ${v}(${m})${sg(h0,'')} = ${H} feet.`);}],
 ['s3','t4',R=>{const r1=R.i(-6,3),r2=r1+R.i(1,6),op=R.pick(['<','≤','>','≥']);const A=fN(r1),B=fN(r2);
@@ -1421,13 +1414,9 @@ const FG=[
   const S=(u,v)=>`At x = ${fN(r1)} the graph ${u}; at x = ${fN(r2)} it ${v}`;
   return fMC(R,`For f(x) = (${xm(r1)})${m1>1?sup(m1):''}(${xm(r2)})${m2>1?sup(m2):''}, which describes the graph at its x-intercepts?`,S(w(m1),w(m2)),[S(w(m1+1),w(m2)),S(w(m1),w(m2+1)),S(w(m1+1),w(m2+1)),`At x = ${fN(-r1)} the graph ${w(m1)}; at x = ${fN(-r2)} it ${w(m2)}`],
    `x = ${fN(r1)} has multiplicity ${m1} (${m1%2?'odd, so it crosses':'even, so it touches'}). x = ${fN(r2)} has multiplicity ${m2} (${m2%2?'odd, so it crosses':'even, so it touches'}).`);}],
-['s4','t4',R=>{const L=R.pick([2,3]),C=R.pick([3,4,5,6,9].filter(c=>c!==L));const fac=n=>{const o=[];for(let i=1;i<=n;i++)if(n%i===0)o.push(i);return o;};
-  const list=(P,Q)=>{const s=[];const v=new Set();P.forEach(p=>Q.forEach(q=>{const g=(a,b)=>{while(b){const t=b;b=a%b;a=t;}return a;};const d=g(p,q);const k=(p/d)+'/'+(q/d);if(!v.has(k)){v.add(k);s.push([p/d,q/d]);}}));
-    s.sort((x,y)=>x[1]-y[1]||x[0]-y[0]);return s.map(([p,q])=>'±'+(q===1?p:p+'/'+q)).join(', ');};
-  const b=R.nz(-5,5),c=R.nz(-6,6);
-  return fMC(R,`List all possible rational zeros of p(x) = ${fpoly([L,b,c,C])}.`,list(fac(C),fac(L)),[list(fac(L),fac(C)),list(fac(C),[1]),list(fac(C).concat(fac(L)),[1]),list(fac(C),[L])],
-   `Possible rational zeros are ±(factors of the constant ${C})/(factors of the leading coefficient ${L}). Factors of ${C}: ${fac(C).join(', ')}. Factors of ${L}: ${fac(L).join(', ')}.`);}],
-['s4','t4',R=>{const r=R.pick([1,2,-1,-2,3]);let s,t;do{s=R.nz(-5,5);t=R.nz(-5,5);}while(s===t||s===r||t===r);
+['s4','t4',R=>{let L=2*R.i(5,12),W=2*R.i(4,10);if(L===W)L+=2;
+  return fMC(R,`An open-top box is made from a ${L}-inch by ${W}-inch sheet of cardboard by cutting a square of side x inches from each corner and folding up the sides. Which function gives the volume of the box?`,`V(x) = x(${L} ${MN} 2x)(${W} ${MN} 2x)`,[`V(x) = x(${L} ${MN} x)(${W} ${MN} x)`,`V(x) = (${L} ${MN} 2x)(${W} ${MN} 2x)`,`V(x) = x²(${L} ${MN} 2x)(${W} ${MN} 2x)`,`V(x) = ${L*W}x ${MN} 4x²`],
+   `Cutting x from both ends of each side leaves a base ${L} ${MN} 2x by ${W} ${MN} 2x, and folding up makes the height x. Volume = length × width × height = x(${L} ${MN} 2x)(${W} ${MN} 2x), for 0 < x < ${Math.min(L,W)/2}.`);}],['s4','t4',R=>{const r=R.pick([1,2,-1,-2,3]);let s,t;do{s=R.nz(-5,5);t=R.nz(-5,5);}while(s===t||s===r||t===r);
   const c=[1,-(r+s+t),r*s+r*t+s*t,-r*s*t];const z=[r,s,t].sort((a,b)=>a-b);const SS=a=>'x = '+a.map(fN).join(', ');
   return fMC(R,`Given that x = ${fN(r)} is a zero of p(x) = ${fpoly(c)}, find all zeros.`,SS(z),[SS([r,-s,-t].sort((a,b)=>a-b)),SS([-r,-s,-t].sort((a,b)=>a-b)),SS([r,s].sort((a,b)=>a-b)),SS([r,s*t].sort((a,b)=>a-b)),SS([r,s+1,t-1].sort((a,b)=>a-b)),SS([-r,s,t].sort((a,b)=>a-b))],
    `Use synthetic division by ${fN(r)}: the quotient is ${fpoly([1,-(s+t),s*t])}. Factor it: (${xm(s)})(${xm(t)}). So the zeros are ${z.map(fN).join(', ')}.`);}],
@@ -1438,13 +1427,9 @@ const FG=[
   const N=fpoly([1,c-a,-a*c]),D=fpoly([1,-(a+b),a*b]);
   return fMC(R,`For f(x) = (${N})/(${D}), find the vertical asymptote(s) and any hole.`,`Vertical asymptote x = ${fN(b)}; hole at x = ${fN(a)}`,[`Vertical asymptotes x = ${fN(Math.min(a,b))} and x = ${fN(Math.max(a,b))}; no hole`,`Vertical asymptote x = ${fN(a)}; hole at x = ${fN(b)}`,`Vertical asymptote x = ${fN(-b)}; hole at x = ${fN(-a)}`,`Vertical asymptote x = ${fN(b)}; no hole`,`Hole at x = ${fN(b)}; no vertical asymptote`],
    `Factor: (${xm(a)})(${xm(-c)})/((${xm(a)})(${xm(b)})). The factor (${xm(a)}) cancels, so x = ${fN(a)} is a hole. The factor (${xm(b)}) stays in the denominator, so x = ${fN(b)} is a vertical asymptote.`);}],
-['s4','t5',R=>{if(R.f()<.5){const p=R.nz(-6,6),q=R.pick([1,2,3,4,-2]),n1=R.i(-5,5),n0=R.i(-5,5),d1=R.i(-5,5),d0=R.nz(-5,5);
-    return fMC(R,`Find the horizontal asymptote of f(x) = (${fpoly([p,n1,n0])})/(${fpoly([q,d1,d0])}).`,`y = ${fFR(p,q)}`,['y = 0','No horizontal asymptote',`y = ${fFR(q,p)}`,`y = ${fFR(n0,d0)}`,`y = ${fFR(p+1,q)}`,`y = ${fFR(-p,q)}`,'y = 1'],
-     `The degrees are equal (both 2), so the horizontal asymptote is y = (leading coefficient of top)/(leading coefficient of bottom) = ${fFR(p,q)}.`);}
-  const d=R.nz(-4,4),b=R.i(-5,5),c=R.nz(-6,6);
-  return fMC(R,`Find the slant (oblique) asymptote of f(x) = (${fpoly([1,b,c])})/(${xm(d)}).`,`y = ${fpoly([1,b+d])}`,[`y = ${fpoly([1,b-d])}`,`y = ${fpoly([1,b])}`,'y = 0',`x = ${fN(d)}`,`y = ${fpoly([1,b+d+1])}`],
-   `Divide x²${sg(b,'x')}${sg(c,'')} by ${xm(d)} (long or synthetic division). The quotient is ${fpoly([1,b+d])} with a remainder, so the slant asymptote is y = ${fpoly([1,b+d])}.`);}],
-['s4','t5',R=>{let a,b;do{a=R.i(-5,5);b=R.i(-5,5);}while(a===b);const op=R.pick(['≥','≤','>','<']);const A=fN(a),B=fN(b),lo=Math.min(a,b),hi=Math.max(a,b),L=fN(lo),H=fN(hi);
+['s4','t5',R=>{const F=R.pick([1200,2500,4000,6000,9000]),c=R.pick([3,4,5,6,8,12]);
+  return fMC(R,`A company spends $${F.toLocaleString('en-US')} to set up production and $${c} to make each item. The average cost per item for x items is A(x) = (${c}x + ${F})/x. What happens to the average cost as the number of items gets very large?`,`It gets closer and closer to $${c} per item`,['It gets closer and closer to $0 per item',`It gets closer and closer to $${F.toLocaleString('en-US')} per item`,'It keeps growing without limit',`It gets closer and closer to $${c+1} per item`],
+   `Top and bottom both have degree 1, so the horizontal asymptote is y = ${c}/1 = ${c}. In context: the set-up cost gets shared across more and more items, so the average cost per item approaches the $${c} it costs to make each one.`);}],['s4','t5',R=>{let a,b;do{a=R.i(-5,5);b=R.i(-5,5);}while(a===b);const op=R.pick(['≥','≤','>','<']);const A=fN(a),B=fN(b),lo=Math.min(a,b),hi=Math.max(a,b),L=fN(lo),H=fN(hi);
   const inc=op==='≥'||op==='≤',out=op==='≥'||op==='>';const aLo=a===lo;
   const ob=(x,isA)=>isA&&inc;
   const corr=out?`(${MN}∞, ${L}${ob(lo,aLo)?']':')'}${UN}${ob(hi,!aLo)?'[':'('}${H}, ∞)`:`${ob(lo,aLo)?'[':'('}${L}, ${H}${ob(hi,!aLo)?']':')'}`;
@@ -1453,20 +1438,18 @@ const FG=[
   return fMC(R,`Solve: (${xm(a)})/(${xm(b)}) ${op} 0`,corr,W,
    `The critical numbers are x = ${A} (top is zero) and x = ${B} (bottom is zero). Test a value in each interval: the quotient is positive outside ${L} and ${H} and negative between them. You want ${out?'positive, so outside':'negative, so between'}. ${inc?`x = ${A} makes the quotient 0, so it is included. `:''}x = ${B} is never included because it makes the denominator zero.`);}],
 /* ===== Section 5: Composite, inverse, exponential & log ===== */
-['s5','t3',R=>{const c=R.i(-5,5),m=R.nz(-3,3),k=R.nz(-4,4);
-  return fMC(R,`f(x) = x²${sg(c,'')} and g(x) = ${fpoly([m,k])}. Find (f ∘ g)(x).`,fpoly([m*m,2*m*k,k*k+c]),[fpoly([m,0,m*c+k]),fpoly([m*m,0,k*k+c]),fpoly([m,k*k+c]),fpoly([m*m,2*m*k,k+c]),fpoly([m*m,m*k,k*k+c]),fpoly([m*m,2*m*k,k*k-c])],
-   `(f ∘ g)(x) = f(g(x)) = (${fpoly([m,k])})²${sg(c,'')} = ${fpoly([m*m,2*m*k,k*k])}${sg(c,'')} = ${fpoly([m*m,2*m*k,k*k+c])}.`);}],
-['s5','t3',R=>{let a,b,c;do{a=R.nz(-4,4);b=R.nz(-6,6);c=R.nz(-5,5);}while(a*(-c)-b===0||a===c);
+['s5','t3',R=>{const k=R.pick([2,3,4,5,6]);const K=k*k;
+  return fMC(R,`A stone dropped in a pond makes a circular ripple. Its radius after t seconds is r(t) = ${k}t centimeters, and the area of a circle of radius r is A(r) = πr². Find (A ∘ r)(t) and say what it means.`,`(A ∘ r)(t) = ${K}πt²: the area of the ripple after t seconds`,[`(A ∘ r)(t) = ${k}πt²: the area of the ripple after t seconds`,`(A ∘ r)(t) = ${K}πt²: the radius of the ripple after t seconds`,`(A ∘ r)(t) = ${2*k}πt: the area of the ripple after t seconds`,`(A ∘ r)(t) = ${K}πt: the area of the ripple after t seconds`],
+   `(A ∘ r)(t) = A(r(t)) = π(${k}t)² = ${K}πt². The input is time and the output is area, so it gives the area of the ripple t seconds after the stone lands.`);}],['s5','t3',R=>{let a,b,c;do{a=R.nz(-4,4);b=R.nz(-6,6);c=R.nz(-5,5);}while(a*(-c)-b===0||a===c);
   const F=(n,d)=>`(${n})/(${d})`;const inv=F(fpoly([c,b]),xm(a));
   return fMC(R,`Find the inverse of f(x) = ${F(fpoly([a,b]),xm(c))}.`,`f^(−1)(x) = ${inv}`,[`f^(−1)(x) = ${F(xm(c),fpoly([a,b]))}`,`f^(−1)(x) = ${F(fpoly([c,-b]),xm(a))}`,`f^(−1)(x) = ${F(fpoly([a,-b]),xm(-c))}`,`f^(−1)(x) = ${F(fpoly([c,b]),xm(-a))}`,`f^(−1)(x) = ${F(fpoly([a,b]),xm(c))}`],
    `Write y = ${F(fpoly([a,b]),xm(c))} and swap x and y: x = ${F(fpoly([a,b],'y'),xm(c).replace('x','y'))}. Multiply both sides by (${xm(c).replace('x','y')}): xy${sg(-c,'x')} = ${fpoly([a,b],'y')}. Get the y terms on one side: xy${sg(-a,'y')} = ${fpoly([c,b])}, so y(${xm(a)}) = ${fpoly([c,b])} and y = ${inv}.`);}],
 ['s5','t6',R=>{const a=R.i(2,4),b=R.i(1,3),c=R.i(2,5);
   return fMC(R,`Write as a single logarithm: ${a} log x + ${b===1?'':b+' '}log y ${MN} ${c} log z`,`log(x${sup(a)}y${b>1?sup(b):''}/z${sup(c)})`,[`log(x${sup(a)}y${b>1?sup(b):''}z${sup(c)})`,`log(${a}x · ${b===1?'':b}y/(${c}z))`,`log(x${sup(a)}/(y${b>1?sup(b):''}z${sup(c)}))`,`log(x${sup(a)} + y${b>1?sup(b):''} ${MN} z${sup(c)})`],
    `Power rule first: log x${sup(a)} + log y${b>1?sup(b):''} ${MN} log z${sup(c)}. Product rule joins the added logs, quotient rule puts the subtracted one in the denominator.`);}],
-['s5','t6',R=>{const p=R.pick([2,3]);let m,n;do{m=R.i(1,3);n=R.i(1,3);}while(m===n||(p===3&&(m>2||n>2)));const t=R.nz(-2,3),cc=(n-m)*t,x=n*t;
-  return fMC(R,`Solve: ${Math.pow(p,m)}^x = ${Math.pow(p,n)}^(${xm(cc)})`,`x = ${fN(x)}`,[`x = ${fN(cc)}`,`x = ${fN(-x)}`,`x = ${fN(x+1)}`,`x = ${fFR(n*cc,m)}`,`x = ${fN(x+2)}`,`x = ${fN(2*x)}`],
-   `Write both sides as powers of ${p}: ${p}^(${m===1?'':m}x) = ${p}^(${n===1?'':n}(${xm(cc)})). Set the exponents equal: ${flin([[m,'x']])} = ${flin([[n,'x'],[-n*cc,'']])}, so x = ${fN(x)}.`);}],
-['s5','t6',R=>{const P=R.pick([[2,3,4,2],[2,4,8,6],[2,5,8,4],[3,2,9,8],[3,3,9,6],[2,4,16,15],[3,4,27,24]]);const b=P[0],k=P[1],s=P[2],a=P[3],o=-(s-a);
+['s5','t6',R=>{const P=R.pick([2000,3000,5000,8000,10000]),r=R.pick([3,4,5,6,7]),m=R.pick([2,3,1.5]);const T=P*m,t=Math.log(m)/(r/100),y=v=>(Math.round(v*10)/10).toFixed(1)+' years';
+  return fMC(R,`$${P.toLocaleString('en-US')} is invested at ${r}% annual interest compounded continuously. How long will it take to grow to $${T.toLocaleString('en-US')}? Round to the nearest tenth of a year.`,y(t),[y(Math.log10(m)/(r/100)),y((m-1)/(r/100)),y(Math.log(m)/r*10),y(t+1),y(Math.log(T)/(r/100)/10)],
+   `Use A = Pe^(rt): ${T} = ${P}e^(${r/100}t). Divide by ${P}: e^(${r/100}t) = ${m}. Take ln of both sides: ${r/100}t = ln ${m}, so t = (ln ${m})/${r/100} ≈ ${y(t)}.`);}],['s5','t6',R=>{const P=R.pick([[2,3,4,2],[2,4,8,6],[2,5,8,4],[3,2,9,8],[3,3,9,6],[2,4,16,15],[3,4,27,24]]);const b=P[0],k=P[1],s=P[2],a=P[3],o=-(s-a);
   return fMC(R,`Solve: log${sub(b)}(x) + log${sub(b)}(${xm(a)}) = ${k}`,`x = ${s}`,[`x = ${s} or x = ${fN(o)}`,`x = ${fN(o)}`,`x = ${fN(Math.pow(b,k)+a)}`,`x = ${s-a}`],
    `Combine: log${sub(b)}(x(${xm(a)})) = ${k}, so x(${xm(a)}) = ${b}${sup(k)} = ${Math.pow(b,k)}. Then ${fpoly([1,-a,-Math.pow(b,k)])} = 0 gives x = ${s} or x = ${fN(o)}. You cannot take the log of a negative number, so reject x = ${fN(o)}.`);}],
 ['s5','t6',R=>{const P=R.pick([1000,2500,4000,5000,8000]),r=R.pick([3,4,5,6]),n=R.pick([4,12]),t=R.i(3,10);const nm=n===4?'quarterly':'monthly';
@@ -1478,7 +1461,6 @@ const FG=[
   return fMC(R,`A substance has a half-life of ${h} years. A sample starts at ${A0} grams. How much remains after ${t} years?`,g(A),[g(A0*Math.pow(.5,h/t)),g(A0*Math.exp(-t/h)),g(A0/2),g(A*2),g(A0*Math.pow(.5,Math.round(t/h)+1))],
    `A = A₀(1/2)^(t/h) = ${A0}(1/2)^(${t}/${h}) ≈ ${g(A)}.`);}]
 ];
-
 const FKEY='mat171-final-v1',FMIN=120,FL='ABCD';
 let F=null;try{const r=localStorage.getItem(FKEY);if(r)F=JSON.parse(r);}catch(e){F=null;}
 function fSave(){try{localStorage.setItem(FKEY,JSON.stringify(F));}catch(e){}}
@@ -1516,6 +1498,7 @@ function renderFinal(){
     <div class="tcard main fcover"><h3>Instructions</h3><ul>
       <li><b>40 questions, 2 hours.</b> Each question is worth 2.5 points, for 100 points in total.</li>
       <li>Choose the one best answer for each question. Work it out on paper first, the way you would in the exam room.</li>
+      <li>About a third of the questions are word problems: building a model from a situation, then using it to answer a question or make a prediction.</li>
       <li>Use the calculator your instructor allows on the final. No notes.</li>
       <li>You can flag any question and come back to it. The question map shows what you have answered.</li>
       <li>The clock starts when you press Start and keeps running if you leave the page. When time runs out the exam submits itself.</li>
