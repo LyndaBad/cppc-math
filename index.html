@@ -273,6 +273,12 @@ code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92em;backgroun
 .ftbl{overflow-x:auto}.ftbl table{border-collapse:collapse;font-size:15px;min-width:280px}.ftbl th,.ftbl td{text-align:left;padding:6px 14px 6px 0;border-bottom:1px solid var(--line)}.ftbl th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}.ftbl td.n{font-variant-numeric:tabular-nums}
 .fscore{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .fgrade{width:84px;height:84px;border-radius:22px;display:grid;place-items:center;font-size:46px;font-weight:700;background:var(--d5);color:#fff}
+.exchips{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;margin:0 0 18px}
+.exchips button{font:inherit;text-align:left;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.exchips button b{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--tcd)}
+.exchips button span{font-size:14px;line-height:1.35;color:var(--mute)}
+.exchips button[aria-selected="true"]{border-color:var(--tc);box-shadow:0 0 0 1px var(--tc);background:var(--soft)}
+.exchips button[aria-selected="true"] span{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -1038,16 +1044,27 @@ function renderTopic(t){
   else if(tab==='know')body=t.rules.map(g=>`<h3 class="gh">${esc(g.h)}</h3><div class="cards">${g.cards.map(c=>`<div class="pc"><h4>${esc(c.t)}</h4><p class="fm">${esc(c.f)}</p>${c.n?`<p>${esc(c.n)}</p>`:''}${c.ex?`<div class="ex">${esc(c.ex)}</div>`:''}${c.viz?`<div class="vz">${c.viz}</div>`:''}</div>`).join('')}</div>`).join('')+
     `<h3 class="gh">The game plan</h3><ol class="flow">${t.flow.map(f=>`<li><b>${esc(f[0])}</b>${esc(f[1])}</li>`).join('')}</ol>`;
   else if(tab==='walk'){
-    const n=walk[t.id]||1,steps=t.ex.steps;
-    body=`<h3 class="gh" style="margin-top:4px">${esc(t.ex.title)}</h3><div class="steps">${steps.slice(0,n).map((s,i)=>`<div class="st"><div class="nb">${i+1}</div><div><div class="do">${esc(s.d)}</div>${s.m?`<div class="mt">${esc(s.m)}</div>`:''}<div class="wy">${esc(s.w)}</div>${s.viz?`<div class="vz">${s.viz}</div>`:''}</div></div>`).join('')}</div>
+    const E=[t.ex].concat(t.exs||[]),k=Math.min(wex[t.id]||0,E.length-1),X=E[k],n=walk[wkey(t.id)]||1,steps=X.steps;
+    body=(E.length>1?`<p class="lead">${E.length} worked examples. Pick one, then reveal it a step at a time. Try each step yourself before you look.</p><div class="exchips" role="tablist">${E.map((e,i)=>`<button role="tab" data-act="wex" data-v="${i}" aria-selected="${i===k}"><b>Example ${i+1}</b><span>${esc(e.title)}</span></button>`).join('')}</div>`:'')+`<h3 class="gh" style="margin-top:4px">${esc(X.title)}</h3><div class="steps">${steps.slice(0,n).map((s,i)=>`<div class="st"><div class="nb">${i+1}</div><div><div class="do">${esc(s.d)}</div>${s.m?`<div class="mt">${esc(s.m)}</div>`:''}<div class="wy">${esc(s.w)}</div>${s.viz?`<div class="vz">${s.viz}</div>`:''}</div></div>`).join('')}</div>
     <div class="walkbtns"><button class="btn" data-act="wback" ${n<=1?'disabled':''}>Back</button><button class="btn fill" data-act="wnext" ${n>=steps.length?'disabled':''}>${n>=steps.length?'Done':'Show next step'}</button><button class="btn" data-act="wall" ${n>=steps.length?'disabled':''}>Show all</button><button class="btn" data-act="wtry">Go to practice</button></div>`;
-  }else body=`<p class="lead">${topicDone(t)} of ${t.qs.length} solved. Wrong answers are fine, they save too so you can see what to review. Tap New numbers for the same kind of question with different numbers.</p><div class="qs">${t.qs.map(q=>renderQ(t,q)).join('')}</div>`;
+  }else body=`<p class="lead">${topicDone(t)} of ${t.qs.length} solved. Wrong answers are fine, they save too so you can see what to review. Tap New numbers for the same kind of question with different numbers.</p><div class="qs">${t.qs.map(q=>renderQ(t,q)).join('')}</div>${renderXP(t)}`;
   return `<div class="tview" style="${tcStyle(t)}"><button class="back" data-act="home">\u2039 All topics</button>
   <div class="thead"><h2>${esc(t.n)}</h2><p>${esc(t.goal)}</p>
   <div class="conf"><span>How does this topic feel?</span>
    <button class="cb g" data-act="conf" data-v="g" aria-pressed="${cf==='g'}">Clear</button><button class="cb y" data-act="conf" data-v="y" aria-pressed="${cf==='y'}">A bit shaky</button><button class="cb r" data-act="conf" data-v="r" aria-pressed="${cf==='r'}">Lost</button></div></div>
   <div class="tabs" role="tablist">${tabs.map(x=>`<button role="tab" data-act="tab" data-v="${x[0]}" aria-selected="${tab===x[0]}">${x[1]}</button>`).join('')}</div>${body}</div>`;
 }
+const wex={},wkey=id=>(wex[id]||0)?id+'#'+wex[id]:id;
+const XP={};
+function xpQ(i){const st=XP[i]||(XP[i]={seed:(Date.now()^Math.floor(Math.random()*4294967295))>>>0});if(!st.q){try{st.q=FG[i][2](rng(st.seed));}catch(e){st.q=null;}}return st;}
+function xpBlock(i,n){const st=xpQ(i),q=st.q;if(!q)return '';const L='ABCD';
+  const opts=`<div class="opts">${q.o.map((o,j)=>{let c='';if(st.ok&&j===q.a)c=' right';else if((st.wrong||[]).includes(j))c=' wrong';
+    return `<button class="opt${c}" data-act="xpick" data-i="${i}" data-v="${j}" ${st.ok||(st.wrong||[]).includes(j)?'disabled':''}><span class="lt">${L[j]}</span><span>${esc(o)}</span></button>`;}).join('')}</div>`;
+  let fb='';if(st.ok)fb=`<div class="fb ok"><b>Correct.</b> ${esc(q.sol)}</div>`;else{if((st.wrong||[]).length)fb+=`<div class="fb bad">Not quite. Try another answer, or open the solution.</div>`;if(st.sol)fb+=`<div class="fb hint"><b>How it works:</b> ${esc(q.sol)}</div>`;}
+  const acts=`<div class="qa">${st.ok?'':`<button data-act="xsol" data-i="${i}">Show solution</button>`}<button${st.ok?' class="go"':''} data-act="xnew" data-i="${i}">New numbers</button></div>`;
+  return `<div class="q${st.ok?' ok':((st.wrong||[]).length?' bad':'')}" id="xp-${i}"><div style="margin-bottom:8px"><span class="tag" style="background:var(--ink)">Exam style ${n}</span></div><p class="qt">${esc(q.q)}</p>${opts}${acts}${fb}</div>`;}
+function renderXP(t){if(typeof FG==='undefined')return '';const ids=FG.map((g,i)=>g[1]===t.id?i:-1).filter(i=>i>=0);if(!ids.length)return '';
+  return `<h3 class="gh">Exam-style questions</h3><p class="lead">The same kinds of questions as the mock final, with four choices and a full solution. Tap New numbers for a fresh version.</p><div class="qs">${ids.map((i,k)=>xpBlock(i,k+1)).join('')}</div>`;}
 function renderQ(t,q0){
   const r=S.q[q0.id]||{};const q=eff(q0,r);const ok=r.ok||r.self==='got';const bad=!ok&&((r.tries>0&&q.t!=='self')||r.self==='missed');
   const L='ABCD';let ui='';
@@ -1461,6 +1478,242 @@ const FG=[
   return fMC(R,`A substance has a half-life of ${h} years. A sample starts at ${A0} grams. How much remains after ${t} years?`,g(A),[g(A0*Math.pow(.5,h/t)),g(A0*Math.exp(-t/h)),g(A0/2),g(A*2),g(A0*Math.pow(.5,Math.round(t/h)+1))],
    `A = A₀(1/2)^(t/h) = ${A0}(1/2)^(${t}/${h}) ≈ ${g(A)}.`);}]
 ];
+/* ---------- exam-ready extensions: more rules, more worked examples, per topic ---------- */
+(function(){
+const T=id=>TOP.find(t=>t.id===id);
+const addRules=(id,groups)=>{T(id).rules.push(...groups);};
+const addEx=(id,exs)=>{const t=T(id);t.exs=(t.exs||[]).concat(exs);};
+
+/* t1 Algebra tools: complex numbers */
+addRules('t1',[
+ {h:"Complex numbers",cards:[
+  {t:"Meet i",f:"i = √(−1), so i² = −1",n:"i lets you take the square root of a negative number.",ex:"√(−25) = √25 · √(−1) = 5i"},
+  {t:"Add and subtract: real with real, i with i",f:"(a + bi) + (c + di) = (a + c) + (b + d)i",n:"Treat i like a variable.",ex:"(3 + 2i) − (1 − 5i) = 2 + 7i"},
+  {t:"Multiply: FOIL, then swap i² for −1",f:"(a + bi)(c + di) = ac + adi + bci + bdi²",n:"The i² term turns into a negative real number. Collect real parts and i parts.",ex:"(2 + 3i)(1 − 4i) = 2 − 8i + 3i − 12i² = 14 − 5i"},
+  {t:"Conjugates",f:"(a + bi)(a − bi) = a² + b²",n:"A number times its conjugate is always real. Use this to divide: multiply top and bottom by the conjugate of the bottom.",ex:"(3 + 4i)(3 − 4i) = 9 + 16 = 25"},
+  {t:"Answer form",f:"a + bi",n:"Always write the real part first, then the i part. Simplify √(negative) to i before doing anything else."}]}]);
+addEx('t1',[
+ {title:"Multiply (3 − 2i)(4 + 5i)",steps:[
+  {d:"FOIL: first, outer, inner, last",m:"12 + 15i − 8i − 10i²",w:"Multiply every part of the first bracket by every part of the second."},
+  {d:"Replace i² with −1",m:"−10i² = −10(−1) = +10",w:"This is the step that makes complex numbers different from ordinary algebra."},
+  {d:"Collect real parts",m:"12 + 10 = 22",w:"Real numbers go together."},
+  {d:"Collect i parts",m:"15i − 8i = 7i",w:"i terms go together."},
+  {d:"Write as a + bi",m:"22 + 7i",w:"Real part first, then the i part."}]},
+ {title:"Simplify (x³y⁻²)²/x⁴",steps:[
+  {d:"Power of a power: multiply exponents",m:"(x³y⁻²)² = x⁶y⁻⁴",w:"The 2 multiplies every exponent inside the bracket."},
+  {d:"Divide: subtract exponents on x",m:"x⁶ / x⁴ = x²",w:"Same base, dividing: top minus bottom."},
+  {d:"Move the negative exponent",m:"x²y⁻⁴ = x²/y⁴",w:"A negative exponent moves the factor to the other side of the fraction bar."}]}]);
+
+/* t2 Equations & inequalities: rational equations, graphs, circles, lines in the plane */
+addRules('t2',[
+ {h:"Rational equations",cards:[
+  {t:"1. List the forbidden values",f:"Denominator = 0 is not allowed",n:"Before you start, write down every x that makes a denominator zero. Those can never be answers."},
+  {t:"2. Multiply every term by the LCD",f:"x/(x − 2) − 4/(x + 2) = 8/(x² − 4)",n:"Here the LCD is (x − 2)(x + 2). Multiplying clears every fraction in one step.",ex:"x(x + 2) − 4(x − 2) = 8"},
+  {t:"3. Solve, then check",f:"Reject any forbidden value",n:"If an answer is a forbidden value, cross it out. If every answer is crossed out, the equation has no solution."}]},
+ {h:"Graphs: intercepts and symmetry",cards:[
+  {t:"x-intercepts",f:"Set y = 0 and solve",n:"Where the graph crosses the x-axis.",ex:"y = x² − 4: 0 = x² − 4, so (−2, 0) and (2, 0)"},
+  {t:"y-intercept",f:"Set x = 0",n:"Where the graph crosses the y-axis.",ex:"y = x² − 4: y = −4, so (0, −4)"},
+  {t:"Symmetric about the y-axis",f:"Replace x with −x: same equation",n:"The left half is a mirror image of the right half. Example: y = x⁴ − 3x²."},
+  {t:"Symmetric about the x-axis",f:"Replace y with −y: same equation",n:"The top half mirrors the bottom half. Example: x = y² − 4."},
+  {t:"Symmetric about the origin",f:"Replace x with −x and y with −y: same equation",n:"Spin it half a turn and it looks the same. Example: y = x³ − 2x."}]},
+ {h:"Points and circles",cards:[
+  {t:"Distance between two points",f:"d = √((x₂ − x₁)² + (y₂ − y₁)²)",n:"Pythagoras in disguise.",ex:"(1, 2) to (4, 6): √(9 + 16) = 5"},
+  {t:"Midpoint",f:"((x₁ + x₂)/2, (y₁ + y₂)/2)",n:"Average the x's and average the y's."},
+  {t:"Circle: standard form",f:"(x − h)² + (y − k)² = r²",n:"Center (h, k), radius r. Watch the signs: (x + 3)² means h = −3."},
+  {t:"Circle: general form",f:"x² + y² + Dx + Ey + F = 0",n:"Complete the square for x and for y separately, then read off the center and radius."}]},
+ {h:"Quadratics with no real solutions",cards:[
+  {t:"Negative discriminant: complex answers",f:"x = (−b ± √(b² − 4ac))/(2a)",n:"If b² − 4ac is negative, write √(negative) as i times a real root. The two answers are a ± bi.",ex:"x² − 2x + 5 = 0: x = (2 ± √(−16))/2 = 1 ± 2i"}]}]);
+addEx('t2',[
+ {title:"Solve x/(x − 2) − 4/(x + 2) = 8/(x² − 4)",steps:[
+  {d:"Factor every denominator and list forbidden values",m:"x² − 4 = (x − 2)(x + 2), so x ≠ 2 and x ≠ −2",w:"Do this first so you know which answers to reject."},
+  {d:"Multiply every term by the LCD (x − 2)(x + 2)",m:"x(x + 2) − 4(x − 2) = 8",w:"Each denominator cancels with part of the LCD."},
+  {d:"Expand and simplify",m:"x² + 2x − 4x + 8 = 8, so x² − 2x = 0",w:"Move everything to one side."},
+  {d:"Factor and solve",m:"x(x − 2) = 0, so x = 0 or x = 2",w:"Two candidate answers."},
+  {d:"Check against the forbidden list",m:"x = 2 is forbidden. Answer: x = 0",w:"x = 2 would make a denominator zero, so it is extraneous."}]},
+ {title:"Find the center and radius of x² + y² − 6x + 4y − 3 = 0",steps:[
+  {d:"Group x terms and y terms, move the constant",m:"(x² − 6x) + (y² + 4y) = 3",w:"Get ready to complete two squares."},
+  {d:"Complete the square for x",m:"half of −6 is −3, and (−3)² = 9",w:"Add 9 to both sides."},
+  {d:"Complete the square for y",m:"half of 4 is 2, and 2² = 4",w:"Add 4 to both sides."},
+  {d:"Rewrite as squares",m:"(x − 3)² + (y + 2)² = 3 + 9 + 4 = 16",w:"Now it is in standard form."},
+  {d:"Read off the answer",m:"Center (3, −2), radius √16 = 4",w:"(y + 2) means k = −2. The radius is the square root of the right side."}]},
+ {title:"Test y = x³ − 4x for symmetry",steps:[
+  {d:"y-axis: replace x with −x",m:"y = (−x)³ − 4(−x) = −x³ + 4x",w:"That is not the original equation, so no y-axis symmetry."},
+  {d:"x-axis: replace y with −y",m:"−y = x³ − 4x",w:"Not the original, so no x-axis symmetry."},
+  {d:"Origin: replace both",m:"−y = −x³ + 4x, so y = x³ − 4x",w:"Multiply both sides by −1: it is the original equation."},
+  {d:"Conclusion",m:"Symmetric about the origin only",w:"Odd powers of x only usually means origin symmetry."}]}]);
+
+/* t3 Functions: lines, piecewise, building models */
+addRules('t3',[
+ {h:"Lines",cards:[
+  {t:"Slope",f:"m = (y₂ − y₁)/(x₂ − x₁)",n:"Rise over run. In a word problem, slope is the rate: output units per input unit.",ex:"(1, 3) and (4, 9): m = 6/3 = 2"},
+  {t:"Slope-intercept form",f:"y = mx + b",n:"m is the slope, b is where the line crosses the y-axis (the starting value in a word problem)."},
+  {t:"Point-slope form",f:"y − y₁ = m(x − x₁)",n:"Use it when you know a slope and one point. Then rearrange to y = mx + b."},
+  {t:"Parallel and perpendicular",f:"parallel: same m · perpendicular: −1/m",n:"Perpendicular slopes are negative reciprocals: flip the fraction and change the sign.",ex:"m = 2/3 gives a perpendicular slope of −3/2"},
+  {t:"From standard form",f:"Ax + By = C has slope −A/B",n:"Or just solve for y.",ex:"2x − 3y = 6 → y = 2/3 x − 2"},
+  {t:"Horizontal and vertical",f:"y = c has slope 0 · x = c has no slope",n:"Horizontal lines are flat. Vertical lines have undefined slope."}]},
+ {h:"Piecewise functions",cards:[
+  {t:"Pick the rule first",f:"f(x) = { rule 1 if x < c ; rule 2 if x ≥ c }",n:"Look at the input, decide which condition it meets, and use only that rule.",ex:"Phone plan: $30 up to 5 GB, then $10 per extra GB. 8 GB: 30 + 10(8 − 5) = $60"},
+  {t:"Watch the boundary",f:"≤ or < tells you which rule owns the endpoint",n:"On a graph: a solid dot belongs to that piece, an open dot does not."}]},
+ {h:"Word problems: building a function",cards:[
+  {t:"Step 1: name the variable",f:"Let x = …",n:"Write what x stands for, with units. Example: let w = width in feet."},
+  {t:"Fixed amount + rate × amount",f:"C(x) = fixed + rate · x",n:"Any cost with a flat fee plus a per-unit charge is linear. The fee is b, the rate is m.",ex:"$70 call-out + $60 per hour: C(h) = 70 + 60h"},
+  {t:"Use a constraint to remove a variable",f:"perimeter 2w + 2L = 100 → L = 50 − w",n:"Then area A = wL = w(50 − w). Now A depends on one variable."},
+  {t:"Average rate of change has units",f:"(f(b) − f(a))/(b − a)",n:"Units are output per input: dollars per item, thousand people per year, feet per second."},
+  {t:"Composition in context",f:"(A ∘ r)(t) = A(r(t))",n:"The output of the inside function becomes the input of the outside one. If r(t) is radius after t seconds and A(r) is area, then A(r(t)) is area after t seconds."}]}]);
+addEx('t3',[
+ {title:"Find the line perpendicular to 2x − 3y = 6 through (4, −1)",steps:[
+  {d:"Solve the given line for y",m:"−3y = −2x + 6, so y = 2/3 x − 2",w:"Now you can read the slope: 2/3."},
+  {d:"Perpendicular slope: negative reciprocal",m:"m = −3/2",w:"Flip 2/3 to 3/2 and change the sign."},
+  {d:"Point-slope form with (4, −1)",m:"y + 1 = −3/2 (x − 4)",w:"y − (−1) becomes y + 1."},
+  {d:"Distribute and solve for y",m:"y + 1 = −3/2 x + 6, so y = −3/2 x + 5",w:"Final answer in slope-intercept form."}]},
+ {title:"A plumber charges $190 for 2 hours and $370 for 5 hours. Find the cost of a 7-hour job.",steps:[
+  {d:"Write the data as points (hours, cost)",m:"(2, 190) and (5, 370)",w:"Input is hours, output is cost."},
+  {d:"Slope = the hourly rate",m:"m = (370 − 190)/(5 − 2) = 60",w:"$60 per hour."},
+  {d:"Find the fixed fee b",m:"190 = 60(2) + b, so b = 70",w:"The call-out fee is $70."},
+  {d:"Write the model",m:"C(h) = 70 + 60h",w:"Fixed amount plus rate times hours."},
+  {d:"Predict",m:"C(7) = 70 + 60(7) = $490",w:"Answer the question that was asked, with units."}]},
+ {title:"Find the difference quotient for f(x) = 2x² − 3x",steps:[
+  {d:"Find f(x + h)",m:"2(x + h)² − 3(x + h) = 2x² + 4xh + 2h² − 3x − 3h",w:"Replace every x with (x + h) and expand carefully."},
+  {d:"Subtract f(x)",m:"(2x² + 4xh + 2h² − 3x − 3h) − (2x² − 3x) = 4xh + 2h² − 3h",w:"Every term without an h cancels. If one does not, check your expansion."},
+  {d:"Divide by h",m:"(4xh + 2h² − 3h)/h = 4x + 2h − 3",w:"Every remaining term has an h, so it divides out cleanly."}]},
+ {title:"A rectangle has a perimeter of 60 feet. Write its area as a function of its width.",steps:[
+  {d:"Name the variable",m:"Let w = width in feet",w:"Always start by saying what x (or w) means."},
+  {d:"Use the perimeter to find the length",m:"2w + 2L = 60, so L = 30 − w",w:"The constraint lets you remove the second variable."},
+  {d:"Write the area",m:"A(w) = w(30 − w) = 30w − w²",w:"Area = width × length, now in terms of w only."}]}]);
+
+/* t4 Polynomial functions: quadratics, optimization, complex zeros, box volume */
+addRules('t4',[
+ {h:"Quadratic functions: vertex, max and min",cards:[
+  {t:"Vertex form",f:"f(x) = a(x − h)² + k",n:"The vertex is (h, k). If a > 0 it opens up and k is the minimum. If a < 0 it opens down and k is the maximum."},
+  {t:"Vertex from standard form",f:"x = −b/(2a), then y = f(x)",n:"The quickest way to find a max or min.",ex:"f(x) = x² + 8x + 19: x = −8/2 = −4, f(−4) = 3. Minimum 3."},
+  {t:"Completing the square",f:"x² + bx + c = (x + b/2)² + c − (b/2)²",n:"Half the middle number, square it, add and subtract it.",ex:"x² − 10x − 8 = (x − 5)² − 33"}]},
+ {h:"Max and min word problems",cards:[
+  {t:"Projectile height",f:"h(t) = −16t² + v₀t + h₀ (feet)",n:"Max height: the vertex. When it hits the ground: solve h(t) = 0 and keep the positive answer."},
+  {t:"Fence along a river",f:"A(x) = x(P − 2x)",n:"Only three sides need fence. x is each side going away from the river. The vertex gives the largest area."},
+  {t:"Revenue",f:"R = price × number sold",n:"If raising the price lowers sales, R is a quadratic. The vertex gives the best price."},
+  {t:"The question decides what to report",f:"Vertex (h, k)",n:"\"When\" or \"what price\" wants h. \"How high\" or \"how much\" wants k."}]},
+ {h:"Complex zeros",cards:[
+  {t:"Conjugate pairs",f:"If a + bi is a zero, so is a − bi",n:"For polynomials with real coefficients, complex zeros always come in pairs."},
+  {t:"Build a polynomial from zeros",f:"zeros 2 and 3i → (x − 2)(x − 3i)(x + 3i)",n:"(x − 3i)(x + 3i) = x² + 9, so p(x) = (x − 2)(x² + 9) = x³ − 2x² + 9x − 18."}]},
+ {h:"Polynomial models",cards:[
+  {t:"Open-top box",f:"V(x) = x(L − 2x)(W − 2x)",n:"Cut an x by x square from each corner of an L by W sheet, fold up the sides. The height is x and each side of the base loses 2x."}]}]);
+addEx('t4',[
+ {title:"A ball's height is h(t) = −16t² + 64t + 80. Find its maximum height and when it hits the ground.",steps:[
+  {d:"Time of the max: vertex",m:"t = −b/(2a) = −64/(2(−16)) = 2 seconds",w:"a is negative, so the vertex is the highest point."},
+  {d:"Maximum height",m:"h(2) = −16(4) + 128 + 80 = 144 feet",w:"\"How high\" wants the output."},
+  {d:"Ground: set h(t) = 0",m:"−16t² + 64t + 80 = 0",w:"The ground is height zero."},
+  {d:"Divide by −16 and factor",m:"t² − 4t − 5 = 0, so (t − 5)(t + 1) = 0",w:"Dividing first keeps the numbers small."},
+  {d:"Keep the answer that makes sense",m:"t = 5 seconds",w:"Time cannot be negative, so reject t = −1."}]},
+ {title:"A farmer has 200 feet of fence for a rectangular pen along a river. Find the largest area.",steps:[
+  {d:"Name the variable",m:"x = each side perpendicular to the river",w:"There are two of these sides."},
+  {d:"Use the fence to write the third side",m:"200 − 2x along the river",w:"The river side needs no fence."},
+  {d:"Write the area",m:"A(x) = x(200 − 2x) = −2x² + 200x",w:"A quadratic that opens down, so it has a maximum."},
+  {d:"Vertex",m:"x = −200/(2(−2)) = 50 feet",w:"The pen is 50 by 100."},
+  {d:"Largest area",m:"A(50) = 50 · 100 = 5,000 square feet",w:"Report the output with units."}]},
+ {title:"Write x² − 8x + 3 in vertex form",steps:[
+  {d:"Half the middle number, then square it",m:"half of −8 is −4, and (−4)² = 16",w:"This is the number that completes the square."},
+  {d:"Add and subtract 16",m:"(x² − 8x + 16) + 3 − 16",w:"Adding and subtracting the same number changes nothing."},
+  {d:"Write the square",m:"(x − 4)² − 13",w:"Vertex (4, −13), opens up, minimum −13."}]},
+ {title:"Find a degree-3 polynomial with zeros 2 and 3i",steps:[
+  {d:"Add the conjugate",m:"Zeros: 2, 3i, −3i",w:"Complex zeros come in pairs."},
+  {d:"Write the factors",m:"(x − 2)(x − 3i)(x + 3i)",w:"Each zero r gives a factor (x − r)."},
+  {d:"Multiply the conjugate pair",m:"(x − 3i)(x + 3i) = x² − 9i² = x² + 9",w:"The i's disappear."},
+  {d:"Multiply out",m:"(x − 2)(x² + 9) = x³ − 2x² + 9x − 18",w:"Real coefficients, degree 3."}]}]);
+
+/* t5 Rational functions: inequalities, context */
+addRules('t5',[
+ {h:"Rational inequalities",cards:[
+  {t:"Critical numbers from top AND bottom",f:"(x − 4)/(x + 1) ≥ 0 → x = 4 and x = −1",n:"Zeros of the top make the quotient 0. Zeros of the bottom make it undefined."},
+  {t:"Sign chart",f:"Test one number in each interval",n:"Mark the critical numbers on a number line and test a value in each piece."},
+  {t:"Brackets",f:"Bottom zeros: always ( )",n:"A top zero is included only for ≤ or ≥. A bottom zero is never included.",ex:"(x − 4)/(x + 1) ≥ 0 → (−∞, −1) ∪ [4, ∞)"},
+  {t:"Never multiply by the denominator",f:"Its sign is unknown",n:"Multiplying by something that might be negative can flip the inequality without you noticing. Use the sign chart instead."}]},
+ {h:"Rational functions in context",cards:[
+  {t:"Average cost",f:"A(x) = (cx + F)/x",n:"F is the fixed cost and c the cost per item. As x grows, A(x) approaches c: the horizontal asymptote y = c.",ex:"A(x) = (5x + 6000)/x → $5 per item in the long run"},
+  {t:"Asymptotes as limits",f:"Horizontal asymptote = long-run value",n:"\"What happens as x gets very large\" is asking for the horizontal asymptote."}]}]);
+addEx('t5',[
+ {title:"Solve (x − 4)/(x + 1) ≥ 0",steps:[
+  {d:"Critical numbers",m:"Top: x = 4. Bottom: x = −1",w:"These split the number line into three intervals."},
+  {d:"Test x = −2 (left)",m:"(−6)/(−1) = 6 > 0 ✓",w:"Positive, so this interval works."},
+  {d:"Test x = 0 (middle)",m:"(−4)/(1) = −4 < 0 ✗",w:"Negative, so this interval does not work."},
+  {d:"Test x = 5 (right)",m:"(1)/(6) > 0 ✓",w:"Positive, so this interval works."},
+  {d:"Decide on the endpoints",m:"x = 4 included (makes 0); x = −1 never included",w:"≥ includes zeros of the top, but the bottom can never be zero."},
+  {d:"Write the answer",m:"(−∞, −1) ∪ [4, ∞)",w:"Union of the intervals that work."}]},
+ {title:"Set-up costs $6,000 and each item costs $5. How many items make the average cost $8?",steps:[
+  {d:"Write the average cost",m:"A(x) = (5x + 6000)/x",w:"Total cost divided by number of items."},
+  {d:"Set it equal to 8",m:"(5x + 6000)/x = 8",w:"Translate the question into an equation."},
+  {d:"Multiply by x and solve",m:"5x + 6000 = 8x, so x = 2,000 items",w:"x is positive here, so multiplying is safe."},
+  {d:"Long-run meaning",m:"As x → ∞, A(x) → 5",w:"The average can get close to $5 but never reach it: the horizontal asymptote."}]}]);
+
+/* t6 Exponentials & logs: growth and decay, solving for time, log equations */
+addRules('t6',[
+ {h:"Growth and decay models",cards:[
+  {t:"Continuous growth",f:"A = A₀e^(kt)",n:"k > 0 is growth, k < 0 is decay. A₀ is the starting amount."},
+  {t:"Half-life",f:"A = A₀(1/2)^(t/h)",n:"h is the half-life. After every h years, half is left.",ex:"80 g, half-life 5 years, after 10 years: 80(1/2)² = 20 g"},
+  {t:"Find k from two data points",f:"k = (1/t) · ln(A/A₀)",n:"Plug in a later value, divide by A₀, take ln, divide by t.",ex:"2000 grows to 3000 in 4 years: k = ln(1.5)/4 ≈ 0.1014"}]},
+ {h:"Solving for time",cards:[
+  {t:"Isolate the exponential first",f:"5000e^(0.05t) = 15000 → e^(0.05t) = 3",n:"Divide by the starting amount before you take a log."},
+  {t:"Take ln of both sides",f:"0.05t = ln 3",n:"ln undoes e. For other bases, use ln and the power rule."},
+  {t:"Divide and round at the end",f:"t = (ln 3)/0.05 ≈ 22.0 years",n:"Keep full calculator accuracy until the last step."}]},
+ {h:"Log equations",cards:[
+  {t:"Combine into one log",f:"log₂x + log₂(x − 6) = log₂(x(x − 6))",n:"Use the product and quotient rules to get a single log on each side."},
+  {t:"Rewrite as an exponential",f:"log base b of M = k → M = bᵏ",n:"Then solve the equation that is left."},
+  {t:"Check every answer",f:"The input of a log must be positive",n:"Reject any answer that puts zero or a negative number inside a log."}]}]);
+addEx('t6',[
+ {title:"$5,000 is invested at 5% compounded continuously. How long until it reaches $15,000?",steps:[
+  {d:"Write the model",m:"15000 = 5000e^(0.05t)",w:"A = Pe^(rt) with r = 0.05."},
+  {d:"Isolate the exponential",m:"e^(0.05t) = 3",w:"Divide both sides by 5000."},
+  {d:"Take ln of both sides",m:"0.05t = ln 3",w:"ln(e^(stuff)) = stuff."},
+  {d:"Solve and round",m:"t = (ln 3)/0.05 ≈ 22.0 years",w:"Answer with units and the rounding asked for."}]},
+ {title:"Solve log₂(x) + log₂(x − 6) = 4",steps:[
+  {d:"Combine with the product rule",m:"log₂(x(x − 6)) = 4",w:"Sum of logs = log of the product."},
+  {d:"Rewrite as an exponential",m:"x(x − 6) = 2⁴ = 16",w:"log₂(M) = 4 means M = 2⁴."},
+  {d:"Solve the quadratic",m:"x² − 6x − 16 = 0, so (x − 8)(x + 2) = 0",w:"x = 8 or x = −2."},
+  {d:"Check the log domain",m:"x = −2 gives log₂(−2): reject. Answer x = 8",w:"Inputs to logs must be positive."}]},
+ {title:"A town grows from 2,000 to 3,000 people in 4 years. When will it reach 5,000?",steps:[
+  {d:"Model",m:"P = 2000e^(kt)",w:"Continuous growth from a starting value of 2000."},
+  {d:"Use the data to find k",m:"3000 = 2000e^(4k) → e^(4k) = 1.5 → k = ln(1.5)/4 ≈ 0.1014",w:"Same steps as solving for time, but solving for k."},
+  {d:"Set P = 5000",m:"5000 = 2000e^(0.1014t) → e^(0.1014t) = 2.5",w:"Now solve for t."},
+  {d:"Take ln and divide",m:"t = ln(2.5)/0.1014 ≈ 9.0 years",w:"Keep k unrounded in your calculator for accuracy."}]},
+ {title:"An 80-gram sample has a half-life of 5 years. How much is left after 13 years?",steps:[
+  {d:"Write the half-life model",m:"A = 80(1/2)^(t/5)",w:"Every 5 years the amount halves."},
+  {d:"Substitute t = 13",m:"A = 80(1/2)^(13/5) = 80(1/2)^(2.6)",w:"13 years is 2.6 half-lives."},
+  {d:"Evaluate",m:"A ≈ 13.20 grams",w:"Between 2 half-lives (20 g) and 3 half-lives (10 g), which makes sense."}]}]);
+
+/* t7 Systems: word problems, partial fractions */
+addRules('t7',[
+ {h:"Word problems with two unknowns",cards:[
+  {t:"Two facts, two equations",f:"how many: x + y = total · how much: ax + by = amount",n:"Ticket, coin and mixture problems almost always give a count and a value.",ex:"208 tickets, $15 adult, $9 student, $2,358 total: x + y = 208 and 15x + 9y = 2358"},
+  {t:"Break-even",f:"Revenue = Cost",n:"R(x) = px and C(x) = F + cx. Set them equal and solve for x.",ex:"12x = 1920 + 4x → x = 240 items"},
+  {t:"Answer the question",f:"Check which variable they asked for",n:"Solve for both, then report the one the question asks about, with units."}]},
+ {h:"Partial fractions",cards:[
+  {t:"Set up",f:"(px + q)/((x − a)(x − b)) = A/(x − a) + B/(x − b)",n:"One fraction for each linear factor in the denominator."},
+  {t:"Clear denominators",f:"px + q = A(x − b) + B(x − a)",n:"Multiply both sides by (x − a)(x − b)."},
+  {t:"Choose smart x-values",f:"x = a kills B; x = b kills A",n:"Each choice leaves one unknown to solve for."}]},
+ {h:"Three equations",cards:[
+  {t:"Eliminate the same variable twice",f:"Pair (1, 2) and pair (1, 3)",n:"You get two equations in two unknowns. Solve those, then back-substitute for the third."}]}]);
+addEx('t7',[
+ {title:"208 tickets were sold: adults $15, students $9, $2,358 in total. How many adult tickets?",steps:[
+  {d:"Name the variables",m:"x = adult tickets, y = student tickets",w:"Say what each letter means."},
+  {d:"Count equation",m:"x + y = 208",w:"How many tickets."},
+  {d:"Money equation",m:"15x + 9y = 2358",w:"How much money."},
+  {d:"Substitute y = 208 − x",m:"15x + 9(208 − x) = 2358 → 6x + 1872 = 2358",w:"Now there is one variable."},
+  {d:"Solve",m:"6x = 486, so x = 81 adult tickets (y = 127)",w:"Check: 15(81) + 9(127) = 1215 + 1143 = 2358 ✓"}]},
+ {title:"Decompose (6x + 3)/((x + 1)(x − 2))",steps:[
+  {d:"Set up",m:"(6x + 3)/((x + 1)(x − 2)) = A/(x + 1) + B/(x − 2)",w:"One fraction per factor."},
+  {d:"Clear the denominators",m:"6x + 3 = A(x − 2) + B(x + 1)",w:"Multiply both sides by (x + 1)(x − 2)."},
+  {d:"Let x = −1",m:"−3 = A(−3), so A = 1",w:"The B term becomes zero."},
+  {d:"Let x = 2",m:"15 = B(3), so B = 5",w:"The A term becomes zero."},
+  {d:"Write the answer",m:"1/(x + 1) + 5/(x − 2)",w:"Check by adding the fractions back together."}]},
+ {title:"Costs are C(x) = 1920 + 4x and revenue is R(x) = 12x. Find the break-even point.",steps:[
+  {d:"Set revenue equal to cost",m:"12x = 1920 + 4x",w:"Break-even means no profit and no loss."},
+  {d:"Solve",m:"8x = 1920, so x = 240 items",w:"Subtract 4x from both sides, then divide."},
+  {d:"Interpret",m:"Sell more than 240 to make a profit",w:"Below 240, cost is higher than revenue."}]}]);
+
+/* exam-style practice: which mock-final question types belong to which topic */
+const FTID=['t2','t2','t2','t2','t2','t2','t2','t3','t3','t3','t3','t3','t3','t3','t3','t3','t7','t4','t4','t4','t2','t1','t4','t7','t7','t4','t4','t4','t4','t4','t5','t5','t5','t3','t3','t6','t6','t6','t6','t6'];
+if(typeof FG!=='undefined'&&FG.length===FTID.length)FG.forEach((g,i)=>{g[1]=FTID[i];});
+})();
+
 const FKEY='mat171-final-v1',FMIN=120,FL='ABCD';
 let F=null;try{const r=localStorage.getItem(FKEY);if(r)F=JSON.parse(r);}catch(e){F=null;}
 function fSave(){try{localStorage.setItem(FKEY,JSON.stringify(F));}catch(e){}}
@@ -1549,13 +1802,18 @@ document.addEventListener('click',e=>{
   if(a==='topic'){return go(b.dataset.id,'see');}
   if(a==='tab'){tab=b.dataset.v;return go(view,tab);}
   if(a==='conf'){S.conf[view]=S.conf[view]===b.dataset.v?undefined:b.dataset.v;if(S.conf[view]===undefined)delete S.conf[view];save();return render();}
-  if(a==='wnext'){walk[view]=(walk[view]||1)+1;return render();}
-  if(a==='wback'){walk[view]=Math.max(1,(walk[view]||1)-1);return render();}
-  if(a==='wall'){walk[view]=99;return render();}
+  if(a==='wex'){wex[view]=+b.dataset.v;return render();}
+if(a==='wnext'){walk[wkey(view)]=(walk[wkey(view)]||1)+1;return render();}
+  if(a==='wback'){walk[wkey(view)]=Math.max(1,(walk[wkey(view)]||1)-1);return render();}
+  if(a==='wall'){walk[wkey(view)]=99;return render();}
   if(a==='wtry'){return go(view,'try');}
   if(a==='share'){shareOpen=!shareOpen;return render();}
   if(a==='copy'){const ta=document.getElementById('sharebox');if(ta){ta.select();let ok=false;try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(ta.value);ok=true;}else ok=document.execCommand('copy');}catch(er){try{ok=document.execCommand('copy');}catch(e2){}}b.textContent=ok?'Copied':'Select the text and copy it';}return;}
   if(a==='reset'){if(!resetArm){resetArm=true;return render();}S={q:{},conf:{},last:null,updated:Date.now()};persistLocal();if(dbDoc)queueCloud();resetArm=false;return render();}
+  if(a==='xpick'){const i=+b.dataset.i,v=+b.dataset.v,st=xpQ(i);if(!st.q||st.ok)return;if(v===st.q.a)st.ok=true;else{st.wrong=(st.wrong||[]).concat([v]);}
+    const el=document.getElementById('xp-'+i);if(el){const k=el.querySelector('.tag').textContent.replace(/\D+/g,'');el.outerHTML=xpBlock(i,k);}return;}
+  if(a==='xsol'){const i=+b.dataset.i,st=xpQ(i);st.sol=true;const el=document.getElementById('xp-'+i);if(el){const k=el.querySelector('.tag').textContent.replace(/\D+/g,'');el.outerHTML=xpBlock(i,k);}return;}
+  if(a==='xnew'){const i=+b.dataset.i;XP[i]={seed:(Date.now()^Math.floor(Math.random()*4294967295))>>>0};const el=document.getElementById('xp-'+i);if(el){const k=el.querySelector('.tag').textContent.replace(/\D+/g,'');el.outerHTML=xpBlock(i,k);}return;}
   if(a==='test'){return go('test');}
   if(a==='final'){return go('final');}
   if(a==='fstart'){if(!F.start){F.start=Date.now();fSave();}render();window.scrollTo(0,0);return;}
