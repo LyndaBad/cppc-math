@@ -259,6 +259,20 @@ code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92em;backgroun
 .tset{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:6px 0 4px}
 .tset select{font:inherit;font-size:15px;padding:7px 10px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
 .fbk{margin-top:10px;padding:12px 14px;border-radius:14px;background:var(--soft);border-left:6px solid var(--fbc);font-size:16px}
+.pfinal{border-color:var(--ink)}.pfinal .pi{background:var(--ink);font-size:18px}.pfinal .ar{color:var(--ink)}
+.fnav{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px;margin:0 0 18px;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.fnav button{font:inherit;font-size:14px;font-variant-numeric:tabular-nums;height:36px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;position:relative}
+.fnav button.an{background:var(--d5);border-color:var(--d5);color:#fff}
+.fnav button.fl::after{content:"";position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%;background:#e8a317;box-shadow:0 0 0 1.5px var(--card)}
+.fqh{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.fqh .tnum{margin:0}
+.fmapb{padding:6px 12px;font-size:14px;margin-left:auto}.tbar .fmapb+.tm{margin-left:0}
+.fflag{font:inherit;font-size:13px;padding:4px 10px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--mute);cursor:pointer}
+.fflag.on{border-color:#e8a317;color:var(--ink);background:rgba(232,163,23,.15)}
+.fq{scroll-margin-top:150px}
+.ftbl{overflow-x:auto}.ftbl table{border-collapse:collapse;font-size:15px;min-width:280px}.ftbl th,.ftbl td{text-align:left;padding:6px 14px 6px 0;border-bottom:1px solid var(--line)}.ftbl th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}.ftbl td.n{font-variant-numeric:tabular-nums}
+.fscore{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.fgrade{width:84px;height:84px;border-radius:22px;display:grid;place-items:center;font-size:46px;font-weight:700;background:var(--d5);color:#fff}
 </style>
 </head>
 <body>
@@ -1009,6 +1023,7 @@ function renderHome(){
   return `<section class="hero"><h1>Precalculus Algebra, picture by picture</h1>
   <p>Seven topics, each with a graph you can play with, plain-English rules, a step-by-step example, and practice questions that save your answers. Tap New numbers on any question to get a fresh version of the same kind of problem.</p>
   <div class="overall" style="--tc:var(--c5);--tcd:var(--d5)"><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><span>${d} of ${QTOTAL} questions solved</span></div></section>
+  ${(()=>{const fh=(F&&F.hist||[]).slice(-1)[0];return `<button class="ptest pfinal" data-act="final"><span class="pi" aria-hidden="true">A+</span><span><b>Mock final exam</b><span class="d">40 multiple-choice questions, 2 hours, the whole course, set out like the CPCC final. Score, letter grade and feedback at the end.${fh?` Last score: ${fh.c} of ${fh.n} (${Math.round(fh.c/fh.n*100)}%).`:''}</span></span><span class="ar" aria-hidden="true">\u203A</span></button>`;})()}
   ${(()=>{const lt=(S.tests||[]).slice(-1)[0];return `<button class="ptest" data-act="test"><span class="pi" aria-hidden="true">\u2713</span><span><b>Practice test</b><span class="d">Part A and Part B, 1 hour each, covering all seven topics, plus a retake for each part. Marked at the end with full solutions.${lt?` Last score: ${lt.c} of ${lt.n} (${Math.round(lt.c/lt.n*100)}%).`:''}</span></span><span class="ar" aria-hidden="true">\u203A</span></button>`;})()}
   <div class="tiles">${TOP.map(t=>{const n=topicDone(t),p=Math.round(n/t.qs.length*100);
    return `<button class="tile" style="${tcStyle(t)}" data-act="topic" data-id="${t.id}"><div class="gl">${t.glyph}</div><div class="tb"><h3>${esc(t.n)}</h3><p>${esc(t.goal)}</p><div class="bar"><i style="width:${p}%"></i></div><div class="cnt">${n} of ${t.qs.length} solved${S.conf[t.id]?' \u00B7 '+({g:'feels clear',y:'a bit shaky',r:'feeling lost'})[S.conf[t.id]]:''}</div></div></button>`;}).join('')}</div>
@@ -1075,6 +1090,7 @@ function render(){
   if(view==='home')main.innerHTML=renderHome();
   else if(view==='tutor')main.innerHTML=renderTutor();
   else if(view==='test')main.innerHTML=renderTest();
+  else if(view==='final')main.innerHTML=renderFinal();
   else{const t=TOP.find(x=>x.id===view);if(!t){view='home';main.innerHTML=renderHome();}else main.innerHTML=renderTopic(t);
     if(t&&tab==='see'){const spec=W[t.widget];const box=$('#wgbox');if(spec&&box)runWidget(box,spec);}}
 }
@@ -1082,13 +1098,13 @@ function go(v,tb,noHash){
   view=v;if(tb)tab=tb;resetArm=false;
   if(TOP.find(x=>x.id===v)){S.last=v;}
   render();window.scrollTo(0,0);
-  if(!noHash){try{const h=v==='home'||v==='tutor'||v==='test'?v:v+'-'+tab;if(location.hash!=='#'+h)location.hash=h;}catch(e){}}
+  if(!noHash){try{const h=v==='home'||v==='tutor'||v==='test'||v==='final'?v:v+'-'+tab;if(location.hash!=='#'+h)location.hash=h;}catch(e){}}
   if(v==='tutor')loadTutor();
 }
 function fromHash(){
   let h='';try{h=(location.hash||'').replace('#','');}catch(e){}
   const m=/^(t[1-7])-(see|know|walk|try)$/.exec(h);
-  if(m){view=m[1];tab=m[2];}else if(h==='tutor'&&isOwner){view='tutor';loadTutor();}else if(h==='test'){view='test';}else if(h==='home'||!h){view='home';}
+  if(m){view=m[1];tab=m[2];}else if(h==='tutor'&&isOwner){view='tutor';loadTutor();}else if(h==='test'){view='test';}else if(h==='final'){view='final';}else if(h==='home'||!h){view='home';}
 }
 
 /* ---------- practice test: Part A and Part B, 1 hour each ---------- */
@@ -1284,6 +1300,254 @@ function mathify(root){if(!root)return;
   list.forEach(fixNode);}
 try{new MutationObserver(ms=>{ms.forEach(m=>m.addedNodes.forEach(nd=>{if(nd.nodeType===1||nd.nodeType===3)mathify(nd);}));}).observe(document.body,{childList:true,subtree:true});}catch(e){}
 
+/* ---------- mock final exam: 40 multiple-choice questions, CPCC MAT 171 style ---------- */
+const fN=v=>f2(v);
+const fFR=(p,q)=>{if(q<0){p=-p;q=-q;}const g=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){const t=b;b=a%b;a=t;}return a||1;};const d=g(p,q);p/=d;q/=d;return q===1?fN(p):(p<0?MN:'')+Math.abs(p)+'/'+q;};
+const fpoly=(c,v)=>{v=v||'x';let s='';const d=c.length-1;c.forEach((a,i)=>{if(!a)return;const p=d-i,ab=Math.abs(a);const t=(ab===1&&p>0?'':f2(ab))+(p>0?v:'')+(p>1?sup(p):'');s+=s===''?(a<0?MN:'')+t:(a<0?' '+MN+' ':' + ')+t;});return s||'0';};
+const flin=terms=>{let s='';terms.forEach(([a,v])=>{if(!a)return;const ab=Math.abs(a);const t=(ab===1&&v?'':f2(ab))+v;s+=s===''?(a<0?MN:'')+t:(a<0?' '+MN+' ':' + ')+t;});return s||'0';};
+const fcx=(re,im)=>{const ip=im===0?'':(Math.abs(im)===1?'i':f2(Math.abs(im))+'i');if(re===0&&im!==0)return (im<0?MN:'')+ip;if(im===0)return fN(re);return fN(re)+(im<0?' '+MN+' ':' + ')+ip;};
+const fiv=(lo,hi,lc,rc)=>(lc?'[':'(')+lo+', '+hi+(rc?']':')');
+const fMC=(R,q,correct,wrongs,sol)=>{const m=mkMC(R,correct,wrongs);return{q,o:m.o,a:m.a,sol};};
+const fslope=(p,q)=>{if(q<0){p=-p;q=-q;}const g=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){const t=b;b=a%b;a=t;}return a||1;};const d=g(p,q);p/=d;q/=d;
+  if(q===1)return p===1?'x':p===-1?MN+'x':fN(p)+'x';return (p<0?MN:'')+Math.abs(p)+'/'+q+' x';};
+const fline=(p,q,b)=>'y = '+fslope(p,q)+(b===0?'':(b<0?' '+MN+' ':' + ')+f2(Math.abs(b)));
+
+const FSEC=[
+ {id:'s1',n:'Equations & graphs',tid:'t2'},
+ {id:'s2',n:'Functions & models',tid:'t3'},
+ {id:'s3',n:'Linear, quadratic & systems',tid:'t4'},
+ {id:'s4',n:'Polynomial & rational functions',tid:'t5'},
+ {id:'s5',n:'Composite, inverse, exponential & log',tid:'t6'}];
+
+const FG=[
+/* ===== Section 1: Equations & graphs ===== */
+['s1','t2',R=>{let b,c,k,a,d;do{b=R.i(-5,6);c=R.i(1,3);k=R.nz(-4,4);a=R.i(1,9);d=a+c*k;}while(d===0);const x0=b+k;
+  return fMC(R,`Solve for x: ${a}/(${xm(b)}) + ${c} = ${fN(d)}/(${xm(b)})`,`x = ${fN(x0)}`,[`x = ${fN(b)}`,`x = ${fN(b-k)}`,`x = ${fN(x0+c)}`,'No solution'],
+   `Multiply every term by (${xm(b)}): ${a} + ${c}(${xm(b)}) = ${fN(d)}. So ${c}(${xm(b)}) = ${fN(d-a)}, which gives ${xm(b)} = ${fN(k)} and x = ${fN(x0)}. Check: x = ${fN(x0)} does not make the denominator zero, so it is the solution.`);}],
+['s1','t2',R=>{const a=R.i(1,3),s1=R.i(-4,6),c=a*R.i(1,4),b=c-a*s1,s2=s1-2*c/a;const lo=Math.min(s1,s2),hi=Math.max(s1,s2);
+  return fMC(R,`Solve: |${fpoly([a,b])}| = ${c}`,`x = ${fN(lo)} or x = ${fN(hi)}`,[`x = ${fN(s1)} only`,`x = ${fN(-hi)} or x = ${fN(-lo)}`,`x = ${fN(s1)} or x = ${fN(-s1)}`,`x = ${fN(lo-1)} or x = ${fN(hi+1)}`],
+   `Split into two equations: ${fpoly([a,b])} = ${c} gives x = ${fN(s1)}, and ${fpoly([a,b])} = ${MN}${c} gives x = ${fN(s2)}.`);}],
+['s1','t2',R=>{const h=R.i(-5,5),k=R.i(1,6),op=R.pick(['<','≤','>','≥']);const lo=fN(h-k),hi=fN(h+k);
+  const O=[fiv(lo,hi,0,0),fiv(lo,hi,1,1),`(${MN}∞, ${lo})${UN}(${hi}, ∞)`,`(${MN}∞, ${lo}]${UN}[${hi}, ∞)`];const idx={'<':0,'≤':1,'>':2,'≥':3}[op];
+  return fMC(R,`Solve the inequality |${xm(h)}| ${op} ${k}. Write the answer in interval notation.`,O[idx],O.filter((_,i)=>i!==idx).concat([fiv(fN(-k),fN(k),0,0)]),
+   idx<2?`"Less than" means between: ${MN}${k} ${op} ${xm(h)} ${op} ${k}, so ${lo} ${op} x ${op} ${hi}.`:`"Greater than" means outside: ${xm(h)} ${idx===2?'<':'≤'} ${MN}${k} or ${xm(h)} ${op} ${k}, so x ${idx===2?'<':'≤'} ${lo} or x ${op} ${hi}.`);}],
+['s1','t2',R=>{let r1=R.nz(-6,5),r2;do{r2=R.nz(-5,6);}while(r2===r1||r2===-r1);const lo=Math.min(r1,r2),hi=Math.max(r1,r2),c=r1*r2;
+  const S=(a,b,y)=>`x-intercepts (${fN(a)}, 0) and (${fN(b)}, 0); y-intercept (0, ${fN(y)})`;
+  return fMC(R,`Find the intercepts of the graph of y = ${fpoly([1,-(r1+r2),c])}.`,S(lo,hi,c),[S(-hi,-lo,c),S(lo,hi,-c),S(-hi,-lo,-c),S(lo,hi,r1+r2)],
+   `x-intercepts: set y = 0 and factor: (${xm(r1)})(${xm(r2)}) = 0, so x = ${fN(lo)} or x = ${fN(hi)}. y-intercept: set x = 0, so y = ${fN(c)}.`);}],
+['s1','t3',R=>{const k=R.i(1,6),c=R.i(-5,5),ty=R.pick(['y','o','x','n']);
+  const eq={y:`y = x⁴ ${MN} ${k}x²${sg(c,'')}`,o:`y = x³ ${MN} ${k}x`,x:`x = y² ${MN} ${k}`,n:`y = x² + ${k}x${sg(c,'')}`}[ty];
+  const L=['Symmetric about the x-axis only','Symmetric about the y-axis only','Symmetric about the origin only','No x-axis, y-axis or origin symmetry'];const corr=L[{x:0,y:1,o:2,n:3}[ty]];
+  const why={y:'Replacing x with −x gives the same equation, so it is symmetric about the y-axis. Replacing y with −y changes it, so not about the x-axis or origin.',o:'Replacing x with −x and y with −y gives −y = −x³ + kx, which is the same equation, so it is symmetric about the origin only.',x:'Replacing y with −y gives the same equation, so it is symmetric about the x-axis only.',n:'Replacing x with −x changes the x term, and replacing y with −y changes the equation, so it has none of the three symmetries.'}[ty].replace('kx',k+'x');
+  return fMC(R,`Test ${eq} for symmetry.`,corr,L.filter(x=>x!==corr),why);}],
+['s1','t2',R=>{const h=R.nz(-5,5),k=R.nz(-5,5),r=R.i(2,7),D=-2*h,E=-2*k,F=h*h+k*k-r*r;
+  const S=(a,b,rr)=>`Center (${fN(a)}, ${fN(b)}), radius ${rr}`;
+  return fMC(R,`Find the center and radius of the circle x² + y²${sg(D,'x')}${sg(E,'y')}${sg(F,'')} = 0.`,S(h,k,r),[S(-h,-k,r),S(h,k,r*r),S(-h,-k,r*r),S(k,h,r)],
+   `Group x terms and y terms, then complete the square for each: (${xm(h)})² + (${xm(k).replace('x','y')})² = ${r*r}. Compare with (x ${MN} h)² + (y ${MN} k)² = r²: the center is (${fN(h)}, ${fN(k)}) and the radius is √${r*r} = ${r}.`);}],
+['s1','t2',R=>{const q=R.i(-2,3),s=q+R.i(2,5),e=2*q+1-s,p=q*q-s*e;const rad=p===0?'√x':`√(${xm(-p)})`;
+  return fMC(R,`Solve: ${rad} = ${xm(q)}`,`x = ${fN(s)}`,[`x = ${fN(e)}`,`x = ${fN(s)} or x = ${fN(e)}`,'No real solution',`x = ${fN(s+1)}`],
+   `Square both sides: ${p===0?'x':xm(-p)} = (${xm(q)})². This gives ${fpoly([1,-(2*q+1),q*q-p])} = 0, so x = ${fN(s)} or x = ${fN(e)}. Check each in the original: x = ${fN(e)} makes the right side ${fN(e-q)}, which is negative, but a square root cannot be negative. So x = ${fN(e)} is extraneous and the only solution is x = ${fN(s)}.`);}],
+/* ===== Section 2: Functions & models ===== */
+['s2','t3',R=>{const c=R.i(-2,3),a=R.i(-4,4),m=R.nz(-3,4),d=R.i(-6,6),v=R.pick([c,c-R.i(1,3),c+R.i(1,3)]);const lo=v<c;
+  const f1=v*v+a,f2v=m*v+d;const ans=lo?f1:f2v,other=lo?f2v:f1;
+  return fMC(R,`f(x) = x²${sg(a,'')} if x < ${fN(c)}, and f(x) = ${fpoly([m,d])} if x ≥ ${fN(c)}. Find f(${fN(v)}).`,fN(ans),[fN(other),fN(ans+1),fN(-ans),fN(v*v),fN(ans-1),fN(ans+2),fN(other+1)],
+   `${fN(v)} is ${lo?'less than':'greater than or equal to'} ${fN(c)}, so use ${lo?'x²'+sg(a,''):fpoly([m,d])}: ${lo?`(${fN(v)})²${sg(a,'')}`:`${fN(m)}(${fN(v)})${sg(d,'')}`} = ${fN(ans)}.`);}],
+['s2','t3',R=>{const a=R.i(-4,3),b=a+R.i(1,5);const A=fN(a),B=fN(b);
+  return fMC(R,`Find the domain of f(x) = √(${xm(a)})/(${xm(b)}).`,`[${A}, ${B})${UN}(${B}, ∞)`,[`[${A}, ∞)`,`(${A}, ${B})${UN}(${B}, ∞)`,`(${MN}∞, ${B})${UN}(${B}, ∞)`,`[${B}, ∞)`],
+   `Two rules: the square root needs ${xm(a)} ≥ 0, so x ≥ ${A}. The denominator cannot be zero, so x ≠ ${B}. Together: [${A}, ${B})${UN}(${B}, ∞).`);}],
+['s2','t3',R=>{const a=R.nz(-3,4),b=R.i(-6,6),c=R.i(-5,5);
+  return fMC(R,`Find the difference quotient (f(x + h) ${MN} f(x))/h for f(x) = ${fpoly([a,b,c])}, h ≠ 0.`,flin([[2*a,'x'],[a,'h'],[b,'']]),[flin([[2*a,'x'],[b,'']]),flin([[a,'x'],[a,'h'],[b,'']]),flin([[2*a,'x'],[a,'h'],[b+c,'']]),flin([[2*a,'x'],[2*a,'h'],[b,'']])],
+   `f(x + h) = ${fN(a)}(x + h)²${sg(b,'(x + h)')}${sg(c,'')}. Subtract f(x): the x² terms and constants cancel, leaving ${flin([[2*a,'xh'],[a,'h²'],[b,'h']])}. Divide by h: ${flin([[2*a,'x'],[a,'h'],[b,'']])}.`);}],
+['s2','t3',R=>{const b=R.i(-5,5),c=R.i(-6,6),p=R.i(-3,2),q=p+R.i(1,4);const f=x=>x*x+b*x+c,ans=(f(q)-f(p))/(q-p);
+  return fMC(R,`Find the average rate of change of f(x) = ${fpoly([1,b,c])} from x = ${fN(p)} to x = ${fN(q)}.`,fN(ans),[fN(f(q)-f(p)),fN(-ans),fN(2*q+b),fN(ans+1),fN(ans+2),fN(ans-1)],
+   `(f(${fN(q)}) ${MN} f(${fN(p)}))/(${fN(q)} ${MN} (${fN(p)})) = (${fN(f(q))} ${MN} (${fN(f(p))}))/${q-p} = ${fN(ans)}.`);}],
+['s2','t3',R=>{const a=R.nz(-4,4),b=R.nz(-6,6),ty=R.pick(['e','o','n1','n2']);
+  const F={e:fpoly([a,0,b,0,0]),o:fpoly([a,0,b,0]),n1:fpoly([a,0,0,b]),n2:fpoly([a,b,0])}[ty];
+  const L=['Even','Odd','Neither even nor odd','Both even and odd'];const corr=L[{e:0,o:1,n1:2,n2:2}[ty]];
+  return fMC(R,`Is f(x) = ${F} even, odd, or neither?`,corr,L.filter(x=>x!==corr),
+   ty==='e'?'Every power of x is even, so f(−x) = f(x). The function is even.':ty==='o'?'Every power of x is odd, so f(−x) = −f(x). The function is odd.':'It mixes even and odd powers (a constant counts as an even power), so f(−x) is neither f(x) nor −f(x).');}],
+['s2','t3',R=>{const P=R.pick([['x²',s=>s==='x'?'x²':`(${s})²`],['√x',s=>`√(${s})`],['|x|',s=>`|${s}|`]]);const h=R.nz(-5,5),k=R.nz(-5,5),ref=R.f()<.5;
+  const D=(h,k,r)=>`${r?'Reflect across the x-axis, then shift':'Shift'} ${h>0?'right':'left'} ${Math.abs(h)} and ${k>0?'up':'down'} ${Math.abs(k)}`;
+  return fMC(R,`How is the graph of g(x) = ${ref?MN:''}${P[1](xm(h))}${sg(k,'')} obtained from the graph of f(x) = ${P[0]}?`,D(h,k,ref),[D(-h,k,ref),D(h,-k,ref),D(h,k,!ref),D(-h,-k,ref)],
+   `Inside the function, ${xm(h)} moves the graph ${h>0?'right':'left'} ${Math.abs(h)} (the opposite of the sign you see). Outside, ${k>0?'+':MN} ${Math.abs(k)} moves it ${k>0?'up':'down'}.${ref?' The minus sign in front reflects it across the x-axis.':' There is no minus sign in front, so there is no reflection.'}`);}],
+['s2','t3',R=>{const P=2*R.i(10,60),half=P/2;
+  return fMC(R,`A rectangle has a perimeter of ${P} feet. Express its area A as a function of its width w.`,`A(w) = ${half}w ${MN} w²`,[`A(w) = ${P}w ${MN} w²`,`A(w) = ${half}w ${MN} 2w²`,`A(w) = ${P} ${MN} 2w`,`A(w) = ${half}w + w²`],
+   `Perimeter: 2w + 2L = ${P}, so L = ${half} ${MN} w. Area = width × length = w(${half} ${MN} w) = ${half}w ${MN} w².`);}],
+/* ===== Section 3: Linear, quadratic & systems ===== */
+['s3','t2',R=>{const m=R.nz(-4,4),b=R.i(-6,6),x1=R.i(-4,1),x2=x1+R.i(1,4);const y1=m*x1+b,y2=m*x2+b;
+  return fMC(R,`Find the equation of the line through (${fN(x1)}, ${fN(y1)}) and (${fN(x2)}, ${fN(y2)}).`,fline(m,1,b),[fline(-m,1,b),fline(m,1,-b),fline(1,m,b),fline(m,1,b+m),fline(-m,1,-b),fline(m,1,b-m),fline(m+1,1,b)],
+   `Slope m = (${fN(y2)} ${MN} (${fN(y1)}))/(${fN(x2)} ${MN} (${fN(x1)})) = ${fN(m)}. Then b = y ${MN} mx = ${fN(y1)} ${MN} (${fN(m)})(${fN(x1)}) = ${fN(b)}. So ${fline(m,1,b)}.`);}],
+['s3','t2',R=>{const p=R.pick([1,2,3,-1,-2,-3]),q=R.pick([2,3,4,5]);const r=R.i(-8,8);const x0=p*R.i(-2,2),y0=R.i(-5,5);const b=y0+q*x0/p;
+  return fMC(R,`Find the equation of the line perpendicular to ${fpoly([p,0])} ${MN} ${q}y = ${fN(r)} that passes through (${fN(x0)}, ${fN(y0)}).`,fline(-q,p,b),[fline(p,q,b),fline(q,p,b),fline(-q,p,-b),fline(-p,q,b),fline(-q,p,b+1),fline(-q,p,b-1),fline(q,p,-b)],
+   `Solve for y: ${q}y = ${fpoly([p,0])}${sg(-r,'')}, so the slope of the given line is ${fFR(p,q)}. A perpendicular slope is the negative reciprocal, ${fFR(-q,p)}. Use the point: b = ${fN(y0)} ${MN} (${fFR(-q,p)})(${fN(x0)}) = ${fN(b)}.`);}],
+['s3','t7',R=>{let a1,b1,a2,b2;do{a1=R.nz(-4,4);b1=R.nz(-4,4);a2=R.nz(-4,4);b2=R.nz(-4,4);}while(a1*b2-a2*b1===0);const x=R.i(-5,5),y=R.i(-5,5);const c1=a1*x+b1*y,c2=a2*x+b2*y;
+  const P=(u,v)=>`(${fN(u)}, ${fN(v)})`;
+  return fMC(R,`Solve the system: ${flin([[a1,'x'],[b1,'y']])} = ${fN(c1)} and ${flin([[a2,'x'],[b2,'y']])} = ${fN(c2)}.`,P(x,y),[P(y,x),P(-x,y),P(x,-y),'No solution',P(-x,-y),P(x+1,y),P(y,-x),P(x,y+1),P(x-1,y+1)],
+   `Eliminate one variable (or substitute) to get x = ${fN(x)}, then substitute to get y = ${fN(y)}. Check in the first equation: ${fN(a1)}(${fN(x)}) ${b1<0?MN:'+'} ${Math.abs(b1)}(${fN(y)}) = ${fN(c1)}.`);}],
+['s3','t4',R=>{const h=R.nz(-6,6),c=R.i(-9,9),b=2*h,k=c-h*h;const V=(hh,kk)=>`(${xm(-hh)})²${sg(kk,'')}`;
+  return fMC(R,`Write x²${sg(b,'x')}${sg(c,'')} in the form (x ${MN} h)² + k by completing the square.`,V(h,k),[V(-h,k),V(h,c+h*h),V(2*h,c-b*b),V(h,-k)],
+   `Half of ${fN(b)} is ${fN(h)}, and (${fN(h)})² = ${h*h}. Add and subtract ${h*h}: (x²${sg(b,'x')} + ${h*h})${sg(c-h*h,'')} = ${V(h,k)}.`);}],
+['s3','t4',R=>{const a=R.pick([1,2,3,-1,-2,-3]),h=R.nz(-4,4),k=R.i(-9,9),b=-2*a*h,c=a*h*h+k;const mm=a>0?'minimum':'maximum',ot=a>0?'maximum':'minimum';
+  const S=(w,v,x)=>`It has a ${w} value of ${fN(v)} at x = ${fN(x)}`;
+  return fMC(R,`For f(x) = ${fpoly([a,b,c])}, which statement is true?`,S(mm,k,h),[S(ot,k,h),S(mm,k,-h),S(mm,c,0),S(ot,c,-h)],
+   `x = ${MN}b/(2a) = ${MN}(${fN(b)})/(2·${fN(a)}) = ${fN(h)}. f(${fN(h)}) = ${fN(k)}. Since a = ${fN(a)} is ${a>0?'positive, the parabola opens up, so this is a minimum':'negative, the parabola opens down, so this is a maximum'}.`);}],
+['s3','t4',R=>{const m=R.i(1,4),v=32*m,h0=R.pick([0,6,16,48,64,80]),H=h0+16*m*m;
+  return fMC(R,`A ball is thrown upward. Its height in feet after t seconds is h(t) = ${MN}16t² + ${v}t${sg(h0,'')}. What is its maximum height?`,`${H} feet`,[`${h0+32*m*m} feet`,`${16*m*m} feet`,`${h0+v*m} feet`,`${m} feet`,`${H+16} feet`,`${h0} feet`],
+   `The maximum is at the vertex: t = ${MN}b/(2a) = ${MN}${v}/(2·(${MN}16)) = ${m} seconds. h(${m}) = ${MN}16(${m})² + ${v}(${m})${sg(h0,'')} = ${H} feet.`);}],
+['s3','t4',R=>{const r1=R.i(-6,3),r2=r1+R.i(1,6),op=R.pick(['<','≤','>','≥']);const A=fN(r1),B=fN(r2);
+  const O=[fiv(A,B,0,0),fiv(A,B,1,1),`(${MN}∞, ${A})${UN}(${B}, ∞)`,`(${MN}∞, ${A}]${UN}[${B}, ∞)`];const idx={'<':0,'≤':1,'>':2,'≥':3}[op];
+  return fMC(R,`Solve: ${fpoly([1,-(r1+r2),r1*r2])} ${op} 0`,O[idx],O.filter((_,i)=>i!==idx).concat([fiv(fN(-r2),fN(-r1),0,0)]),
+   `Factor: (${xm(r1)})(${xm(r2)}) ${op} 0. The zeros ${A} and ${B} split the number line. Test a value between them: the product is negative there; outside it is positive. You want ${idx<2?'negative, so between':'positive, so outside'}${idx%2?', including the zeros':', not including the zeros'}.`);}],
+['s3','t1',R=>{const a=R.nz(-5,5),b=R.nz(-5,5),c=R.nz(-5,5),d=R.nz(-5,5);
+  return fMC(R,`Multiply and write in the form a + bi: (${fcx(a,b)})(${fcx(c,d)})`,fcx(a*c-b*d,a*d+b*c),[fcx(a*c+b*d,a*d+b*c),fcx(a*c-b*d,a*d-b*c),fcx(a*c,b*d),fcx(a*c+b*d,a*d-b*c)],
+   `FOIL: ${fN(a*c)}${sg(a*d,'i')}${sg(b*c,'i')}${sg(b*d,'i²')}. Since i² = ${MN}1, ${fN(b*d)}i² becomes ${fN(-b*d)}. Combine: ${fcx(a*c-b*d,a*d+b*c)}.`);}],
+['s3','t4',R=>{const p=R.i(-4,4),q=R.i(1,5),b=-2*p,c=p*p+q*q;const S=(re,im)=>`x = ${re===0?'':fN(re)+' '}±${re===0?'':' '}${im===1?'':im}i`;
+  return fMC(R,`Solve: ${fpoly([1,b,c])} = 0`,S(p,q),[S(-p,q),`x = ${p===0?'':fN(p)+' '}±${p===0?'':' '}${q}`,S(p,2*q),S(p,q*q),S(p,q+1),S(p+1,q)],
+   `Quadratic formula: x = (${fN(-b)} ± √(${fN(b*b)} ${MN} ${4*c}))/2 = (${fN(-b)} ± √(${fN(b*b-4*c)}))/2 = (${fN(-b)} ± ${2*q}i)/2, so ${S(p,q)}.`);}],
+['s3','t2',R=>{const r=R.i(2,9),p=r+R.i(2,10),x=R.i(20,90)*10,F=(p-r)*x;
+  return fMC(R,`A company's monthly cost is C(x) = ${F} + ${r}x dollars and its revenue is R(x) = ${p}x dollars, where x is the number of items sold. How many items must it sell to break even?`,`${x} items`,[`${Math.round(F/p)} items`,`${Math.round(F/r)} items`,`${Math.round(F/(p+r))} items`,`${x*2} items`],
+   `Break even when R(x) = C(x): ${p}x = ${F} + ${r}x, so ${p-r}x = ${F} and x = ${x}.`);}],
+['s3','t7',R=>{const A=R.nz(-5,5),B=R.nz(-5,5);let p=R.i(-4,4),q;do{q=R.i(-4,4);}while(q===p);const n1=A+B,n0=-(A*q+B*p);
+  const S=(u,v)=>`A = ${fN(u)}, B = ${fN(v)}`;
+  return fMC(R,`Find A and B: (${fpoly([n1,n0])})/((${xm(p)})(${xm(q)})) = A/(${xm(p)}) + B/(${xm(q)})`,S(A,B),[S(B,A),S(-A,-B),S(A,-B),S(-A,B)],
+   `Multiply both sides by (${xm(p)})(${xm(q)}): ${fpoly([n1,n0])} = A(${xm(q)}) + B(${xm(p)}). Let x = ${fN(p)}: ${fN(n1*p+n0)} = A(${fN(p-q)}), so A = ${fN(A)}. Let x = ${fN(q)}: ${fN(n1*q+n0)} = B(${fN(q-p)}), so B = ${fN(B)}.`);}],
+/* ===== Section 4: Polynomial & rational functions ===== */
+['s4','t4',R=>{const a=R.pick([2,-3,1,-1,4,-2,5]),n=R.i(3,7);const c=Array(n+1).fill(0);c[0]=a;c[n]=R.nz(-6,6);c[R.i(1,n-1)]=R.nz(-6,6);
+  const L=['Falls to the left and rises to the right','Rises to the left and falls to the right','Rises to the left and rises to the right','Falls to the left and falls to the right'];const ev=n%2===0;
+  const corr=ev?(a>0?L[2]:L[3]):(a>0?L[0]:L[1]);
+  return fMC(R,`Describe the end behavior of f(x) = ${fpoly(c)}.`,corr,L.filter(x=>x!==corr),
+   `Only the leading term ${fpoly([a].concat(Array(n).fill(0)))} matters. Degree ${n} is ${ev?'even, so both ends go the same way':'odd, so the ends go opposite ways'}, and the leading coefficient is ${a>0?'positive':'negative'}.`);}],
+['s4','t4',R=>{const r1=R.i(-5,0),r2=r1+R.i(1,6),m1=R.i(1,3),m2=R.i(1,3);const w=m=>m%2?'crosses the x-axis':'touches the x-axis and turns around';
+  const S=(u,v)=>`At x = ${fN(r1)} the graph ${u}; at x = ${fN(r2)} it ${v}`;
+  return fMC(R,`For f(x) = (${xm(r1)})${m1>1?sup(m1):''}(${xm(r2)})${m2>1?sup(m2):''}, which describes the graph at its x-intercepts?`,S(w(m1),w(m2)),[S(w(m1+1),w(m2)),S(w(m1),w(m2+1)),S(w(m1+1),w(m2+1)),`At x = ${fN(-r1)} the graph ${w(m1)}; at x = ${fN(-r2)} it ${w(m2)}`],
+   `x = ${fN(r1)} has multiplicity ${m1} (${m1%2?'odd, so it crosses':'even, so it touches'}). x = ${fN(r2)} has multiplicity ${m2} (${m2%2?'odd, so it crosses':'even, so it touches'}).`);}],
+['s4','t4',R=>{const L=R.pick([2,3]),C=R.pick([3,4,5,6,9].filter(c=>c!==L));const fac=n=>{const o=[];for(let i=1;i<=n;i++)if(n%i===0)o.push(i);return o;};
+  const list=(P,Q)=>{const s=[];const v=new Set();P.forEach(p=>Q.forEach(q=>{const g=(a,b)=>{while(b){const t=b;b=a%b;a=t;}return a;};const d=g(p,q);const k=(p/d)+'/'+(q/d);if(!v.has(k)){v.add(k);s.push([p/d,q/d]);}}));
+    s.sort((x,y)=>x[1]-y[1]||x[0]-y[0]);return s.map(([p,q])=>'±'+(q===1?p:p+'/'+q)).join(', ');};
+  const b=R.nz(-5,5),c=R.nz(-6,6);
+  return fMC(R,`List all possible rational zeros of p(x) = ${fpoly([L,b,c,C])}.`,list(fac(C),fac(L)),[list(fac(L),fac(C)),list(fac(C),[1]),list(fac(C).concat(fac(L)),[1]),list(fac(C),[L])],
+   `Possible rational zeros are ±(factors of the constant ${C})/(factors of the leading coefficient ${L}). Factors of ${C}: ${fac(C).join(', ')}. Factors of ${L}: ${fac(L).join(', ')}.`);}],
+['s4','t4',R=>{const r=R.pick([1,2,-1,-2,3]);let s,t;do{s=R.nz(-5,5);t=R.nz(-5,5);}while(s===t||s===r||t===r);
+  const c=[1,-(r+s+t),r*s+r*t+s*t,-r*s*t];const z=[r,s,t].sort((a,b)=>a-b);const SS=a=>'x = '+a.map(fN).join(', ');
+  return fMC(R,`Given that x = ${fN(r)} is a zero of p(x) = ${fpoly(c)}, find all zeros.`,SS(z),[SS([r,-s,-t].sort((a,b)=>a-b)),SS([-r,-s,-t].sort((a,b)=>a-b)),SS([r,s].sort((a,b)=>a-b)),SS([r,s*t].sort((a,b)=>a-b)),SS([r,s+1,t-1].sort((a,b)=>a-b)),SS([-r,s,t].sort((a,b)=>a-b))],
+   `Use synthetic division by ${fN(r)}: the quotient is ${fpoly([1,-(s+t),s*t])}. Factor it: (${xm(s)})(${xm(t)}). So the zeros are ${z.map(fN).join(', ')}.`);}],
+['s4','t4',R=>{const r=R.nz(-4,4),q=R.i(1,4),Q=q*q;
+  return fMC(R,`Which polynomial of degree 3 with leading coefficient 1 has zeros ${fN(r)} and ${q===1?'':q}i?`,fpoly([1,-r,Q,-r*Q]),[fpoly([1,-r,-Q,r*Q]),fpoly([1,r,Q,r*Q]),fpoly([1,-r,Q,r*Q]),fpoly([1,-r,0,-r*Q])],
+   `Complex zeros come in conjugate pairs, so ${MN}${q===1?'':q}i is also a zero. p(x) = (${xm(r)})(x ${MN} ${q===1?'':q}i)(x + ${q===1?'':q}i) = (${xm(r)})(x² + ${Q}) = ${fpoly([1,-r,Q,-r*Q])}.`);}],
+['s4','t5',R=>{let a,b,c;do{a=R.nz(-5,5);b=R.nz(-5,5);c=R.nz(-5,5);}while(a===b||c===-a||-c===b||c===0);
+  const N=fpoly([1,c-a,-a*c]),D=fpoly([1,-(a+b),a*b]);
+  return fMC(R,`For f(x) = (${N})/(${D}), find the vertical asymptote(s) and any hole.`,`Vertical asymptote x = ${fN(b)}; hole at x = ${fN(a)}`,[`Vertical asymptotes x = ${fN(Math.min(a,b))} and x = ${fN(Math.max(a,b))}; no hole`,`Vertical asymptote x = ${fN(a)}; hole at x = ${fN(b)}`,`Vertical asymptote x = ${fN(-b)}; hole at x = ${fN(-a)}`,`Vertical asymptote x = ${fN(b)}; no hole`,`Hole at x = ${fN(b)}; no vertical asymptote`],
+   `Factor: (${xm(a)})(${xm(-c)})/((${xm(a)})(${xm(b)})). The factor (${xm(a)}) cancels, so x = ${fN(a)} is a hole. The factor (${xm(b)}) stays in the denominator, so x = ${fN(b)} is a vertical asymptote.`);}],
+['s4','t5',R=>{if(R.f()<.5){const p=R.nz(-6,6),q=R.pick([1,2,3,4,-2]),n1=R.i(-5,5),n0=R.i(-5,5),d1=R.i(-5,5),d0=R.nz(-5,5);
+    return fMC(R,`Find the horizontal asymptote of f(x) = (${fpoly([p,n1,n0])})/(${fpoly([q,d1,d0])}).`,`y = ${fFR(p,q)}`,['y = 0','No horizontal asymptote',`y = ${fFR(q,p)}`,`y = ${fFR(n0,d0)}`,`y = ${fFR(p+1,q)}`,`y = ${fFR(-p,q)}`,'y = 1'],
+     `The degrees are equal (both 2), so the horizontal asymptote is y = (leading coefficient of top)/(leading coefficient of bottom) = ${fFR(p,q)}.`);}
+  const d=R.nz(-4,4),b=R.i(-5,5),c=R.nz(-6,6);
+  return fMC(R,`Find the slant (oblique) asymptote of f(x) = (${fpoly([1,b,c])})/(${xm(d)}).`,`y = ${fpoly([1,b+d])}`,[`y = ${fpoly([1,b-d])}`,`y = ${fpoly([1,b])}`,'y = 0',`x = ${fN(d)}`,`y = ${fpoly([1,b+d+1])}`],
+   `Divide x²${sg(b,'x')}${sg(c,'')} by ${xm(d)} (long or synthetic division). The quotient is ${fpoly([1,b+d])} with a remainder, so the slant asymptote is y = ${fpoly([1,b+d])}.`);}],
+['s4','t5',R=>{let a,b;do{a=R.i(-5,5);b=R.i(-5,5);}while(a===b);const op=R.pick(['≥','≤','>','<']);const A=fN(a),B=fN(b),lo=Math.min(a,b),hi=Math.max(a,b),L=fN(lo),H=fN(hi);
+  const inc=op==='≥'||op==='≤',out=op==='≥'||op==='>';const aLo=a===lo;
+  const ob=(x,isA)=>isA&&inc;
+  const corr=out?`(${MN}∞, ${L}${ob(lo,aLo)?']':')'}${UN}${ob(hi,!aLo)?'[':'('}${H}, ∞)`:`${ob(lo,aLo)?'[':'('}${L}, ${H}${ob(hi,!aLo)?']':')'}`;
+  const W=out?[`(${MN}∞, ${L}]${UN}[${H}, ∞)`,`(${MN}∞, ${L})${UN}(${H}, ∞)`,`(${MN}∞, ${L}${aLo?')':']'}${UN}${aLo?'[':'('}${H}, ∞)`,`[${L}, ${H}]`,`(${L}, ${H})`]
+             :[`[${L}, ${H}]`,`(${L}, ${H})`,`${aLo?'(':'['}${L}, ${H}${aLo?']':')'}`,`(${MN}∞, ${L})${UN}(${H}, ∞)`,`(${MN}∞, ${L}]${UN}[${H}, ∞)`];
+  return fMC(R,`Solve: (${xm(a)})/(${xm(b)}) ${op} 0`,corr,W,
+   `The critical numbers are x = ${A} (top is zero) and x = ${B} (bottom is zero). Test a value in each interval: the quotient is positive outside ${L} and ${H} and negative between them. You want ${out?'positive, so outside':'negative, so between'}. ${inc?`x = ${A} makes the quotient 0, so it is included. `:''}x = ${B} is never included because it makes the denominator zero.`);}],
+/* ===== Section 5: Composite, inverse, exponential & log ===== */
+['s5','t3',R=>{const c=R.i(-5,5),m=R.nz(-3,3),k=R.nz(-4,4);
+  return fMC(R,`f(x) = x²${sg(c,'')} and g(x) = ${fpoly([m,k])}. Find (f ∘ g)(x).`,fpoly([m*m,2*m*k,k*k+c]),[fpoly([m,0,m*c+k]),fpoly([m*m,0,k*k+c]),fpoly([m,k*k+c]),fpoly([m*m,2*m*k,k+c]),fpoly([m*m,m*k,k*k+c]),fpoly([m*m,2*m*k,k*k-c])],
+   `(f ∘ g)(x) = f(g(x)) = (${fpoly([m,k])})²${sg(c,'')} = ${fpoly([m*m,2*m*k,k*k])}${sg(c,'')} = ${fpoly([m*m,2*m*k,k*k+c])}.`);}],
+['s5','t3',R=>{let a,b,c;do{a=R.nz(-4,4);b=R.nz(-6,6);c=R.nz(-5,5);}while(a*(-c)-b===0||a===c);
+  const F=(n,d)=>`(${n})/(${d})`;const inv=F(fpoly([c,b]),xm(a));
+  return fMC(R,`Find the inverse of f(x) = ${F(fpoly([a,b]),xm(c))}.`,`f^(−1)(x) = ${inv}`,[`f^(−1)(x) = ${F(xm(c),fpoly([a,b]))}`,`f^(−1)(x) = ${F(fpoly([c,-b]),xm(a))}`,`f^(−1)(x) = ${F(fpoly([a,-b]),xm(-c))}`,`f^(−1)(x) = ${F(fpoly([c,b]),xm(-a))}`,`f^(−1)(x) = ${F(fpoly([a,b]),xm(c))}`],
+   `Write y = ${F(fpoly([a,b]),xm(c))} and swap x and y: x = ${F(fpoly([a,b],'y'),xm(c).replace('x','y'))}. Multiply both sides by (${xm(c).replace('x','y')}): xy${sg(-c,'x')} = ${fpoly([a,b],'y')}. Get the y terms on one side: xy${sg(-a,'y')} = ${fpoly([c,b])}, so y(${xm(a)}) = ${fpoly([c,b])} and y = ${inv}.`);}],
+['s5','t6',R=>{const a=R.i(2,4),b=R.i(1,3),c=R.i(2,5);
+  return fMC(R,`Write as a single logarithm: ${a} log x + ${b===1?'':b+' '}log y ${MN} ${c} log z`,`log(x${sup(a)}y${b>1?sup(b):''}/z${sup(c)})`,[`log(x${sup(a)}y${b>1?sup(b):''}z${sup(c)})`,`log(${a}x · ${b===1?'':b}y/(${c}z))`,`log(x${sup(a)}/(y${b>1?sup(b):''}z${sup(c)}))`,`log(x${sup(a)} + y${b>1?sup(b):''} ${MN} z${sup(c)})`],
+   `Power rule first: log x${sup(a)} + log y${b>1?sup(b):''} ${MN} log z${sup(c)}. Product rule joins the added logs, quotient rule puts the subtracted one in the denominator.`);}],
+['s5','t6',R=>{const p=R.pick([2,3]);let m,n;do{m=R.i(1,3);n=R.i(1,3);}while(m===n||(p===3&&(m>2||n>2)));const t=R.nz(-2,3),cc=(n-m)*t,x=n*t;
+  return fMC(R,`Solve: ${Math.pow(p,m)}^x = ${Math.pow(p,n)}^(${xm(cc)})`,`x = ${fN(x)}`,[`x = ${fN(cc)}`,`x = ${fN(-x)}`,`x = ${fN(x+1)}`,`x = ${fFR(n*cc,m)}`,`x = ${fN(x+2)}`,`x = ${fN(2*x)}`],
+   `Write both sides as powers of ${p}: ${p}^(${m===1?'':m}x) = ${p}^(${n===1?'':n}(${xm(cc)})). Set the exponents equal: ${flin([[m,'x']])} = ${flin([[n,'x'],[-n*cc,'']])}, so x = ${fN(x)}.`);}],
+['s5','t6',R=>{const P=R.pick([[2,3,4,2],[2,4,8,6],[2,5,8,4],[3,2,9,8],[3,3,9,6],[2,4,16,15],[3,4,27,24]]);const b=P[0],k=P[1],s=P[2],a=P[3],o=-(s-a);
+  return fMC(R,`Solve: log${sub(b)}(x) + log${sub(b)}(${xm(a)}) = ${k}`,`x = ${s}`,[`x = ${s} or x = ${fN(o)}`,`x = ${fN(o)}`,`x = ${fN(Math.pow(b,k)+a)}`,`x = ${s-a}`],
+   `Combine: log${sub(b)}(x(${xm(a)})) = ${k}, so x(${xm(a)}) = ${b}${sup(k)} = ${Math.pow(b,k)}. Then ${fpoly([1,-a,-Math.pow(b,k)])} = 0 gives x = ${s} or x = ${fN(o)}. You cannot take the log of a negative number, so reject x = ${fN(o)}.`);}],
+['s5','t6',R=>{const P=R.pick([1000,2500,4000,5000,8000]),r=R.pick([3,4,5,6]),n=R.pick([4,12]),t=R.i(3,10);const nm=n===4?'quarterly':'monthly';
+  const A=P*Math.pow(1+r/100/n,n*t),money=v=>'$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  return fMC(R,`$${P.toLocaleString('en-US')} is invested at ${r}% annual interest compounded ${nm}. Find the balance after ${t} years.`,money(A),[money(P*(1+r/100*t)),money(P*Math.exp(r/100*t)),money(P*Math.pow(1+r/100,t)),money(P*Math.pow(1+r/100/n,t))],
+   `A = P(1 + r/n)^(nt) = ${P}(1 + ${r/100}/${n})^(${n}·${t}) ≈ ${money(A)}. Write ${r}% as ${r/100}.`);}],
+['s5','t6',R=>{const h=R.pick([5,8,10,12,20,25]),A0=R.pick([40,50,80,100,200]),t=h*R.pick([2,3])+R.pick([0,Math.round(h/2)]);
+  const A=A0*Math.pow(.5,t/h),g=v=>(Math.round(v*100)/100).toFixed(2)+' grams';
+  return fMC(R,`A substance has a half-life of ${h} years. A sample starts at ${A0} grams. How much remains after ${t} years?`,g(A),[g(A0*Math.pow(.5,h/t)),g(A0*Math.exp(-t/h)),g(A0/2),g(A*2),g(A0*Math.pow(.5,Math.round(t/h)+1))],
+   `A = A₀(1/2)^(t/h) = ${A0}(1/2)^(${t}/${h}) ≈ ${g(A)}.`);}]
+];
+
+const FKEY='mat171-final-v1',FMIN=120,FL='ABCD';
+let F=null;try{const r=localStorage.getItem(FKEY);if(r)F=JSON.parse(r);}catch(e){F=null;}
+function fSave(){try{localStorage.setItem(FKEY,JSON.stringify(F));}catch(e){}}
+function fSeeds(){const R=rng((Date.now()^Math.floor(Math.random()*4294967295))>>>0);return FG.map((_,i)=>({g:i,seed:R.i(1,2147483646)}));}
+function fNew(keepHist){const h=F&&F.hist&&keepHist?F.hist:[];F={items:fSeeds(),ans:{},flag:{},start:0,end:0,done:false,hist:h,missOnly:false};fSave();}
+const fCache={};
+function fQ(i){const it=F.items[i],k=it.g+':'+it.seed;if(fCache[k])return fCache[k];const g=FG[it.g];let q;
+  try{q=g[2](rng(it.seed));}catch(e){q={q:'This question could not be generated. Skip it.',o:['A','B','C','D'],a:0,sol:''};}
+  q.sec=g[0];q.tid=g[1];return fCache[k]=q;}
+const fLeft=()=>Math.max(0,F.start+FMIN*60000-Date.now());
+const hms=ms=>{const s=Math.ceil(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return h+':'+String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');};
+const fUsed=()=>{const ms=Math.min(FMIN*60000,(F.end||Date.now())-F.start);const m=Math.round(ms/60000);return m>=60?Math.floor(m/60)+' h '+(m%60)+' min':m+' min';};
+const fAnsN=()=>F.items.filter((_,i)=>F.ans[i]!=null).length;
+const fFlagN=()=>F.items.filter((_,i)=>F.flag[i]).length;
+const letter=p=>p>=90?'A':p>=80?'B':p>=70?'C':p>=60?'D':'F';
+let fArm=false;
+function fFinish(){if(F.done)return;F.done=true;F.end=Math.min(Date.now(),F.start+FMIN*60000);fArm=false;F.missOnly=false;
+  let c=0;F.items.forEach((_,i)=>{if(F.ans[i]===fQ(i).a)c++;});F.hist=(F.hist||[]).concat([{c,n:F.items.length,t:fUsed(),d:Date.now()}]);fSave();}
+function fQBlock(i,res){const q=fQ(i),a=F.ans[i],ok=res&&a===q.a,t=TOP.find(x=>x.id===q.tid)||TOP[0];
+  if(res&&F.missOnly&&ok)return '';
+  const opts=`<div class="opts">${q.o.map((o,j)=>{let c='';if(res){if(j===q.a)c=' right';else if(j===a)c=' wrong';}else if(j===a)c=' sel';
+    return `<button class="opt${c}" data-act="fpick" data-i="${i}" data-v="${j}" aria-pressed="${j===a}" ${res?'disabled':''}><span class="lt">${FL[j]}</span><span>${esc(o)}</span></button>`;}).join('')}</div>`;
+  let fb='';if(res){fb=ok?`<div class="fb ok"><b>Correct.</b> ${esc(q.sol)}</div>`:`<div class="fb bad"><b>${a==null?'Not answered.':'Incorrect.'}</b> The correct answer is ${FL[q.a]}.</div><div class="fb hint"><b>How it works:</b> ${esc(q.sol)}</div>`;}
+  const flag=res?'':`<button class="fflag${F.flag[i]?' on':''}" data-act="fflag" data-i="${i}" aria-pressed="${!!F.flag[i]}">${F.flag[i]?'⚑ Flagged':'⚐ Flag for review'}</button>`;
+  return `<div class="q fq${res?(ok?' ok':' bad'):''}" id="fq-${i}" style="${tcStyle(t)};--tcd:var(--ink)"><div class="fqh"><span class="tnum" style="--tcd:var(--mute)">Question ${i+1}${res?' · '+esc((FSEC.find(s=>s.id===q.sec)||{}).n||''):''}</span>${flag}</div><p class="qt">${esc(q.q)}</p>${opts}${fb}</div>`;}
+function fNav(){return `<div class="fnav" aria-label="Question map">${F.items.map((_,i)=>`<button class="${F.ans[i]!=null?'an':''}${F.flag[i]?' fl':''}" data-act="fjump" data-i="${i}" aria-label="Question ${i+1}${F.ans[i]!=null?', answered':''}${F.flag[i]?', flagged':''}">${i+1}</button>`).join('')}</div>`;}
+function renderFinal(){
+  if(!F||!F.items||F.items.length!==FG.length)fNew(true);
+  if(F.start&&!F.done&&fLeft()<=0)fFinish();
+  const back=`<button class="back" data-act="home">‹ All topics</button>`;
+  const hist=(F.hist||[]);
+  if(!F.start){
+    const cov=FSEC.map(s=>{const idx=FG.map((g,i)=>g[0]===s.id?i+1:0).filter(Boolean);return `<tr><td>${esc(s.n)}</td><td class="n">${idx[0]}–${idx[idx.length-1]}</td><td class="n">${idx.length}</td></tr>`;}).join('');
+    return back+`<section class="hero" style="padding-top:6px"><h1 style="max-width:none">Mock final exam</h1><p>MAT 171 Precalculus Algebra · set out like the CPCC final: 40 multiple-choice questions covering the whole course, 2 hours.</p></section>
+    <div class="tcard main fcover"><h3>Instructions</h3><ul>
+      <li><b>40 questions, 2 hours.</b> Each question is worth 2.5 points, for 100 points in total.</li>
+      <li>Choose the one best answer for each question. Work it out on paper first, the way you would in the exam room.</li>
+      <li>Use the calculator your instructor allows on the final. No notes.</li>
+      <li>You can flag any question and come back to it. The question map shows what you have answered.</li>
+      <li>The clock starts when you press Start and keeps running if you leave the page. When time runs out the exam submits itself.</li>
+      <li>You get your score, percentage, letter grade and feedback straight away. Every retake uses new numbers.</li></ul>
+    <h3 style="margin-top:14px">What it covers</h3><div class="ftbl"><table><thead><tr><th>Unit</th><th>Questions</th><th>Count</th></tr></thead><tbody>${cov}</tbody></table></div>
+    ${hist.length?`<p style="margin-top:12px">Your attempts so far: ${hist.map((h,k)=>`attempt ${k+1}: ${h.c} of ${h.n} (${Math.round(h.c/h.n*100)}%)`).join(' · ')}</p>`:''}
+    <div class="tsub" style="--tcd:var(--d5)"><button class="btn fill" data-act="fstart">Start the mock final (2 hours)</button></div></div>`;}
+  if(!F.done){
+    const left=F.items.length-fAnsN();
+    return `<div class="tbar"><span class="pt">Mock final</span><span class="cnt" id="fcount">${fAnsN()} of 40 answered${fFlagN()?' · '+fFlagN()+' flagged':''}</span><button class="btn fmapb" data-act="fmap">Question map</button><span class="tm${fLeft()<600000?' low':''}" id="fclock" aria-label="Time remaining">${hms(fLeft())}</span></div>
+    <div id="fmap">${fNav()}</div>
+    <div class="qs">${F.items.map((_,i)=>fQBlock(i,false)).join('')}</div>
+    <div class="tsub" style="--tcd:var(--d5)"><button class="btn fill" data-act="fsub">${fArm?'Submit anyway':'Submit the exam'}</button><span style="color:var(--mute)" id="fsubmsg">${fArm&&(left||fFlagN())?`${left?left+' unanswered (marked wrong)':''}${left&&fFlagN()?' and ':''}${fFlagN()?fFlagN()+' still flagged':''}. Press again to submit.`:'Answers save as you go.'}</span></div>`;}
+  let c=0;const by={};F.items.forEach((_,i)=>{const q=fQ(i),ok=F.ans[i]===q.a;if(ok)c++;const b=by[q.sec]||(by[q.sec]={n:0,c:0});b.n++;if(ok)b.c++;});
+  const n=F.items.length,pct=Math.round(c/n*100),pts=(c*2.5).toFixed(1).replace(/\.0$/,''),fb0=fbBand(pct),fb={h:fb0.h,c:fb0.c,m:fb0.m.replace(/this part/g,'the mock final').replace(/red topics?/g,m=>m.replace('topic','unit'))};
+  let cmp='';if(hist.length>1){const pv=hist[hist.length-2],d=pct-Math.round(pv.c/pv.n*100);cmp=`<p style="margin-top:8px">${d>0?`Up ${d} percentage points from your last attempt.`:d<0?`Down ${-d} percentage points from your last attempt.`:'Same percentage as your last attempt.'}</p>`;}
+  const secs=FSEC.map(s=>{const b=by[s.id]||{n:0,c:0};const t=TOP.find(x=>x.id===s.tid)||TOP[0];return `<a href="#${s.tid}-try" class="${b.c<b.n?'weak':''}" style="${tcStyle(t)}"><b>${esc(s.n)}</b>${b.c} of ${b.n} correct (${b.n?Math.round(b.c/b.n*100):0}%)</a>`;}).join('');
+  const weak=FSEC.filter(s=>by[s.id]&&by[s.id].c<by[s.id].n).sort((x,y)=>by[x.id].c/by[x.id].n-by[y.id].c/by[y.id].n).slice(0,2).map(s=>s.n);
+  return back+`<section class="hero" style="padding-top:6px"><h1 style="max-width:none">Mock final results</h1></section>
+  <div class="tcard main"><div class="tnum" style="--tcd:var(--d5)">Your score · finished in ${fUsed()}</div>
+   <div class="fscore"><div><div class="big">${pts} <small>/ 100 points</small></div><p style="margin:0">${c} of ${n} correct · ${pct}%</p></div><div class="fgrade" aria-label="Letter grade ${letter(pct)}">${letter(pct)}</div></div>
+   <div class="fbk" style="--fbc:${fb.c}"><b>${fb.h}.</b> ${fb.m}</div>${cmp}
+   <p style="margin-top:12px">${weak.length?`<b>Focus next on:</b> ${weak.join(' and ')}. Tap a unit in red to practise it.`:'Every unit fully correct.'} Letter grade uses the usual 90 / 80 / 70 / 60 scale.</p>
+   <div class="tbt">${secs}</div>
+   <div class="tsub" style="--tcd:var(--d5)"><button class="btn fill" data-act="fretake">Retake with new numbers</button><button class="btn" data-act="fmiss">${F.missOnly?'Show all 40 questions':'Show only questions I missed'}</button></div></div>
+  <h3 class="gh">${F.missOnly?'Questions you missed':'Every question with feedback'}</h3><div class="qs">${F.items.map((_,i)=>fQBlock(i,true)).join('')||'<p>You did not miss any questions.</p>'}</div>`;
+}
+setInterval(()=>{if(view!=='final'||!F||!F.start||F.done)return;const ms=fLeft();if(ms<=0){fFinish();render();window.scrollTo(0,0);return;}
+  const c=document.getElementById('fclock');if(c){c.textContent=hms(ms);c.classList.toggle('low',ms<600000);}},1000);
+function fRefreshBar(){const c=document.getElementById('fcount');if(c)c.textContent=`${fAnsN()} of 40 answered${fFlagN()?' · '+fFlagN()+' flagged':''}`;
+  const nav=document.getElementById('fmap');if(nav)nav.innerHTML=fNav();}
+
 /* ---------- answer checking ---------- */
 function parseNum(s){
   s=String(s).toLowerCase().replace(/\s+/g,'').replace(/\u2212/g,'-').replace(/^[a-z]=/,'').replace(/,/g,'');
@@ -1310,6 +1574,18 @@ document.addEventListener('click',e=>{
   if(a==='copy'){const ta=document.getElementById('sharebox');if(ta){ta.select();let ok=false;try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(ta.value);ok=true;}else ok=document.execCommand('copy');}catch(er){try{ok=document.execCommand('copy');}catch(e2){}}b.textContent=ok?'Copied':'Select the text and copy it';}return;}
   if(a==='reset'){if(!resetArm){resetArm=true;return render();}S={q:{},conf:{},last:null,updated:Date.now()};persistLocal();if(dbDoc)queueCloud();resetArm=false;return render();}
   if(a==='test'){return go('test');}
+  if(a==='final'){return go('final');}
+  if(a==='fstart'){if(!F.start){F.start=Date.now();fSave();}render();window.scrollTo(0,0);return;}
+  if(a==='fpick'){if(F.done)return;const i=+b.dataset.i,v=+b.dataset.v;F.ans[i]=v;fArm=false;fSave();
+    b.parentNode.querySelectorAll('.opt').forEach(o=>{const on=o===b;o.classList.toggle('sel',on);o.setAttribute('aria-pressed',on);});fRefreshBar();return;}
+  if(a==='fflag'){if(F.done)return;const i=+b.dataset.i;F.flag[i]=!F.flag[i];fSave();b.classList.toggle('on',!!F.flag[i]);b.setAttribute('aria-pressed',!!F.flag[i]);b.textContent=F.flag[i]?'\u2691 Flagged':'\u2690 Flag for review';fRefreshBar();return;}
+  if(a==='fjump'){const el=document.getElementById('fq-'+b.dataset.i);if(el){const off=(document.querySelector('.tbar')||{offsetHeight:0}).offsetHeight+(document.querySelector('header.top')||{offsetHeight:0}).offsetHeight+12;window.scrollTo(0,el.getBoundingClientRect().top+window.scrollY-off);}return;}
+  if(a==='fmap'){window.scrollTo(0,0);return;}
+  if(a==='fsub'){if(F.done)return;if((fAnsN()<F.items.length||fFlagN())&&!fArm){fArm=true;const m=document.getElementById('fsubmsg');const left=F.items.length-fAnsN();
+      if(m)m.textContent=`${left?left+' unanswered (marked wrong)':''}${left&&fFlagN()?' and ':''}${fFlagN()?fFlagN()+' still flagged':''}. Press again to submit.`;b.textContent='Submit anyway';return;}
+    fFinish();render();window.scrollTo(0,0);return;}
+  if(a==='fretake'){fNew(true);render();window.scrollTo(0,0);return;}
+  if(a==='fmiss'){F.missOnly=!F.missOnly;fSave();render();return;}
   if(a==='tnew'){tFresh();tArm=false;render();window.scrollTo(0,0);return;}
   if(a==='tview'){T.show=null;tSave();render();window.scrollTo(0,0);return;}
   if(a==='tretake'){T.show=null;T.pend=+b.dataset.p;tSave();render();window.scrollTo(0,0);return;}
