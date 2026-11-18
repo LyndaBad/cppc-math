@@ -294,6 +294,15 @@ code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92em;backgroun
 .exchips button span{font-size:14px;line-height:1.35;color:var(--mute)}
 .exchips button[aria-selected="true"]{border-color:var(--tc);box-shadow:0 0 0 1px var(--tc);background:var(--soft)}
 .exchips button[aria-selected="true"] span{color:var(--ink)}
+.rev{margin-top:10px;padding:10px 14px;border-radius:14px;border:1.5px dashed var(--tc,var(--d5));display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-size:15px}
+.rev b{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin-right:2px}
+.rev a,.revlist a{color:var(--d5);font-weight:500;text-decoration:underline;text-underline-offset:3px}
+.revlist{border-color:var(--d5)}.revlist h3{margin:0 0 4px}.revlist ol{margin:8px 0 0;padding-left:22px;display:grid;gap:12px}
+.revlist li{padding-left:4px}.revlist li::marker{color:var(--tcd);font-weight:700}
+.rl-h{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}.rl-h span{font-size:14px;color:var(--mute)}
+.rl-a{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:15px;margin-top:2px}
+.flash{animation:flash 2s ease-out}@keyframes flash{0%{background:var(--soft);box-shadow:0 0 0 6px var(--soft)}100%{background:transparent;box-shadow:0 0 0 0 transparent}}
+@media (prefers-reduced-motion:reduce){.flash{animation:none}}
 </style>
 </head>
 <body>
@@ -1056,11 +1065,11 @@ function renderTopic(t){
   const cf=S.conf[t.id];
   let body='';
   if(tab==='see')body=`<p class="lead">Drag the sliders and watch what changes.</p><div id="wgbox"></div><div class="notice"><b>What to notice</b><ul>${t.notice.map(n=>`<li>${esc(n)}</li>`).join('')}</ul></div>`;
-  else if(tab==='know')body=t.rules.map(g=>`<h3 class="gh">${esc(g.h)}</h3><div class="cards">${g.cards.map(c=>`<div class="pc"><h4>${esc(c.t)}</h4><p class="fm">${esc(c.f)}</p>${c.n?`<p>${esc(c.n)}</p>`:''}${c.ex?`<div class="ex">${esc(c.ex)}</div>`:''}${c.viz?`<div class="vz">${c.viz}</div>`:''}</div>`).join('')}</div>`).join('')+
+  else if(tab==='know')body=t.rules.map((g,gi)=>`<h3 class="gh" id="g-${gi}">${esc(g.h)}</h3><div class="cards">${g.cards.map(c=>`<div class="pc"><h4>${esc(c.t)}</h4><p class="fm">${esc(c.f)}</p>${c.n?`<p>${esc(c.n)}</p>`:''}${c.ex?`<div class="ex">${esc(c.ex)}</div>`:''}${c.viz?`<div class="vz">${c.viz}</div>`:''}</div>`).join('')}</div>`).join('')+
     `<h3 class="gh">The game plan</h3><ol class="flow">${t.flow.map(f=>`<li><b>${esc(f[0])}</b>${esc(f[1])}</li>`).join('')}</ol>`;
   else if(tab==='walk'){
     const E=[t.ex].concat(t.exs||[]),k=Math.min(wex[t.id]||0,E.length-1),X=E[k],n=walk[wkey(t.id)]||1,steps=X.steps;
-    body=(E.length>1?`<p class="lead">${E.length} worked examples. Pick one, then reveal it a step at a time. Try each step yourself before you look.</p><div class="exchips" role="tablist">${E.map((e,i)=>`<button role="tab" data-act="wex" data-v="${i}" aria-selected="${i===k}"><b>Example ${i+1}</b><span>${esc(e.title)}</span></button>`).join('')}</div>`:'')+`<h3 class="gh" style="margin-top:4px">${esc(X.title)}</h3><div class="steps">${steps.slice(0,n).map((s,i)=>`<div class="st"><div class="nb">${i+1}</div><div><div class="do">${esc(s.d)}</div>${s.m?`<div class="mt">${esc(s.m)}</div>`:''}<div class="wy">${esc(s.w)}</div>${s.viz?`<div class="vz">${s.viz}</div>`:''}</div></div>`).join('')}</div>
+    body=(E.length>1?`<p class="lead">${E.length} worked examples. Pick one, then reveal it a step at a time. Try each step yourself before you look.</p><div class="exchips" role="tablist">${E.map((e,i)=>`<button role="tab" data-act="wex" data-v="${i}" aria-selected="${i===k}"><b>Example ${i+1}</b><span>${esc(e.title)}</span></button>`).join('')}</div>`:'')+`<h3 class="gh" id="walkhead" style="margin-top:4px">${esc(X.title)}</h3><div class="steps">${steps.slice(0,n).map((s,i)=>`<div class="st"><div class="nb">${i+1}</div><div><div class="do">${esc(s.d)}</div>${s.m?`<div class="mt">${esc(s.m)}</div>`:''}<div class="wy">${esc(s.w)}</div>${s.viz?`<div class="vz">${s.viz}</div>`:''}</div></div>`).join('')}</div>
     <div class="walkbtns"><button class="btn" data-act="wback" ${n<=1?'disabled':''}>Back</button><button class="btn fill" data-act="wnext" ${n>=steps.length?'disabled':''}>${n>=steps.length?'Done':'Show next step'}</button><button class="btn" data-act="wall" ${n>=steps.length?'disabled':''}>Show all</button><button class="btn" data-act="wtry">Go to practice</button></div>`;
   }else body=`<p class="lead">${topicDone(t)} of ${t.qs.length} solved. Wrong answers are fine, they save too so you can see what to review. Tap New numbers for the same kind of question with different numbers.</p><div class="qs">${t.qs.map(q=>renderQ(t,q)).join('')}</div>${renderXP(t)}`;
   return `<div class="tview" style="${tcStyle(t)}"><button class="back" data-act="home">\u2039 All topics</button>
@@ -1135,9 +1144,29 @@ function go(v,tb,noHash){
 }
 function fromHash(){
   let h='';try{h=(location.hash||'').replace('#','');}catch(e){}
-  const m=/^(t[1-7])-(see|know|walk|try)$/.exec(h);
-  if(m){view=m[1];tab=m[2];}else if(h==='tutor'&&isOwner){view='tutor';loadTutor();}else if(h==='test'){view='test';}else if(h==='final'){view='final';}else if(h==='home'||!h){view='home';}
+  const m=/^(t[1-7])-(see|know|walk|try)(?:-(\d+))?$/.exec(h);
+  if(m){view=m[1];tab=m[2];if(m[3]!=null){const k=+m[3];if(tab==='walk'){wex[view]=k;walk[wkey(view)]=99;pendScroll='walkhead';}else if(tab==='know'){pendScroll='g-'+k;}}}else if(h==='tutor'&&isOwner){view='tutor';loadTutor();}else if(h==='test'){view='test';}else if(h==='final'){view='final';}else if(h==='home'||!h){view='home';}
 }
+
+let pendScroll=null;
+function doPend(){const id=pendScroll;pendScroll=null;if(!id)return;const el=document.getElementById(id);if(!el)return;
+  const off=(document.querySelector('header.top')||{offsetHeight:0}).offsetHeight+12;window.scrollTo(0,el.getBoundingClientRect().top+window.scrollY-off);
+  el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),2200);}
+/* where each mock-final question type is taught: [topic, rule group, worked example (-1 = none)] */
+const FREV=[['t2',3,1],['t2',1,-1],['t2',1,-1],['t2',4,-1],['t2',4,3],['t2',5,2],['t2',2,-1],
+ ['t3',4,-1],['t3',0,-1],['t3',0,3],['t3',5,-1],['t3',1,-1],['t3',2,-1],['t3',5,4],
+ ['t3',5,2],['t3',3,1],['t7',2,1],['t4',3,3],['t4',4,2],['t4',4,1],['t2',0,0],['t1',2,1],['t2',6,-1],['t7',2,3],['t7',3,2],
+ ['t4',0,-1],['t4',1,-1],['t4',6,-1],['t4',2,0],['t4',5,4],['t5',0,0],['t5',4,2],['t5',3,1],
+ ['t3',5,-1],['t3',1,0],['t6',1,-1],['t6',4,1],['t6',5,2],['t6',2,-1],['t6',3,4]];
+const exOf=t=>[t.ex].concat(t.exs||[]);
+function revLinks(tid,g,e){const t=TOP.find(x=>x.id===tid);if(!t)return '';const grp=t.rules[g],X=e>=0?exOf(t)[e]:null;
+  return `<a href="#${tid}-know-${g}">${esc(t.n)} \u203A ${esc(grp?grp.h:'Remember it')}</a>${X?`<a href="#${tid}-walk-${e}">Worked example: ${esc(X.title)}</a>`:''}<a href="#${tid}-try">Practise this topic</a>`;}
+function revBox(tid,g,e){return `<div class="rev"><b>Review this</b>${revLinks(tid,g,e)}</div>`;}
+function revList(misses){/* misses: array of [tid,g,e] */
+  const seen=new Map();misses.forEach(([tid,g,e])=>{const k=tid+':'+g;const v=seen.get(k)||{tid,g,es:new Set(),n:0};v.n++;if(e>=0)v.es.add(e);seen.set(k,v);});
+  const items=[...seen.values()].sort((a,b)=>TOP.findIndex(t=>t.id===a.tid)-TOP.findIndex(t=>t.id===b.tid)||a.g-b.g);if(!items.length)return '';
+  return `<div class="tcard revlist"><h3>Your review list</h3><p>Everything you got wrong, grouped by what to study. Work down the list: read the rules, follow the worked example, then try the practice. Use your browser's back button to return here.</p><ol>${items.map(v=>{const t=TOP.find(x=>x.id===v.tid),grp=t.rules[v.g];
+    return `<li style="${tcStyle(t)}"><div class="rl-h"><b>${esc(t.n)} \u203A ${esc(grp?grp.h:'')}</b><span>${v.n} question${v.n>1?'s':''} missed</span></div><div class="rl-a"><a href="#${v.tid}-know-${v.g}">Read the rules</a>${[...v.es].map(e=>`<a href="#${v.tid}-walk-${e}">Worked example: ${esc(exOf(t)[e].title)}</a>`).join('')}<a href="#${v.tid}-try">Practise</a></div></li>`;}).join('')}</ol></div>`;}
 
 /* ---------- practice test: Part A and Part B, 1 hour each ---------- */
 const TKEY='mat171-test-v1',PART_MIN=60,PN=['A','B'];
@@ -1187,7 +1216,7 @@ function qBlock(P,i,showRes){const {t,q}=tItem(P.items[i]);const a=P.ans[i];cons
   let fb='';
   if(showRes){const blank=a==null||String(a).trim()==='';
     fb=ok?`<div class="fb ok"><b>Correct.</b> ${esc(q.sol)}</div>`
-      :`<div class="fb bad"><b>${blank?'Not answered.':'Not quite.'}</b> ${q.t==='mc'?`The right answer is ${L[q.a]}.`:`The answer is ${q.a.map(f2).join(' or ')}.`}</div><div class="fb hint"><b>How it works:</b> ${esc(q.sol)}</div>`;}
+      :`<div class="fb bad"><b>${blank?'Not answered.':'Not quite.'}</b> ${q.t==='mc'?`The right answer is ${L[q.a]}.`:`The answer is ${q.a.map(f2).join(' or ')}.`}</div><div class="fb hint"><b>How it works:</b> ${esc(q.sol)}</div><div class="rev"><b>Review this</b><a href="#${t.id}-know">${esc(t.n)} \u203A Remember it</a><a href="#${t.id}-walk">Worked examples</a><a href="#${t.id}-try">Practise this topic</a></div>`;}
   return `<div class="q${showRes?(ok?' ok':' bad'):''}" style="${tcStyle(t)}"><div class="tnum">Part ${PN[T.cur]}${pLabel(P)} \u00B7 Question ${i+1} \u00B7 ${esc(t.n)}</div><p class="qt">${esc(q.q)}</p>${ui}${fb}</div>`;}
 function fbBand(pct){
   if(pct>=90)return {h:'Excellent work',m:'You are exam-ready on this material. Keep it fresh with a retake every few days.',c:'var(--ok)'};
@@ -1751,7 +1780,7 @@ function fQBlock(i,res){const q=fQ(i),a=F.ans[i],ok=res&&a===q.a,t=TOP.find(x=>x
   if(res&&F.missOnly&&ok)return '';
   const opts=`<div class="opts">${q.o.map((o,j)=>{let c='';if(res){if(j===q.a)c=' right';else if(j===a)c=' wrong';}else if(j===a)c=' sel';
     return `<button class="opt${c}" data-act="fpick" data-i="${i}" data-v="${j}" aria-pressed="${j===a}" ${res?'disabled':''}><span class="lt">${FL[j]}</span><span>${esc(o)}</span></button>`;}).join('')}</div>`;
-  let fb='';if(res){fb=ok?`<div class="fb ok"><b>Correct.</b> ${esc(q.sol)}</div>`:`<div class="fb bad"><b>${a==null?'Not answered.':'Incorrect.'}</b> The correct answer is ${FL[q.a]}.</div><div class="fb hint"><b>How it works:</b> ${esc(q.sol)}</div>`;}
+  let fb='';if(res){fb=ok?`<div class="fb ok"><b>Correct.</b> ${esc(q.sol)}</div>`:`<div class="fb bad"><b>${a==null?'Not answered.':'Incorrect.'}</b> The correct answer is ${FL[q.a]}.</div><div class="fb hint"><b>How it works:</b> ${esc(q.sol)}</div>${(()=>{const rv=FREV[F.items[i].g];return rv?revBox(rv[0],rv[1],rv[2]):'';})()}`;}
   const flag=res?'':`<button class="fflag${F.flag[i]?' on':''}" data-act="fflag" data-i="${i}" aria-pressed="${!!F.flag[i]}">${F.flag[i]?'⚑ Flagged':'⚐ Flag for review'}</button>`;
   return `<div class="q fq${res?(ok?' ok':' bad'):''}" id="fq-${i}" style="${tcStyle(t)};--tcd:var(--ink)"><div class="fqh"><span class="tnum" style="--tcd:var(--mute)">Question ${i+1}${res?' · '+esc((FSEC.find(s=>s.id===q.sec)||{}).n||''):''}</span>${flag}</div><p class="qt">${esc(q.q)}</p>${opts}${fb}</div>`;}
 function fNav(){return `<div class="fnav" aria-label="Question map">${F.items.map((_,i)=>`<button class="${F.ans[i]!=null?'an':''}${F.flag[i]?' fl':''}" data-act="fjump" data-i="${i}" aria-label="Question ${i+1}${F.ans[i]!=null?', answered':''}${F.flag[i]?', flagged':''}">${i+1}</button>`).join('')}</div>`;}
@@ -1792,6 +1821,7 @@ function renderFinal(){
    <p style="margin-top:12px">${weak.length?`<b>Focus next on:</b> ${weak.join(' and ')}. Tap a unit in red to practise it.`:'Every unit fully correct.'} Letter grade uses the usual 90 / 80 / 70 / 60 scale.</p>
    <div class="tbt">${secs}</div>
    <div class="tsub" style="--tcd:var(--d5)"><button class="btn fill" data-act="fretake">Retake with new numbers</button><button class="btn" data-act="fmiss">${F.missOnly?'Show all 40 questions':'Show only questions I missed'}</button></div></div>
+  ${revList(F.items.map((it,i)=>F.ans[i]===fQ(i).a?null:FREV[it.g]).filter(Boolean))}
   <h3 class="gh">${F.missOnly?'Questions you missed':'Every question with feedback'}</h3><div class="qs">${F.items.map((_,i)=>fQBlock(i,true)).join('')||'<p>You did not miss any questions.</p>'}</div>`;
 }
 setInterval(()=>{if(view!=='final'||!F||!F.start||F.done)return;const ms=fLeft();if(ms<=0){fFinish();render();window.scrollTo(0,0);return;}
@@ -1868,10 +1898,10 @@ if(a==='wnext'){walk[wkey(view)]=(walk[wkey(view)]||1)+1;return render();}
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.matches&&e.target.matches('.ans input')){const b=document.querySelector(`[data-act="check"][data-q="${e.target.dataset.q}"]`);if(b)b.click();}
 });
-window.addEventListener('hashchange',()=>{fromHash();render();});
+window.addEventListener('hashchange',()=>{fromHash();render();setTimeout(doPend,40);});
 
 /* ---------- start ---------- */
-fromHash();setPill('device');render();mathify(document.body);initCloud();
+fromHash();setPill('device');render();mathify(document.body);setTimeout(doPend,80);initCloud();
 })();
 </script>
 </body>
